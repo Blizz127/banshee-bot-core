@@ -92,6 +92,25 @@ The script verifies the packet before compilation and checks its two source
 members against the selected immutable git objects. It does not extract the
 packet into an owning checkout.
 
+**Platform relay reconciled, 2026-11-15 CST:** the neighboring source/test
+`RECEIPT.json` matches SHA256
+`b7ad0d38cf57de1e3b58cfca72e41cf994fa2f02b9b058f7f6a5d9d6ecf08b1e`.
+All 14 manifest entries and all three packet source files were reverified.
+The platform reports seven adapter tests, 12 interoperability outcomes and
+three corrupted-input refusals as separate runs; these were not rerun during
+relay reconciliation. Its own native checks are synthetic, and its receipt
+explicitly leaves owned FFXI native load/query unrun. The later bot-core results
+above are separate standalone-library executions, not platform-receipt results
+or in-server verification. Calibration, Game QA and owning tiled support remain
+unproven. The exact producer arithmetic cause remains **INFERRED**.
+
+The packet supersedes only the proposed marked-detail-boundary correction,
+not C1 or the original failure evidence. C1 adoption/P0 is independent of maps.
+The relay grants no install, restart, live action or new worker. The no-restart
+hold and all other holds remain unchanged. Identity/attribution receipt:
+`evidence/ffxi-platform-relay-20261115-0255/result.json`, SHA256
+`38f41c5d07c0e8c15e3a453215538b6e029b07205e154efbdf20d776efa97a53`.
+
 **OBSERVED:** the correction narrowly accepts bounded binary32 rounding at
 marked extra detail-boundary vertices. Native layout, convexity, winding,
 interior vertices, topology, raw hashes, query bounds and producer constraints

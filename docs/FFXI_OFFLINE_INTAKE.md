@@ -1,8 +1,11 @@
 # FFXI source and offline navigation intake — 2026-11-15 CST
 
-**Supersedes the earlier failure-only navigation intake.** Route once through
-Devbox task `dcc9a63a40ab` to the existing owning FFXI lead. Prior receipts remain
-historical evidence. No install, reload or deployment is requested here. The
+**Updates the action list in the earlier navigation intake; no prior evidence
+is superseded.** Route once through Devbox task `dcc9a63a40ab` to the existing
+owning FFXI lead. The platform's source/test packet supersedes only the proposed
+detail-boundary correction, not C1 or the original failure evidence. Our later
+standalone library checks and C1 comparison have their own receipts. No install,
+reload or deployment is requested here. The
 standing **never restart FFXI servers** hold includes zero-player periods.
 
 ## Corrected wrapper consumed independently

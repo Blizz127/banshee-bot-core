@@ -469,3 +469,21 @@ Times are America/Chicago (CST).
   Exact message/response: `evidence/build0006-readback/coordinator-intake.txt`
   and `coordinator-response.json`. Final archive SHA readback still matches;
   no remote exists and the source worktree was clean at handoff.
+
+## 2026-11-15 CST — platform source/test relay reconciliation: PASS identity
+
+- VERIFIED: relayed packet and receipt match their supplied SHA256 identities.
+  All 14 manifest entries and three source git objects match; the original a13
+  failure receipt and later standalone-library/C1 receipts remain unchanged.
+- OBSERVED platform report: 7 adapter tests, 12 interoperability outcomes and
+  three corrupted variants pass/refuse as stated, in separate runs. No tests,
+  native queries or builds were repeated for this documentation reconciliation.
+- Scope clarified: the platform packet supersedes only the proposed marked
+  detail-boundary correction, not C1 or prior failure evidence. Later bot-core
+  standalone library results are separately attributed, not in-server proof.
+  Exact producer cause stays INFERRED; calibration, Game QA and owning tiled
+  support remain unproven. No new worker or operational action occurred.
+- Evidence: `evidence/ffxi-platform-relay-20261115-0255/result.json`, SHA256
+  `38f41c5d07c0e8c15e3a453215538b6e029b07205e154efbdf20d776efa97a53`.
+  Next C1 boundary remains owning native adoption/P0, independently of maps;
+  publication and Game QA remain pending. All holds are unchanged.

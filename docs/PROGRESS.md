@@ -1232,3 +1232,19 @@ Times are America/Chicago (CST).
 - Next correction: package/read back build0019 and route one superseding private
   tool/source intake. Native adapter instrumentation, current C1/P0/Game QA and
   publisher receipts remain owning-lane results. NEVER restart FFXI.
+
+## 2026-11-15 08:18 CST — private build0019: PASS, publication unconfirmed
+
+- VERIFIED: source `43b214567c1a7a8ddf19b33fa2f1a0ae91cf36cc` packages as **0.1.0-build0019**,
+  1192411 bytes, SHA256
+  `aa9768571bbd9b595e54489394a59b8500f648ce1fd3e984d6fe259e2e357271`.
+  Readback passes 148 payloads /14 startup invocations; 133 source files/log/Rust
+  outputs join the fresh producer. Packaged release CLI consumes the new
+  writer's actual synthetic example with the same INCOMPLETE /3 result.
+- Bot-soak binary identity changes; all three navigation tools and 22 shared-core
+  inputs remain unchanged. No C1/nav comparison replay, native action or Game QA.
+  Exact proofs, example warning correction and join-summary typo correction are
+  retained in `BUILD_0019.md`; no behavior pass is inferred from those fixes.
+- Next correction: one superseding private TOOL/SOURCE intake to the existing
+  publisher. Native adoption/instrumentation, C1/P0/Game QA and publication need
+  owning-lane results. All holds persist; NEVER restart FFXI.

@@ -45,6 +45,12 @@ SHA-256 `e72f7ed95cd7465fdeb6c6524a4f8fda0a9a2bf9f29523709ac11c99a0febeef`.
 The file contains all six task IDs and timestamps below. Runtime claims inside
 those reports have not been independently repeated here.
 
+The seven relevant task records (six scores plus ESO's pending correction) are
+also retained under this project's evidence root:
+`~/.local/share/banshee-bot-core/evidence/c0-readiness-20261115/selected-reports.json`,
+SHA-256 `91753d2346ed1972d82260d8e36068b2f7f928ca41a718807187474570e9b4f1`.
+The subset records the original snapshot path/hash and omits unrelated tasks.
+
 ### F1 — FFXI Forever Rust
 
 Task `0fcbfa0421bc`, lead `claude-ffxi-platform`, updated 00:58:03 CST.
@@ -190,6 +196,11 @@ The sole integrator routes them through the coordinator under task
 leads, preserve their in-flight work and holds, and do not create a competing
 writer. No prior bot-core intake is superseded; older 0–3 scorecards are
 superseded only where the lead explicitly provided a corrected row.
+
+Routing update, 01:10 CST: the integrator submitted these intakes through
+`coordinator.py report --task dcc9a63a40ab`. The task board accepted the record;
+native notification was unavailable. Owning-lead receipt or execution is not
+yet confirmed. No new worker/session was launched and no existing hold lifted.
 
 | Owning lead / existing task | Missing piece | Concrete next work and acceptance evidence |
 | --- | --- | --- |

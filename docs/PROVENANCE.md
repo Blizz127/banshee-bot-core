@@ -26,8 +26,12 @@ manifest and licence are retained at
 The private candidate includes `manifest.json` and `RECAST-LICENSE.txt` from that
 build alongside the original bridge source. The helper SHA-256 is
 `d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c`.
-The optional 64-bit pipeline has not been built/queried end to end; its wrapper
-inspection was checked separately against a native synthetic fixture.
+At build0001, the optional 64-bit pipeline had only wrapper inspection evidence.
+The later [ABI verification](NAV_ABI_VERIFICATION.md) records a full synthetic
+64-bit pipeline pass against pinned AzerothCore Recast/Detour sources, including
+single and tiled queries. Its backend SHA-256 is
+`b32097eb8e9205ee51b1738129a15e4ffe8cad211d2ad61a4576ee76a725fcfb`.
+This separately built helper does not change FFXI's 32-bit adapter contract.
 
 The tiled 32-bit backend retains the same external licence and records every
 input hash in `evidence/tiled-nav-20261115/backend-v2/manifest.json` under the

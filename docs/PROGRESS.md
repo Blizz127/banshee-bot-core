@@ -170,3 +170,15 @@ Times are America/Chicago (CST).
 - Next correction: package and read back the candidate; consume the in-progress
   64-bit and known-source FFXI export evidence. FFXI's current native loader still
   accepts only a single tile; native adaptation and Game QA remain outstanding.
+
+## 2026-11-15 02:12 AM CST — 64-bit native pipeline: PASS offline
+
+- VERIFIED: the same original bridge builds against the owner's pinned
+  AzerothCore dependency with 64-bit polygon references. Single and tiled
+  synthetic bake/reload/query checks pass; no implementation correction needed.
+- Evidence: `~/.local/share/banshee-bot-core/evidence/nav-abi64-20261115/`;
+  helper SHA-256 `b32097eb8e9205ee51b1738129a15e4ffe8cad211d2ad61a4576ee76a725fcfb`.
+  Source/ABI details are in `NAV_ABI_VERIFICATION.md`. This does not establish
+  native WoW integration, real-game coverage or Game QA.
+- Next correction: read back build0002 (bundled helper remains 32-bit), then
+  retain the first known-source FFXI export and query evidence. No server changes.

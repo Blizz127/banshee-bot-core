@@ -33,6 +33,9 @@ The vertical interval must contain the supplied geometry's entire Y bounds.
 Recast receives `[MIN_Y - CELL_HEIGHT, MAX_Y + HEIGHT + CLIMB + CELL_HEIGHT]`.
 All tiles keep that same vertical interval; different per-tile extrema would
 change quantization and prevent a coherent collection.
+Recast's compact heightfield extends the serialized upper Y bound by another
+`ceil(HEIGHT / CELL_HEIGHT) * CELL_HEIGHT`; the collection validator accounts
+for this headroom. It is padding, not an additional collision surface.
 
 Each tile rasterizes a border of `ceil(RADIUS / CELL_SIZE) + 3` cells on every
 horizontal side. The border participates in clearance filtering and erosion;

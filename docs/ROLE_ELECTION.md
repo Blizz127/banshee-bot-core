@@ -80,3 +80,46 @@ SHA256 `37c4d12f23eb71fd2bdfcaee322d2d6c681ee064e154d79c3794dd34fd990a7b`.
 Native source and future reference binaries remain outside Git. All committed
 implementation and comparison tooling is original. Native P0/Game QA remain
 separate from the focused pure-function comparison.
+
+## Focused comparison result
+
+VERIFIED, 2026-11-15 CST: **8,498 comparisons** against the pinned pure functions
+pass, with **19 separate generic helper checks**. The deterministic cases cover
+every present `u8` job and absent jobs, all manual-role choices, representative
+job pairs under shared/separate owners, mixed groups and tie ordering. Generic
+checks cover arbitrary priorities/IDs, manual overrides, missing-job behavior,
+overlapping preferences without backfill and an input larger than six members.
+These finite cases are not a general or whole-program equivalence proof.
+
+The checker verifies the complete native source hash before extracting only the
+three pure functions into a new external directory. A documented minimal
+Assignment/OwnerBinding/four-role enum shim and original projection wrapper make
+that function boundary compilable. It compiles the shared library and driver
+directly with `rustc`; no native World, server, Session/P0 or earlier comparison
+suite is built or run. Source, core, compiler and tool hashes stayed stable.
+
+```sh
+python3 scripts/check_ffxi_role_election.py \
+  --core /home/blizz/dev/banshee-bot-core \
+  --source /absolute/private/path/to/pinned-bot_roles.rs \
+  --evidence /absolute/private/path/to/new-evidence-directory
+```
+
+Two additional CLI refusal checks pass: unsupported source fails before
+compilation/evidence creation, and an existing evidence directory is refused
+without changing its retained files. There is no overwrite option.
+
+| Receipt under `~/.local/share/banshee-bot-core/` | SHA256 |
+| --- | --- |
+| `evidence/role-election-compat-20261115-01/result.json` | `872e5f917fd60f7867cfd650c4ce083b9426531b5d1a89676cf48d1ed709498a` |
+| `evidence/role-election-refusals-20261115-01/result.json` | `7e2abef2cb4bd53f8729a637938456af3bc218953a362b63ee700d0c7cd9cef5` |
+| `evidence/role-election-compat-20261115-01/scope-join.json` | `9b9b6fc43a69b09cdd1685ec7dfbd75a66b9cc49c25a73474409ebb3630a18b8` |
+
+The receipt pins 22 current core inputs. Relative to the earlier strategy
+receipt, only `roles/mod.rs` gains an export and `roles/election.rs` is added;
+existing Role/PolicyRole definitions are byte-identical after removing that
+export. Strategy, decision and navigation source/test bytes retain their saved
+identities, without replaying their tests. Of the historical C1 comparison's
+18 inputs, 15 are unchanged; brain/nav/roles files only gained module exports.
+This does not promote the earlier comparison to whole-current-crate proof or
+authorize a native adoption, install or restart.

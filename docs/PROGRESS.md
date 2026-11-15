@@ -875,3 +875,25 @@ Times are America/Chicago (CST).
   The existing bot_roles file is identical at04b andf7c, pinned separately in
   `role-election-source-20261115-01/result.json` (SHA256
   `37c4d12f23eb71fd2bdfcaee322d2d6c681ee064e154d79c3794dd34fd990a7b`).
+
+## 2026-11-15 05:21 CST — additive pure role election: PASS offline
+
+- Added original `roles::election` over adapter-supplied preferences. It preserves
+  manual choices, party Tank priority/ties, primary/fallback healers and per-owner
+  Puller selection. Game job IDs, authoritative bindings, retained job/manual
+  state, native role setters and atomic epoch commits remain adapter-owned.
+- VERIFIED: 8,498 comparisons against exact pinned pure FFXI functions pass;
+  19 separate generic cases and two CLI refusal checks pass. New source/compiler
+  inputs stay stable, with all snapshots/shim/binaries outside Git. Receipt
+  `evidence/role-election-compat-20261115-01/result.json`, SHA256
+  `872e5f917fd60f7867cfd650c4ce083b9426531b5d1a89676cf48d1ed709498a`.
+  The shim/source boundary and other receipts are in `ROLE_ELECTION.md`.
+- No native server/World/Session/P0 suite or old comparison was run. Current core
+  inputs total22; old Role/PolicyRole definitions and strategy/decision/nav
+  source/tests retain their bytes. The earlier full C1 comparison remains scoped
+  to its original source; 15/18 inputs remain unchanged with module exports the
+  only existing-file differences. This is an additive unadopted candidate.
+- Next correction: build/read back0013 with exact proof and fresh producer
+  associations, then submit one superseding private tool/source candidate.
+  Current native jobs, canonical04b/shared6ead intake, producer allowlist,
+  P0/Game QA gates, NEVER restart FFXI and every hold remain unchanged.

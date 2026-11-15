@@ -300,3 +300,8 @@ Times are America/Chicago (CST).
   ready for the existing private publisher. Native C1 adoption/P0 and real
   geometry correction/QA remain owning-lead work; restart-dependent installs
   are held, and no generic approval request or implied exception is introduced.
+- Build0003 has a separate immutable `OPERATIONS-HOLD.json` authority addendum,
+  SHA-256 `ab49e907c19a930df24a1aa6fe6551b9a7bf2f7e9910c771c88357f34bad8b00`;
+  artifact bytes remain unchanged. Final bounded scorecard refresh records
+  E&B preparation progress without changing any readiness scores. No C1
+  adoption/P0 or publication receipt was found in that snapshot.

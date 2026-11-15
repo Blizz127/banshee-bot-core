@@ -90,3 +90,8 @@ is `/home/blizz/dev/ffxi/AGENTS.md:3` and
 `handoffs/CURRENT-OPERATION-CONSTRAINTS.json`. The hold was already standing;
 this turn newly surfaced its current reconciliation. It authorizes no install,
 reload or other server action. Source/tool handoff does not lift that hold.
+The immutable sibling `OPERATIONS-HOLD.json` carries this authority addendum
+for publisher/intake readback; SHA-256
+`ab49e907c19a930df24a1aa6fe6551b9a7bf2f7e9910c771c88357f34bad8b00`.
+Include it with the intake. The original archive bytes and SHA-256 are unchanged;
+the addendum supersedes older restart assumptions in its historical source docs.

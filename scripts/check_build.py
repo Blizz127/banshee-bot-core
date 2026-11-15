@@ -25,7 +25,7 @@ MAX_MANIFEST = 4 * MIB
 MAX_FILES = 4096
 MAX_LOG = MIB
 CHUNK = MIB
-TOOLS = ("bnav-extract", "bot-soak", "bnav-recast")
+TOOLS = ("bnav-extract", "bot-soak", "bnav-recast", "bnav-recast64")
 FIXTURE = "source/crates/bot-soak/examples/synthetic-short.csv"
 EXTRAS = {"manifest.json", "build.log"}
 
@@ -229,11 +229,22 @@ def smoke(selected, manifest, output, receipt):
             continue
         binary = selected[f"bin/{tool}"]
         help_text = invoke([binary, "--help"], f"{tool}-help", 0, output, receipt)
-        need(tool in help_text, f"{tool} help lacks its tool name")
+        canonical_name = "bnav-recast" if tool == "bnav-recast64" else tool
+        need(canonical_name in help_text, f"{tool} help lacks its tool name")
         version = invoke([binary, "--version"], f"{tool}-version", 0, output, receipt).strip()
-        expected = f"{tool} {manifest['version']}"
-        need(version == expected or (tool == "bnav-recast" and version.startswith(expected + " ")),
+        expected = f"{canonical_name} {manifest['version']}"
+        need(version == expected or (canonical_name == "bnav-recast" and version.startswith(expected + " ")),
              f"{tool} version differs from manifest")
+        if canonical_name == "bnav-recast":
+            bits = re.search(r"\breference_bits=(32|64)\b", version)
+            need(bits is not None, f"{tool} does not declare its ABI")
+            if tool == "bnav-recast64":
+                need(bits.group(1) == "64", "explicit 64-bit helper has a different ABI")
+            declared = manifest.get("native_backends", {}).get(f"bin/{tool}")
+            if declared is not None:
+                need(declared.get("reference_bits") == int(bits.group(1))
+                     and declared.get("sha256") == manifest["files"][f"bin/{tool}"]["sha256"],
+                     f"{tool} identity differs from native-backend manifest entry")
     soak = invoke([selected["bin/bot-soak"], "replay", selected[FIXTURE], "--zone", "100"],
                   "synthetic-soak", 3, output, receipt)
     fields = dict(line.split("=", 1) for line in soak.splitlines() if "=" in line)

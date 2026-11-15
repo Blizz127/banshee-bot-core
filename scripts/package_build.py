@@ -25,15 +25,18 @@ def main():
     parser.add_argument("--backend", type=Path, help="Optional built native Recast executable")
     parser.add_argument("--backend-manifest", type=Path)
     parser.add_argument("--backend-license", type=Path)
+    parser.add_argument("--backend64", type=Path, help="Optional separately identified 64-bit native helper")
+    parser.add_argument("--backend64-manifest", type=Path)
+    parser.add_argument("--backend64-license", type=Path)
     parser.add_argument("--verification", action="append", type=Path, default=[])
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     if not re.fullmatch(r"[0-9]{1,8}", args.build):
         parser.error("build must be 1..8 decimal digits")
-    if any((args.backend, args.backend_manifest, args.backend_license)) and not all(
-        (args.backend, args.backend_manifest, args.backend_license)
-    ):
-        parser.error("backend, backend-manifest and backend-license must be supplied together")
+    for suffix in ("", "64"):
+        selected = [getattr(args, "backend" + suffix + field) for field in ("", "_manifest", "_license")]
+        if any(selected) and not all(selected):
+            parser.error(f"backend{suffix}, backend{suffix}-manifest and backend{suffix}-license must be supplied together")
     output = args.output.expanduser().resolve()
     if output == root or root in output.parents:
         parser.error("build output must remain outside the repository")
@@ -66,9 +69,13 @@ def main():
         str(root / "target/release/bot-soak"), "replay",
         str(root / "crates/bot-soak/examples/synthetic-short.csv"), "--zone", "100"
     ], expected=3).decode()
-    if args.backend:
-        backend_bytes = args.backend.read_bytes()
-        backend_manifest = args.backend_manifest.read_bytes()
+    native_backends = {}
+    for suffix in ("", "64"):
+        backend = getattr(args, "backend" + suffix)
+        if not backend:
+            continue
+        backend_bytes = backend.read_bytes()
+        backend_manifest = getattr(args, "backend" + suffix + "_manifest").read_bytes()
         backend_record = json.loads(backend_manifest)
         if digest(backend_bytes) != backend_record["backend_sha256"]:
             raise RuntimeError("backend binary does not match its source manifest")
@@ -76,10 +83,22 @@ def main():
                          if key.endswith("/crates/bnav-extract/native/bnav_recast.cpp")]
         if bridge_hashes != [digest((root / "crates/bnav-extract/native/bnav_recast.cpp").read_bytes())]:
             raise RuntimeError("backend was not built from this bridge source")
-        payload["bin/bnav-recast"] = (backend_bytes, 0o755)
-        payload["provenance/backend-manifest.json"] = (backend_manifest, 0o644)
-        payload["provenance/Recast-LICENSE.txt"] = (args.backend_license.read_bytes(), 0o644)
-        checks["bnav_recast_help"] = command([str(args.backend.resolve()), "--help"]).decode()
+        binary_name = "bnav-recast" + suffix
+        version_text = command([str(backend.resolve()), "--version"]).decode().strip()
+        match = re.fullmatch(r"bnav-recast " + re.escape(version) + r" detour=7 reference_bits=(32|64)", version_text)
+        if not match or (suffix == "64" and match.group(1) != "64"):
+            raise RuntimeError("backend version or explicitly named 64-bit ABI mismatch")
+        bits = int(match.group(1))
+        if backend_record.get("reference_bits", bits) != bits:
+            raise RuntimeError("backend manifest and executable ABI disagree")
+        payload[f"bin/{binary_name}"] = (backend_bytes, 0o755)
+        provenance_path = f"provenance/backend{suffix}-manifest.json"
+        payload[provenance_path] = (backend_manifest, 0o644)
+        payload[f"provenance/Recast{suffix}-LICENSE.txt"] = (getattr(args, "backend" + suffix + "_license").read_bytes(), 0o644)
+        checks[f"bnav_recast{suffix}_help"] = command([str(backend.resolve()), "--help"]).decode()
+        checks[f"bnav_recast{suffix}_version"] = version_text
+        native_backends[f"bin/{binary_name}"] = {"reference_bits": bits,
+            "sha256": digest(backend_bytes), "source_manifest": provenance_path}
     for i, path in enumerate(args.verification):
         data = path.read_bytes()
         if path.suffix == ".json":
@@ -116,6 +135,10 @@ def main():
         "live_deployment": "NOT_PERFORMED",
         "publication": "NOT_PERFORMED",
         "default_features": "OFF",
+        "native_backends": native_backends,
+        "operation_holds": {"ffxi_restart": "PROHIBITED_BY_CURRENT_OWNER_ORDER",
+                            "zero_players_restores_restart_authority": False,
+                            "installation_or_reload_authorized_by_package": False},
         "startup_checks": checks,
         "files": {key: {"sha256": digest(value[0]), "bytes": len(value[0])} for key, value in sorted(payload.items())},
     }

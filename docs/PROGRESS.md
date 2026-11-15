@@ -487,3 +487,26 @@ Times are America/Chicago (CST).
   `38f41c5d07c0e8c15e3a453215538b6e029b07205e154efbdf20d776efa97a53`.
   Next C1 boundary remains owning native adoption/P0, independently of maps;
   publication and Game QA remain pending. All holds are unchanged.
+
+## 2026-11-15 CST — additive closed platform records: PASS integration
+
+- Appended records A/B to the existing `FFXI_OFFLINE_INTAKE.md`; no new intake,
+  assignment, worker, dependency or native P0 acceptance was created. Metadata
+  identities match the supplied roots/findings and consumed coordinator reviews.
+- OBSERVED closed query A: exact 5c73, one declared/added tile, corridor `[87]`,
+  complete projected length 9.45141287795 versus requested separation 10.0.
+  Both endpoints project; exact arrival and multi-polygon traversal are false.
+  The 35 input pins remain saved declarations, not a new payload rehash. Earlier
+  7/12/3 test domains and bot-core's different query runs stay separate.
+- OBSERVED B is the historical shared db74/native e519 source comparison.
+  Its source-gap findings remain valid for those pins. Later build0006 work
+  against explicit 5c73 is independently scoped; neither supplies native P0.
+  C1 has no nav prerequisite. No completed/dispatched check was replayed.
+- Native12 RUNNING and Fillhost1/rc183/rc180 states remain dated reports only;
+  no job was polled or changed. Urgent entity/wall priority, all single-writer
+  and player/progress/access/schema/device/companion holds, and NEVER restart
+  FFXI remain intact. No source packet was resent/reapplied or live action taken.
+- Append receipt: `evidence/ffxi-additive-closed-records-20261115-0257/result.json`,
+  SHA-256 `42ec96140a92c6e129dc43dabecad2054ac26e1b8efd907116eb28fc181a1a26`.
+  Next boundary remains actual native adoption/P0 and Game QA; no new suite or
+  duplicate core intake is requested. Build0006 remains the existing candidate.

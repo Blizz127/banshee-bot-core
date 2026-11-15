@@ -111,6 +111,15 @@ hold and all other holds remain unchanged. Identity/attribution receipt:
 `evidence/ffxi-platform-relay-20261115-0255/result.json`, SHA256
 `38f41c5d07c0e8c15e3a453215538b6e029b07205e154efbdf20d776efa97a53`.
 
+The later-delivered [closed additive platform query](FFXI_OFFLINE_INTAKE.md#additive-closed-platform-records--relay-at-024051-cst)
+records one projected path on corridor `[87]` at the same source/raw/MSET pins.
+Its outer closed execution is separate from the earlier source/test packet's
+owned-query NOT_RUN statement and from bot-core's runs above. Both requested
+endpoints project; no exact endpoint or multi-polygon result is inferred.
+It was consumed as saved evidence, without repeating the query or its 35 input
+payload hashes. The same intake retains the separate historical db74/e519 C1
+record and dated native-job states without accepting P0 or changing their work.
+
 **OBSERVED:** the correction narrowly accepts bounded binary32 rounding at
 marked extra detail-boundary vertices. Native layout, convexity, winding,
 interior vertices, topology, raw hashes, query bounds and producer constraints

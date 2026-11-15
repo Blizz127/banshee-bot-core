@@ -29,6 +29,14 @@ also pass (`evidence/c1-current-integrated-20261115-01/result.json`, SHA-256
 `579df0f17bc9cd8e006db0207bb5ac2bbe401f59b9a5186dfef4ce0a05206c87`).
 These are finite offline checks, not whole-program equivalence or native P0.
 
+The coordinator's additive db74/e519 source reconciliation is retained in
+[the existing intake](FFXI_OFFLINE_INTAKE.md#b-closed-historical-c1-source-reconciliation).
+It describes the older shared db74 primitives and their historical proof,
+not a replacement verdict for build0006. The native features it identifies
+must be preserved; no current e519 adapter/P0 acceptance is inferred from
+either record. C1 source readiness remains independent of maps, and the
+platform's already-running/prepared jobs are not retargeted or duplicated.
+
 Native `formation` should re-export the coherent shared `Shape`, `Setting`,
 `Config` and `decimal` types/functions while retaining native `desired` placement.
 This avoids mixing nominally different setting types in `Order::Geometry` and

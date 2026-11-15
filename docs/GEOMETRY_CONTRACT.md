@@ -55,6 +55,12 @@ hashes, build settings and region bounds. Use named path pairs demonstrating
 walkable areas and blocked/disconnected areas. A partial path must never be
 reported as complete arrival.
 
+Record both requested and projected endpoint coordinates, their 3D separation,
+and the returned path length. Collection/import queries provide these as
+[`route_metrics`](NAV_ROUTE_METRICS.md), with an optional caller-selected
+projection limit. A complete projected path alone does not establish arrival at
+the requested point; source-unit tolerances still require owning-game calibration.
+
 The owning game adapter then maps these queries to its existing in-process
 movement validation. Game QA checks walls, floors, ramps/stairs, narrow passages,
 zone transitions and representative failure cases on the real server/client.

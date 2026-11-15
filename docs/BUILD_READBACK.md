@@ -40,17 +40,30 @@ Only these fixed destinations are materialized from archive payloads:
 - `bin/bnav-recast`, when included in the manifest.
 - `bin/bnav-recast64`, when separately included with a matching explicit ABI identity.
 - `synthetic-short.csv`, from the packaged soak example.
+- `source/scripts/bake_nav_collection.py` and `source/scripts/import_wow_nav.py`,
+  when present, plus their optional sibling `nav_route_metrics.py` module.
 
-Source, provenance and verification files are hashed without extraction. Files
-are created exclusively inside the new evidence directory. Binaries become
+All other source, provenance and verification files are hashed without
+extraction. Files are created exclusively inside the new evidence directory. Binaries become
 executable only after the full archive passes. Each packaged tool runs `--help`
 and `--version`; versions must match the manifest. The packaged soak example
 must return exit 3 with `source=synthetic`, `verdict=INCOMPLETE` and
 `live_game_qa=NOT_RUN`. Its incomplete status is the expected smoke outcome.
 
+The two fixed Python entry points run `--help` with the current interpreter,
+Python environment overrides and user-site modules disabled, and bytecode
+generation suppressed. When the shared projection module is present, both also
+run `query --help` and must expose `--max-projection-distance`. This verifies
+packaged sibling imports instead of using the source checkout. A missing module
+needed by a wrapper fails startup. Historical candidates without these scripts
+remain supported. No command is taken from the manifest, and no other source
+script or test is executed. No source invocation occurs until the full archive
+and sidecars have passed validation.
+
 Readback limits are 256 MiB compressed, 512 MiB expanded including tar metadata,
 128 MiB per member, 4 MiB for the manifest, 4,096 listed files and 1 MiB for the
-synthetic CSV. Tool invocations use low priority, a 20-second wall timeout,
+synthetic CSV and each selected Python source. Tool invocations use low priority,
+a 20-second wall timeout,
 15 CPU seconds, a 1 MiB combined output limit and disabled core dumps. These
 limits keep this a bounded CLI smoke, not a load test or execution sandbox.
 
@@ -63,6 +76,7 @@ and startup PASS; exit 1 means failure; argument errors use argparse exit 2.
 
 Native navigation smoke is deliberately recorded as `NOT_RUN` here. The lead
 may run the current focused tile/collection smoke against `bin/bnav-extract`
-and `bin/bnav-recast` afterward and keep its receipt beside this one. No source
-or test script from the archive is executed. Native FFXI P0, live deployment,
-private publication and actual-client Game QA retain their separate evidence.
+and `bin/bnav-recast` afterward and keep its receipt beside this one. The fixed
+Python help commands above are the only source executions; no archived tests
+are run. Native FFXI P0, live deployment, private publication and actual-client
+Game QA retain their separate evidence.

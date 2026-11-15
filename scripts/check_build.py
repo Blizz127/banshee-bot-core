@@ -26,6 +26,8 @@ MAX_FILES = 4096
 MAX_LOG = MIB
 CHUNK = MIB
 TOOLS = ("bnav-extract", "bot-soak", "bnav-recast", "bnav-recast64")
+PYTHON_QUERY_TOOLS = ("source/scripts/bake_nav_collection.py", "source/scripts/import_wow_nav.py")
+PYTHON_MODULE = "source/scripts/nav_route_metrics.py"
 FIXTURE = "source/crates/bot-soak/examples/synthetic-short.csv"
 EXTRAS = {"manifest.json", "build.log"}
 
@@ -128,6 +130,9 @@ def validate_manifest(data, artifact):
     need({"bin/bnav-extract", "bin/bot-soak", FIXTURE} <= files.keys(),
          "required tools or synthetic fixture missing from manifest")
     need(files[FIXTURE]["bytes"] <= MIB, "synthetic fixture exceeds 1 MiB")
+    for path in (*PYTHON_QUERY_TOOLS, PYTHON_MODULE):
+        if path in files:
+            need(files[path]["bytes"] <= MIB, f"Python startup source exceeds 1 MiB: {path}")
     native = manifest.get("native_backends", {})
     need(isinstance(native, dict), "native backend identities must be an object")
     for path, identity in native.items():
@@ -150,8 +155,13 @@ def verify_archive(raw, manifest, manifest_bytes, output, receipt):
     files = manifest["files"]
     selected = {f"bin/{tool}": output / "bin" / tool for tool in TOOLS if f"bin/{tool}" in files}
     selected[FIXTURE] = output / "synthetic-short.csv"
+    for path in (*PYTHON_QUERY_TOOLS, PYTHON_MODULE):
+        if path in files:
+            selected[path] = output / path
     seen = set()
     (output / "bin").mkdir(mode=0o700)
+    for destination in selected.values():
+        destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     with gzip.GzipFile(fileobj=raw, mode="rb") as compressed:
         bounded = BoundedReader(compressed)
         with tarfile.open(fileobj=bounded, mode="r|") as archive:
@@ -266,6 +276,29 @@ def smoke(selected, manifest, output, receipt):
     need(fields.get("verdict") == "INCOMPLETE" and fields.get("source") == "synthetic"
          and fields.get("live_game_qa") == "NOT_RUN", "soak fixture lost its synthetic/incomplete status")
     receipt["synthetic_soak"] = {"exit_code": 3, "verdict": "INCOMPLETE", "source": "synthetic"}
+
+    # These are fixed repository-owned entry points, never commands supplied by
+    # the manifest. Keep the optional shared module beside the scripts so an
+    # import cannot accidentally succeed from the current source checkout.
+    python_tools = [path for path in PYTHON_QUERY_TOOLS if path in selected]
+    shared_module = PYTHON_MODULE in selected
+    receipt["python_startup"] = {"status": "RUNNING" if python_tools else "NOT_PRESENT",
+                                 "tools": python_tools, "shared_module_present": shared_module,
+                                 "invocations": 0}
+    for path in python_tools:
+        label = Path(path).stem
+        # Ignore Python environment overrides and user-site modules; suppress
+        # bytecode creation while retaining sibling imports from the archive.
+        argv = [sys.executable, "-E", "-s", "-B", selected[path]]
+        help_text = invoke([*argv, "--help"], f"{label}-help", 0, output, receipt)
+        need("usage:" in help_text and Path(path).name in help_text, f"{label} help lacks its tool name")
+        receipt["python_startup"]["invocations"] += 1
+        if shared_module:
+            help_text = invoke([*argv, "query", "--help"], f"{label}-query-help", 0, output, receipt)
+            need("--max-projection-distance" in help_text, f"{label} query help lacks projection policy")
+            receipt["python_startup"]["invocations"] += 1
+    if python_tools:
+        receipt["python_startup"]["status"] = "PASS"
 
 
 def external_output(value):

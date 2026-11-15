@@ -65,6 +65,17 @@ commit recorded in each build manifest. The owning lead controls any producer
 metadata/allowlist update. Tiled portals and nonzero coordinates require a
 separate native integration change.
 
+**Native wrapper compatibility is currently FAIL/PARTIAL.** The unchanged
+`a13dabcd` wrapper also rejects the honestly retained build0001 producer's real
+tile with `detail vertex outside convex polygon`. Build0002 is rejected earlier
+as `unrecognized producer backend`. The matching raw bytes load/query in the
+native Detour helper, but that does not establish which geometric constraint
+needs correction. No guard was relaxed and no MSET acceptance is claimed.
+Receipt: `ffxi-nav-compat-20261115-owned/result.json`, SHA-256
+`a563ffdf1278b4caeaad3f0dc1271a45d6e8f75d2265eeabd2698e81473898c1`.
+The owning lead must resolve this point/edge validation disagreement before
+native map adoption; source diagnosis is retained separately.
+
 Next acceptance remains with the FFXI lead: reconcile the loader/source baseline,
 retain incomplete/calibration flags, verify character dimensions and real
 collision behavior, then Game QA checks representative routes and failures.

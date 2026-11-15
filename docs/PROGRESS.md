@@ -568,3 +568,24 @@ Times are America/Chicago (CST).
   only, retaining rollback. The existing FFXI source/adoption intake is unchanged.
   Publication lacks a channel receipt; native C1/P0 and Game QA remain pending.
   No worker/job, game state, producer pin or operational hold changed.
+
+## 2026-11-15 03:18 AM CST — automatic packaged Python startup: PASS
+
+- VERIFIED: the archive checker now materializes only the two fixed query
+  wrappers and their optional shared module alongside the existing binary/CSV
+  selection. All archive members, hashes and sidecars must pass before any
+  startup invocation. Python environment overrides and user-site modules are
+  disabled; sibling imports come from the archive, not the working checkout.
+- VERIFIED: six focused synthetic checks pass: packaged imports/fixed paths,
+  missing module refusal, late-member corruption before any invocation, legacy
+  candidate support, ignored PYTHONPATH injection, and missing projection-option
+  refusal. Failed Python startup now records FAIL rather than a stale RUNNING
+  state. Receipt `evidence/build-python-readback-tests/integrated-20261115/result.json`,
+  SHA256 `55619ca5f855075812424ef0c400c546d79b9c8d4a5851b418670cbce21321de`.
+- VERIFIED separately: a readback of existing build0007 passes all 100 payloads
+  and 13 invocations, including four automatic Python checks. This is a changed
+  checker smoke, not another native/game query. Receipt
+  `evidence/build0007-automatic-python-readback/result.json`, SHA256
+  `c726b340f25cecbb00dcf9309c4102dce04d14fd2f8e5fd6d04d9db82c3e6ef8`.
+- Next correction: include the automated checker in the next private candidate;
+  existing gameplay gates, native jobs, source/adoption intake and holds remain.

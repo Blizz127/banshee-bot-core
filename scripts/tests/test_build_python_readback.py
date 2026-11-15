@@ -163,6 +163,7 @@ class PythonArchiveReadback(unittest.TestCase):
         root, artifact = self.build("missing-module", module=False)
         output, receipt = self.check(root, artifact, 1)
         self.assertNotIn(MODULE, receipt["extracted"])
+        self.assertEqual(receipt["python_startup"]["status"], "FAIL")
         self.assertFalse((output / "source-invocations.jsonl").exists())
         logs = "\n".join(path.read_text() for path in output.glob("*.log"))
         self.assertIn("ModuleNotFoundError", logs)

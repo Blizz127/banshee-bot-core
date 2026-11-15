@@ -363,6 +363,8 @@ def main():
     except (OSError, ValueError, KeyError, tarfile.TarError, EOFError) as error:
         if receipt is not None:
             receipt["error"] = str(error)
+            if receipt.get("python_startup", {}).get("status") == "RUNNING":
+                receipt["python_startup"]["status"] = "FAIL"
         else:
             print(f"readback failed: {error}", file=sys.stderr)
             return 1

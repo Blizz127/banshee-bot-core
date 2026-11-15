@@ -30,6 +30,9 @@ The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds the existing pinne
 reader outside Git; its first bounded zone230 geometry has been
 [baked and queried locally](docs/FFXI_REGION_BAKE.md). Collision completeness,
 physical calibration and native/client QA remain unverified.
+The corrected owning FFXI wrapper and native library now
+[load/query that retained tile offline](docs/FFXI_NATIVE_CONSUMPTION.md);
+this does not satisfy server P0 or actual-client QA.
 Existing owner WoW artifacts have [explicit ABI preflight evidence](docs/WOW_NAV_PREFLIGHT.md);
 `cmangos-v8-ref64` selects the observed retained cMaNGOS map format.
 The [selected-map importer](docs/WOW_NAV_IMPORT.md) retains those raw tiles and

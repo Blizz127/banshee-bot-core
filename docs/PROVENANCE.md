@@ -73,3 +73,13 @@ Detour query interface. Caller-supplied map names and flag masks remain
 declarations; the importer does not authenticate a game producer or establish
 movement policy. Per-file identities, flags/areas and query receipts stay in
 the private evidence directory. No map payload is committed or bundled.
+
+The [corrected FFXI consumption](FFXI_NATIVE_CONSUMPTION.md) selects immutable
+owning commit `5c73a8751940ba767c7b86a50bb96b38b5d1e4f6` and verifies the
+owner's source/test packet before compiling it externally. Its `detour-sys`
+tree `f60ac5be2549c158730514f004218a168c76f907` vendors zlib-licensed Detour
+`1078bfe3`; the inspected private binding package declares no separate licence.
+Only the original caller/reproduction logic is committed here. Owning source,
+native binary, asset inputs and query coordinates remain external. The exact
+capacity contract and current production call-site evidence are recorded with
+the result, without claiming server/client QA or changing native guards.

@@ -1215,3 +1215,20 @@ Times are America/Chicago (CST).
   using the existing row schema with permanent failure handling. This supplies
   source groundwork only, without a live runner or reordered rollout. C1/P0
   and C2+ gates remain unchanged; NEVER restart FFXI and all holds persist.
+
+## 2026-11-15 08:16 CST — adapter telemetry writer: PASS offline, PARTIAL integration
+
+- Added typed `bot_soak::recording` export with the existing replay row validator,
+  producer-supplied sequence/elapsed/metrics and permanent input/I/O failure.
+  Missing data and observed policy failures are retained. The sink is supplied
+  by the caller; no files, measurements, sessions or game actions are created.
+- VERIFIED: 11 new writer checks and six existing replay checks pass. Actual
+  example-to-CLI replay returns synthetic INCOMPLETE / exit 3 after two seconds.
+  One example-only warning was fixed; only its build/smoke repeated, with exact
+  output retained. Exact receipts/limits are in `BOT_SOAK_RECORDING.md`.
+- Existing replay source differs only by its module export. All 22 shared-core
+  pins and navigation source/tooling remain unchanged; no native check replay.
+  This changes neither the C1 candidate nor C2/C3 acceptance gates.
+- Next correction: package/read back build0019 and route one superseding private
+  tool/source intake. Native adapter instrumentation, current C1/P0/Game QA and
+  publisher receipts remain owning-lane results. NEVER restart FFXI.

@@ -27,6 +27,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             ..baseline
         })?;
     }
-    writer.finish()?;
+    let _ = writer.finish()?;
     Ok(())
 }

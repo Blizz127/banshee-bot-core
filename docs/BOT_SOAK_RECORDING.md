@@ -76,3 +76,33 @@ Successful finish does not prove observation accuracy, uninterrupted sampling,
 disk durability, headless behavior or Game QA. Existing feature switches remain
 OFF and **NEVER restart FFXI**, including at zero players. Native adapter/P0
 acceptance remains independent of navigation and this telemetry groundwork.
+
+## Focused evidence
+
+VERIFIED offline: 11 recording tests and the six existing replay tests pass.
+They cover an in-memory one-hour declaration, baseline/short synthetic inputs,
+missing observations and gaps, zero load, preserved policy failures, finite
+numeric extremes, invalid input and counter regression, partial writes, flush
+failures and permanent refusal of subsequent sink calls. These fixtures are
+synthetic even when their CSV declaration says `adapter`.
+
+The compiled example writes two seconds of synthetic data; the actual CLI
+returns exit 3 / INCOMPLETE. An initial unused-stdout-lock warning was corrected
+with explicit discard of the returned lock. Only the example build and its CLI
+round trip were repeated; both output files match the earlier bytes. Production
+writer/replay and test inputs remained unchanged, with no test replay.
+
+Receipts under `~/.local/share/banshee-bot-core/`:
+
+| Receipt | SHA256 |
+| --- | --- |
+| `evidence/soak-recording-20261115-01/result.json` | `db4553657ffec6df1bbadcffd36374ccbecfaf63a95e28457d19c6b760a13a99` |
+| `evidence/soak-recording-20261115-01/example-v2/result.json` | `b1f258bad51f8b45b50ac2f83735e615231e7803263afddbca00b1ba569593f9` |
+| `evidence/soak-recording-20261115-01/scope-join.json` | `28353b88c3b3aabd4470d08cff6d2410e21777b6991c3ea13aac349046e27551` |
+
+Replay implementation bytes are unchanged except the new module export. All
+22 shared-core input pins and the existing navigation source/tooling remain
+unchanged; native checks were not repeated. The 10-million-tick bound, sink
+panic behavior and real filesystem exhaustion/durability were not fault tested.
+No live timing, adapter instrumentation, headless run, native FFXI/P0 or Game QA
+was performed.

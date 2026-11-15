@@ -1106,3 +1106,27 @@ Times are America/Chicago (CST).
   response, not publication. Final link/identity/source-status closeout passes;
   `evidence/build0016-readback/closeout.json` retains that narrower check. No
   other lane was polled or contacted through a native status queue.
+
+## 2026-11-15 07:43 CST — named route probe runner: PASS, offline synthetic scope
+
+- Added a bounded original Python runner for 1..32 named probes against an exact
+  collection/selected-map manifest, with explicit projection limits and actual
+  command/log hashes. Matching outcomes remain offline expectations; query
+  errors never become unreachable/blocked passes. The runner recomputes metrics
+  and distinguishes observation mismatches from invalid/failing commands.
+- VERIFIED: ten pure schema/result tests and seven archive-startup tests pass.
+  Both reference ABIs pass a small actual CLI smoke: six outer commands per ABI
+  cover matching collection/selection probes, a deliberate mismatch, a query
+  error retaining a NOT_RUN probe, and manifest rejection before output. There
+  are 15 actual runner commands per ABI. Synthetic WoW wrappers contain retained
+  original seam-wall tiles; no geometry rebake, real asset or native job ran.
+- Receipts and unrun resource/fault cases are in `NAV_ROUTE_PROBES.md`. Exact
+  source/tool/fixture pins stay unchanged throughout the checks. Native binaries,
+  shared core, existing query wrappers and current C1 intake are unchanged.
+  Next correction: package/read back build0017 and provide one superseding
+  private tool/source intake. Features remain OFF; Game QA NOT_RUN.
+- OBSERVED: one bounded 07:42 metadata refresh reports an owning native
+  claim-passing gap and source-only 81a7 observer, compiler/tests UNRUN. No new
+  C1/P0 acceptance or shared-core API defect is supplied. Native fixes stay in
+  the existing owning lanes; no jobs/packets were opened. Details and exact
+  evidence are retained in `FFXI_OFFLINE_INTAKE.md` section I. NEVER restart FFXI.

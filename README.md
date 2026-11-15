@@ -59,6 +59,10 @@ queries an explicitly bounded selection with a matching native backend.
 Both collection and selected-map queries report
 [endpoint projection distances](docs/NAV_ROUTE_METRICS.md), with an optional
 caller-specified limit that can reject a complete but displaced path.
+The [named probe runner](docs/NAV_ROUTE_PROBES.md) records bounded, explicit route
+expectations against an exact map manifest, including projection refusals and
+wall-detour observations. Query errors remain errors, with no inferred arrival
+or unreachable verdict.
 The Rust navigation boundary also provides optional
 [route measurements](docs/NAV_CORE_METRICS.md) for future in-process adapters.
 

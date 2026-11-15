@@ -42,6 +42,7 @@ Only these fixed destinations are materialized from archive payloads:
 - `synthetic-short.csv`, from the packaged soak example.
 - `source/scripts/bake_nav_collection.py` and `source/scripts/import_wow_nav.py`,
   when present, plus their optional sibling `nav_route_metrics.py` module.
+- `source/scripts/probe_nav_routes.py`, when present, beside those wrappers.
 
 All other source, provenance and verification files are hashed without
 extraction. Files are created exclusively inside the new evidence directory. Binaries become
@@ -59,6 +60,11 @@ needed by a wrapper fails startup. Historical candidates without these scripts
 remain supported. No command is taken from the manifest, and no other source
 script or test is executed. No source invocation occurs until the full archive
 and sidecars have passed validation.
+
+The optional named-route runner also runs `--help`, with the same isolated
+Python settings, and must expose its explicit `--probes` and `--manifest` inputs.
+It has no query subcommand. This adds one startup invocation when packaged; it
+does not run a probe list or query a map during archive readback.
 
 Readback limits are 256 MiB compressed, 512 MiB expanded including tar metadata,
 128 MiB per member, 4 MiB for the manifest, 4,096 listed files and 1 MiB for the

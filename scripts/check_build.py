@@ -27,6 +27,8 @@ MAX_LOG = MIB
 CHUNK = MIB
 TOOLS = ("bnav-extract", "bot-soak", "bnav-recast", "bnav-recast64")
 PYTHON_QUERY_TOOLS = ("source/scripts/bake_nav_collection.py", "source/scripts/import_wow_nav.py")
+PYTHON_PROBE_TOOL = "source/scripts/probe_nav_routes.py"
+PYTHON_TOOLS = (*PYTHON_QUERY_TOOLS, PYTHON_PROBE_TOOL)
 PYTHON_MODULE = "source/scripts/nav_route_metrics.py"
 FIXTURE = "source/crates/bot-soak/examples/synthetic-short.csv"
 EXTRAS = {"manifest.json", "build.log"}
@@ -130,7 +132,7 @@ def validate_manifest(data, artifact):
     need({"bin/bnav-extract", "bin/bot-soak", FIXTURE} <= files.keys(),
          "required tools or synthetic fixture missing from manifest")
     need(files[FIXTURE]["bytes"] <= MIB, "synthetic fixture exceeds 1 MiB")
-    for path in (*PYTHON_QUERY_TOOLS, PYTHON_MODULE):
+    for path in (*PYTHON_TOOLS, PYTHON_MODULE):
         if path in files:
             need(files[path]["bytes"] <= MIB, f"Python startup source exceeds 1 MiB: {path}")
     native = manifest.get("native_backends", {})
@@ -155,7 +157,7 @@ def verify_archive(raw, manifest, manifest_bytes, output, receipt):
     files = manifest["files"]
     selected = {f"bin/{tool}": output / "bin" / tool for tool in TOOLS if f"bin/{tool}" in files}
     selected[FIXTURE] = output / "synthetic-short.csv"
-    for path in (*PYTHON_QUERY_TOOLS, PYTHON_MODULE):
+    for path in (*PYTHON_TOOLS, PYTHON_MODULE):
         if path in files:
             selected[path] = output / path
     seen = set()
@@ -280,7 +282,7 @@ def smoke(selected, manifest, output, receipt):
     # These are fixed repository-owned entry points, never commands supplied by
     # the manifest. Keep the optional shared module beside the scripts so an
     # import cannot accidentally succeed from the current source checkout.
-    python_tools = [path for path in PYTHON_QUERY_TOOLS if path in selected]
+    python_tools = [path for path in PYTHON_TOOLS if path in selected]
     shared_module = PYTHON_MODULE in selected
     receipt["python_startup"] = {"status": "RUNNING" if python_tools else "NOT_PRESENT",
                                  "tools": python_tools, "shared_module_present": shared_module,
@@ -293,7 +295,9 @@ def smoke(selected, manifest, output, receipt):
         help_text = invoke([*argv, "--help"], f"{label}-help", 0, output, receipt)
         need("usage:" in help_text and Path(path).name in help_text, f"{label} help lacks its tool name")
         receipt["python_startup"]["invocations"] += 1
-        if shared_module:
+        if path == PYTHON_PROBE_TOOL:
+            need("--probes" in help_text and "--manifest" in help_text, "probe help lacks explicit inputs")
+        elif shared_module:
             help_text = invoke([*argv, "query", "--help"], f"{label}-query-help", 0, output, receipt)
             need("--max-projection-distance" in help_text, f"{label} query help lacks projection policy")
             receipt["python_startup"]["invocations"] += 1

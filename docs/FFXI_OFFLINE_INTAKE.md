@@ -388,3 +388,33 @@ SHA256 `75408fa4d5b18e2e32bae5c51beb7f13a1a1b37d9dbecf20b1d95c5d03932ee7`.
 
 All source snapshots, binaries and game data remain external. Only original
 tooling is committed here. No owning checkout, runtime or player state changed.
+
+## I. Reported native claim-passing gap — 07:42 bounded refresh
+
+**OBSERVED owning-summary only:** one 07:42:50 CST metadata snapshot compares
+with the saved 07:15 observation. The platform's 07:39:41 report identifies a
+native FFXI port gap: its character-only claim timer can lose claim during Pull,
+while the referenced LSB behavior can pass claim to an eligible idle living
+same-zone party/alliance peer with null-or-same claim. This description is not
+an independently inspected source or gameplay result.
+
+The existing owning lane is implementing map-owned claim passing with the
+reported anti-steal/ownership and no-eligible fallback rules. No shared-core API
+defect is identified. Observer source `81a7f8a6b9bc6f7e8f2480cc17423cd60c0546c8`
+is reported source-reviewed under its owning lease; compiler/tests remain
+UNRUN and counts null. Its existing full-Pull check and separate claim-passing
+and direct-spell cleanup work are not retargeted, duplicated or merged here.
+Source review/patch replay counts are not native/P0 acceptance.
+
+Evidence under the private data root:
+`evidence/c1-metadata-refresh-20261115-074250cst/delta-summary.json`, SHA256
+`3dd82a85d1c4640a4ea63f42a50e25e404fc6b57370dcd05df7ea3c9db683f0c`.
+Only the board and two current saved summaries were observed. No native job,
+terminal, packet, source body or test was opened or replayed. Publisher metadata
+is unchanged and supplies no bot-core publication receipt. This does not reopen
+historical packets or supersede the coherent 04b/shared6ead source intake.
+
+C1/P0 and Game QA remain unaccepted and independent of maps. The current claim
+implementation, native baseline and runtime effects stay with the owning lane.
+All player/progress/access/install holds persist. **NEVER restart FFXI**,
+including at zero players. No live action or new worker is requested.

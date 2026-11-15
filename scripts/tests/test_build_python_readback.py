@@ -85,7 +85,7 @@ class PythonArchiveReadback(unittest.TestCase):
                    "native_ffxi_p0": "NOT_RUN", "game_qa": "NOT_RUN"}
         (cls.evidence / "test-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
-    def build(self, label, python=True, module=True, projection_option=True, corrupt=False):
+    def build(self, label, python=True, module=True, projection_option=True, corrupt=False, probe=False):
         root = Path(tempfile.mkdtemp(prefix=label + "-", dir=self.evidence))
         name = "banshee-bot-core-0.1.0-build9999"
         files = {
@@ -97,6 +97,14 @@ class PythonArchiveReadback(unittest.TestCase):
             files.update({f"source/scripts/{name}": wrapper() for name in WRAPPERS})
             if module:
                 files[MODULE] = shared_module(projection_option)
+            if probe:
+                files["source/scripts/probe_nav_routes.py"] = b"""import argparse
+import nav_route_metrics
+parser = argparse.ArgumentParser()
+parser.add_argument('--probes', required=True)
+parser.add_argument('--manifest', required=True)
+parser.parse_args()
+"""
         # This valid, listed source must remain unextracted and unexecuted.
         files["source/scripts/other.py"] = b"raise RuntimeError('not an allowlisted tool')\n"
         files["source/later.txt"] = b"later member after every Python wrapper\n"
@@ -168,6 +176,16 @@ class PythonArchiveReadback(unittest.TestCase):
         logs = "\n".join(path.read_text() for path in output.glob("*.log"))
         self.assertIn("ModuleNotFoundError", logs)
         self.assertIn("nav_route_metrics", logs)
+
+    def test_optional_probe_tool_has_its_own_startup_without_query_subcommand(self):
+        root, artifact = self.build("probe-tool", probe=True)
+        output, receipt = self.check(root, artifact, 0)
+        path = receipt["extracted"]["source/scripts/probe_nav_routes.py"]
+        calls = [call for call in receipt["tool_invocations"] if path in call["argv"]]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["argv"][-1], "--help")
+        self.assertEqual(receipt["python_startup"]["invocations"], 5)
+        self.assertFalse(list(output.rglob("__pycache__")))
 
     def test_corrupt_later_member_prevents_every_tool_invocation(self):
         root, artifact = self.build("late-corruption", corrupt=True)

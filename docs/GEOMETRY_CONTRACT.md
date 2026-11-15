@@ -55,6 +55,13 @@ hashes, build settings and region bounds. Use named path pairs demonstrating
 walkable areas and blocked/disconnected areas. A partial path must never be
 reported as complete arrival.
 
+The [named offline probe runner](NAV_ROUTE_PROBES.md) can bind a bounded set of
+route expectations to an exact collection or selected-map manifest, with
+explicit projection limits and retained command receipts. Native query errors
+remain errors; the runner does not infer that a failed query proves a blocked
+route. Wall-ray observations and projection refusals retain their narrower
+offline meaning.
+
 Record both requested and projected endpoint coordinates, their 3D separation,
 and the returned path length. Collection/import queries provide these as
 [`route_metrics`](NAV_ROUTE_METRICS.md), with an optional caller-selected

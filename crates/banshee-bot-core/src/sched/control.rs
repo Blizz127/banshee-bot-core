@@ -15,6 +15,7 @@ pub enum Operation {
     Gear,
     Summon,
     Dismiss,
+    Fallback,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -104,7 +105,7 @@ impl Clock {
     fn accepts_order(&self, binding: NonZeroU64) -> Result<(), Refusal> {
         match self.phase {
             Phase::Legacy => Ok(()),
-            Phase::Active => {
+            Phase::Active | Phase::Fenced(Operation::Fallback) => {
                 if binding.get() == self.identity.revision {
                     Ok(())
                 } else {
@@ -130,7 +131,15 @@ impl Clock {
     /// Call only after native authority/readiness checks. Cancel previous queued
     /// work before mutating anything in the game.
     pub fn begin(&mut self, operation: Operation, binding: NonZeroU64) -> Result<Token, Refusal> {
-        self.accepts_order(binding)?;
+        if self.phase == Phase::Fenced(Operation::Fallback) {
+            // Only another retreat can replace this pending operation. A
+            // mismatched binding is closed here, unlike an ordinary order.
+            if operation != Operation::Fallback || binding.get() != self.identity.revision {
+                return Err(Refusal::Closed);
+            }
+        } else {
+            self.accepts_order(binding)?;
+        }
         self.change(Phase::Fenced(operation), binding.get())
     }
 
@@ -199,8 +208,8 @@ impl Clock {
         self.change(Phase::Detached, 0)
     }
 
-    /// Preserve legacy behavior and unchanged bindings. A changed binding
-    /// invalidates pending work without opening an in-flight operation's fence.
+    /// Preserve legacy behavior and unchanged bindings. A changed binding ends
+    /// a retreat; operations awaiting a durable outcome keep their fence closed.
     pub fn binding_changed(
         &mut self,
         actual: Option<NonZeroU64>,
@@ -215,7 +224,7 @@ impl Clock {
             return Ok(None);
         }
         let next = match self.phase {
-            Phase::Fenced(op) => Phase::Fenced(op),
+            Phase::Fenced(op) if op != Operation::Fallback => Phase::Fenced(op),
             _ if revision == 0 => Phase::Detached,
             _ => Phase::Active,
         };
@@ -308,6 +317,34 @@ mod tests {
         assert_eq!(clock.admit(None, false), Err(Refusal::Required));
         assert_eq!(clock.binding_changed(None), Err(Refusal::Exhausted));
         assert_eq!(clock.snapshot().token, before.token);
+    }
+
+    #[test]
+    fn fallback_cancellation_and_replacement_cannot_wrap_the_epoch() {
+        for transition in 0..3 {
+            let mut clock = Clock::default();
+            clock.begin(Operation::Fallback, binding()).unwrap();
+            clock.identity.epoch = u64::MAX;
+            let before = clock.snapshot();
+            let other = NonZeroU64::new(8).unwrap();
+            assert_eq!(clock.can_order(binding()), Err(Refusal::Exhausted));
+            assert_eq!(clock.can_order(other), Err(Refusal::Stale));
+            assert_eq!(
+                clock.begin(Operation::Fallback, other),
+                Err(Refusal::Closed)
+            );
+            assert_eq!(clock.snapshot(), before);
+            let result = match transition {
+                0 => clock.begin(Operation::Fallback, binding()),
+                1 => clock.order(binding()),
+                _ => clock.binding_changed(None).map(Option::unwrap),
+            };
+            assert_eq!(result, Err(Refusal::Exhausted));
+            assert_eq!(clock.snapshot().phase, Phase::Exhausted);
+            assert_eq!(clock.snapshot().token, before.token);
+            assert_eq!(clock.human_invitation(), Err(Refusal::Exhausted));
+            assert_eq!(clock.admit(before.token, false), Err(Refusal::Exhausted));
+        }
     }
 
     #[test]

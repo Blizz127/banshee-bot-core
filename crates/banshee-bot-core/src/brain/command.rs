@@ -1,5 +1,7 @@
 //! FFXI compatibility grammar; no game action or permission is produced here.
 
+use crate::roles::Role;
+
 pub const MAX_COMMAND_BYTES: usize = 200;
 pub const MAX_NAME_BYTES: usize = 16;
 
@@ -13,6 +15,10 @@ pub enum Target {
 pub enum Command {
     Help,
     List,
+    Fill(Option<Role>),
+    Rally { clear: bool },
+    PullBack,
+    FallBack,
     Summon(Target),
     Dismiss(Target),
 }
@@ -59,15 +65,46 @@ pub fn parse(input: &[u8]) -> Result<Option<Command>, ParseError> {
     };
     let verb = verb.to_ascii_lowercase();
     let command = match verb.as_slice() {
-        b"help" | b"list" => {
+        b"help" | b"list" | b"pullback" | b"fallback" => {
             if tokens.len() != 2 {
                 return Err(ParseError::TooManyArguments);
             }
-            if verb == b"help" {
-                Command::Help
-            } else {
-                Command::List
+            match verb.as_slice() {
+                b"help" => Command::Help,
+                b"list" => Command::List,
+                b"pullback" => Command::PullBack,
+                _ => Command::FallBack,
             }
+        }
+        b"rally" => {
+            let clear = match tokens.get(2) {
+                None => false,
+                Some(value) => {
+                    if !value.eq_ignore_ascii_case(b"clear") {
+                        return Err(ParseError::InvalidName);
+                    }
+                    true
+                }
+            };
+            if tokens.len() > 3 {
+                return Err(ParseError::TooManyArguments);
+            }
+            Command::Rally { clear }
+        }
+        b"fill" => {
+            let role = tokens
+                .get(2)
+                .map(|value| match value.to_ascii_lowercase().as_slice() {
+                    b"tank" => Ok(Role::Tank),
+                    b"healer" => Ok(Role::Healer),
+                    b"dps" => Ok(Role::Dps),
+                    _ => Err(ParseError::InvalidName),
+                })
+                .transpose()?;
+            if tokens.len() > 3 {
+                return Err(ParseError::TooManyArguments);
+            }
+            Command::Fill(role)
         }
         b"summon" | b"dismiss" => {
             if tokens.len() > 3 {

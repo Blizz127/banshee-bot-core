@@ -77,6 +77,33 @@ Geometry read_geometry() {
     return g;
 }
 
+// Only eliminate triangles strictly outside the padded horizontal heightfield.
+// A crossing triangle may have all three vertices outside; a bounds comparison
+// retains it, along with every triangle touching a border. Preserve source order
+// because rasterized span merging must receive the same contributing sequence.
+std::vector<int> select_tile_triangles(const Geometry& geometry, const rcConfig& config) {
+    std::vector<int> selected;
+    for (std::size_t triangle = 0; triangle < geometry.triangles.size(); triangle += 3) {
+        bool disjoint = false;
+        for (const int axis : {0, 2}) {
+            const auto coordinate = [&](std::size_t corner) {
+                return geometry.vertices[static_cast<std::size_t>(geometry.triangles[triangle + corner]) * 3 + axis];
+            };
+            const float lower = std::min({coordinate(0), coordinate(1), coordinate(2)});
+            const float upper = std::max({coordinate(0), coordinate(1), coordinate(2)});
+            if (upper < config.bmin[axis] || lower > config.bmax[axis]) {
+                disjoint = true;
+                break;
+            }
+        }
+        if (!disjoint) {
+            selected.insert(selected.end(), geometry.triangles.begin() + triangle,
+                            geometry.triangles.begin() + triangle + 3);
+        }
+    }
+    return selected;
+}
+
 void build(int argc, char** argv, bool tiled = false) {
     need(argc == (tiled ? 15 : 8), "build requires six settings; build-tile also requires origin-x origin-z min-y max-y tile-cells tile-x tile-z");
     const float cs = number(argv[2]), ch = number(argv[3]);
@@ -139,13 +166,22 @@ void build(int argc, char** argv, bool tiled = false) {
     need((double(config.bmax[1]) - config.bmin[1]) / ch < 8191,
          "vertical span exceeds Recast heightfield range");
     rcCalcGridSize(config.bmin, config.bmax, cs, &config.width, &config.height);
+    const auto selected = tiled ? select_tile_triangles(g, config) : std::vector<int>{};
+    const int* triangles = tiled ? selected.data() : g.triangles.data();
+    const int triangle_count = tiled ? static_cast<int>(selected.size() / 3) : nt;
+    if (tiled) {
+        std::cerr << "triangle_selection=padded_xz input_triangles=" << nt
+                  << " candidate_triangles=" << triangle_count
+                  << " culled_triangles=" << nt - triangle_count << '\n';
+        if (triangle_count == 0) throw EmptyTile("tile contains no triangles overlapping its padded bounds");
+    }
     auto solid = std::unique_ptr<rcHeightfield, decltype(&rcFreeHeightField)>(rcAllocHeightfield(), rcFreeHeightField);
     need(bool(solid), "heightfield allocation failed");
     need(rcCreateHeightfield(&context, *solid, config.width, config.height, config.bmin, config.bmax, cs, ch),
          "heightfield creation failed");
-    std::vector<unsigned char> areas(nt, RC_NULL_AREA);
-    rcMarkWalkableTriangles(&context, slope, g.vertices.data(), nv, g.triangles.data(), nt, areas.data());
-    need(rcRasterizeTriangles(&context, g.vertices.data(), nv, g.triangles.data(), areas.data(), nt,
+    std::vector<unsigned char> areas(triangle_count, RC_NULL_AREA);
+    rcMarkWalkableTriangles(&context, slope, g.vertices.data(), nv, triangles, triangle_count, areas.data());
+    need(rcRasterizeTriangles(&context, g.vertices.data(), nv, triangles, areas.data(), triangle_count,
                              *solid, config.walkableClimb), "triangle rasterization failed");
     rcFilterLowHangingWalkableObstacles(&context, config.walkableClimb, *solid);
     rcFilterLedgeSpans(&context, config.walkableHeight, config.walkableClimb, *solid);

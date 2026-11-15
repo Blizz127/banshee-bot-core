@@ -111,3 +111,14 @@ role setters and clock commits remain excluded. The existing private-source
 licence limitation applies. Exact source/shim/binary evidence stays external;
 the shared implementation and committed comparison tools are original. See
 [the role-election boundary](ROLE_ELECTION.md) for mapping and acceptance scope.
+
+The tiled builder's original horizontal candidate selector uses the padded
+heightfield bounds. The locally supplied Recast `Recast/Source/RecastRasterization.cpp`
+(`rasterizeTri` and its bounds predicate) was consulted to verify that strictly
+disjoint triangles cannot contribute spans; tangency remains inclusive. Recast
+retains its existing zlib licence. No upstream implementation is copied into
+the selector, and the dependency is not edited or vendored. The selected backend
+build manifest pins that source along with the original bridge and all other
+dependency inputs. Synthetic differential fixtures compare retained and new
+helpers; those results establish only the tested inputs, not general producer
+equivalence or native FFXI allowlist acceptance.

@@ -43,8 +43,29 @@ region/contour construction removes it and marks native boundary portals. The
 saved tile header records `(TILE_X, TILE_Z, layer 0)` and the unpadded bounds.
 Tile coordinates are not inferred from filenames.
 
-This implementation rasterizes the full supplied mesh for each cell. It is a
-bounded correctness foundation, not an accelerated whole-world extractor.
+Each cell scans the full supplied triangle list and selects candidates whose
+horizontal bounds overlap its **padded** heightfield. Strict separation along X
+or Z is the only exclusion: touching bounds and triangles crossing the cell
+with every vertex outside are retained. The comparison uses the same finite
+float bounds supplied to Recast. It does not clip triangles, remove vertices,
+reorder candidates or filter by elevation. Unwalkable faces remain candidates
+when they overlap; they can still obstruct movement or reduce clearance.
+
+Only those candidates enter Recast's slope marking and rasterization. Stderr
+records `triangle_selection=padded_xz`, `input_triangles`,
+`candidate_triangles` and `culled_triangles`, including when no candidates remain.
+This removes work on disjoint faces, but still reads, validates and scans the
+whole source for each cell. It is not a spatial index or a measured end-to-end
+speedup. Candidate indices require additional bounded, linear storage. Large
+triangles with overlapping bounds may remain even if they miss the cell itself.
+
+Full-input coordinate/index checks, global vertical bounds and grid limits run
+before selection. Thus a disjoint face cannot hide invalid input or exceed the
+declared Y interval. Zero candidates gives the existing empty-cell status 3;
+overlapping candidates may also become empty after Recast filtering. Neither
+case establishes missing collision coverage. `build-obj` keeps its full-mesh
+path. Source geometry, grid, border size and serialized tile format are unchanged.
+
 Existing one-million vertex/triangle, four-million horizontal cell, vertical
 heightfield and 64 MiB output limits still apply to each padded tile. A wide
 agent radius can make an otherwise valid tile exceed those limits.

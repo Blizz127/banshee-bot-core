@@ -34,6 +34,10 @@ adapter may have its own separately authorized safe response to planning failure
 
 ## Frozen proposals and advice
 
+The optional [advice window](ADVICE_WINDOW.md) owns a prepared frame while an
+adapter waits for a ranking. It supplies nonblocking deadline/failure fallback,
+stale-reply handling and explicit cancellation without reevaluating strategies.
+
 Successful preparation owns bounded copies of legal declarations and proposals,
 plus a deterministic fallback. `fallback()`, `proposals()` and `legal_actions()`
 expose immutable references. No world reference or callback is retained.

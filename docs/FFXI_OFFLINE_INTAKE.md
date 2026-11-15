@@ -441,3 +441,30 @@ Evidence under the private data root:
 C1 remains independent of maps. All holds persist, including **NEVER restart
 FFXI**, at any player count. The local telemetry-writer groundwork changes no
 native adoption source, acceptance condition or runtime authority.
+
+## K. Scoped Pull pass and separate native7 compile failure — 08:42 refresh
+
+**OBSERVED owning-summary only:** the 08:42:42 CST snapshot records the
+platform's 08:39:14 report: rc186 exact `08ed` archive and **Pull1 PASS**, still
+**OFFLINE/UNSEALED**. This is one scoped result, not full current C1/P0, startup,
+launcher, Forever-client or live acceptance. No test/archive body was opened.
+
+Separately, source `4466` native7 attempt 2 reports compile exit 101, outer exit
+1, eight native API/fixture compiler errors, and all seven checks **NOT RUN**,
+with null outcome counts. Seven unrun checks are not seven test failures. The
+reported next native correction is owned by the existing lane; neither the
+failure nor Pull pass identifies a shared-core defect or new core action.
+
+Evidence under the private data root:
+`evidence/c1-metadata-refresh-20261115-084242cst/delta-summary.json`, SHA256
+`6de885aa5b4e817418496e43bef079a00c75097be3335a820c3bdf08baa05dae`.
+One task-board snapshot and two summaries were read, with no job, terminal,
+dispatch receipt, source/test body, packet or publisher runtime opened.
+Publisher metadata remains unchanged with no bot-core publication receipt.
+Measured time is 08:42:42 CST /14:42:42 UTC; the continuation relay's 14:41 CST
+label is not used as evidence time.
+
+No duplicate native worker/check, source retarget or result aggregation follows.
+Current C1 adoption and all access/native-ID/activation holds remain intact.
+**NEVER restart FFXI**, including at zero players. The additive advice window
+changes no native runtime and creates no new C1 prerequisite.

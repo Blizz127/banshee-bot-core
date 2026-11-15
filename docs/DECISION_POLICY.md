@@ -8,6 +8,8 @@ It performs no gameplay mutation, network access, session creation or LLM call.
 
 The optional [strategy-frame interface](STRATEGY_FRAMES.md) evaluates bounded
 adapter callbacks and freezes their proposals before this selection step.
+The [advice window](ADVICE_WINDOW.md) adds one-result deadline/failure handling
+around a frozen frame; safety and owner decisions never wait for advice.
 
 This is shared architecture groundwork. No FFXI call site uses it, no feature
 switch changes, and no C2+ rollout or native C1/P0 acceptance follows. The owning

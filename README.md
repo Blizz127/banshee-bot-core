@@ -28,6 +28,8 @@ proposal ordering and restricted optional advice for future adapters. Native
 FFXI integration and its existing C1 source candidate remain separate.
 The optional [strategy-frame interface](docs/STRATEGY_FRAMES.md) supplies bounded
 callback evaluation and immutable proposals for that selector.
+The [advice window](docs/ADVICE_WINDOW.md) bounds optional ranking waits and
+falls back on deadline or model failure without blocking the adapter loop.
 The additive [role-election helper](docs/ROLE_ELECTION.md) computes pure choices
 from adapter-supplied preferences; native FFXI role state and atomic updates
 remain unchanged pending separate adoption.

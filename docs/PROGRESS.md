@@ -1254,3 +1254,16 @@ Times are America/Chicago (CST).
   `evidence/build0019-readback/coordinator-response.json`. This is not publication
   or acceptance. The prior report's 08:19 prose label was corrected to its actual
   08:17:03 CST coordinator receipt time. No tests or native jobs were rerun.
+
+## 2026-11-15 08:45 CST — latest native boundary: PARTIAL
+
+- OBSERVED one 08:42:42 CST summary snapshot: rc186/08ed Pull1 PASS remains
+  OFFLINE/UNSEALED. Separate 4466 native7 compile exit 101 leaves all seven
+  checks NOT RUN/counts null. No full C1/P0 acceptance or shared-core defect.
+- Evidence: `evidence/c1-metadata-refresh-20261115-084242cst/delta-summary.json`,
+  SHA256 `6de885aa5b4e817418496e43bef079a00c75097be3335a820c3bdf08baa05dae`.
+  No job/terminal/body/packet opened; publisher still has no bot-core receipt.
+- Next unheld shared-brain boundary: nonblocking optional advice lifecycle for
+  an existing frozen strategy frame. Explicit deadline, deterministic model
+  failure fallback, stale-reply handling and one result; no native adoption or
+  C2+ rollout. Existing C1 primitives/holds remain; NEVER restart FFXI.

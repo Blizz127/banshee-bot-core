@@ -12,6 +12,7 @@ import tarfile
 import tomllib
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from rust_build_provenance import build_rust_tools
 
 
 def digest(data):
@@ -41,8 +42,8 @@ def main():
     if output == root or root in output.parents:
         parser.error("build output must remain outside the repository")
 
-    def command(argv, expected=0):
-        result = subprocess.run(argv, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    def command(argv, expected=0, env=None):
+        result = subprocess.run(argv, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if result.returncode != expected:
             raise RuntimeError(f"{argv!r}: expected {expected}, got {result.returncode}\n{result.stdout.decode(errors='replace')}")
         return result.stdout
@@ -55,18 +56,19 @@ def main():
     name = f"banshee-bot-core-{version}-build{args.build}"
     destination = output / name
     destination.mkdir(parents=True, exist_ok=False)
-    build_log = command(["nice", "-n", "19", "cargo", "build", "--release", "--locked", "--offline", "-j2"])
+    build_log, rust_binaries, rust_receipt = build_rust_tools(root, destination, commit, tree, command)
     (destination / "build.log").write_bytes(build_log)
 
-    payload = {}
+    rust_provenance_path = "provenance/rust-build-manifest.json"
+    payload = {rust_provenance_path: ((json.dumps(rust_receipt, indent=2) + "\n").encode(), 0o644)}
     checks = {}
     for binary in ("bnav-extract", "bot-soak"):
-        path = root / "target" / "release" / binary
-        payload[f"bin/{binary}"] = (path.read_bytes(), 0o755)
+        path = Path(rust_receipt["outputs"][f"bin/{binary}"]["build_path"])
+        payload[f"bin/{binary}"] = (rust_binaries[binary], 0o755)
         checks[f"{binary}_help"] = command([str(path), "--help"]).decode()
         checks[f"{binary}_version"] = command([str(path), "--version"]).decode().strip()
     checks["synthetic_soak_exit3"] = command([
-        str(root / "target/release/bot-soak"), "replay",
+        rust_receipt["outputs"]["bin/bot-soak"]["build_path"], "replay",
         str(root / "crates/bot-soak/examples/synthetic-short.csv"), "--zone", "100"
     ], expected=3).decode()
     native_backends = {}
@@ -132,7 +134,8 @@ def main():
         "source_commit": commit,
         "source_tree": tree,
         "spec_sha256": digest((root / "docs/BANSHEE_BOT_CORE_SPEC_20261115.md").read_bytes()),
-        "rustc": command(["rustc", "--version"]).decode().strip(),
+        "rustc": rust_receipt["toolchain"]["rustc"]["verbose_version"].splitlines()[0],
+        "rust_producer_manifest": rust_provenance_path,
         "status": "QA_CANDIDATE",
         "game_qa": "NOT_RUN",
         "native_ffxi_p0": "NOT_RUN",

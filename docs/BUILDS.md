@@ -11,6 +11,22 @@ the exact source commit, tools, provenance and supplied verification receipts.
 Every file has a SHA-256/size entry in the manifest. New output directories and
 archives are created without replacing an earlier candidate.
 
+Future builds also include `provenance/rust-build-manifest.json`. Packaging uses
+a new target directory under that candidate, with an explicit host target and
+the active Rust sysroot's Cargo/compiler executables. Compiler wrappers are
+disabled for this build only. The receipt records exact command arguments,
+tracked input hashes, lockfile, tool executable hashes and verbose versions,
+controlled compiler environment settings, verbose build-log hash and output
+hashes. Inputs/toolchain must retain their before/after identities. Source and
+tool receipts are pinned by the archive manifest; the archive pins the log.
+
+This records an observed build association. Ambient configuration, system
+linker and dynamic libraries are not fully pinned, so it is not a hermetic or
+reproducible-build claim. No unrelated environment dump is collected. It does
+not reconstruct the historical `f64f0648` extractor's missing association,
+establish equivalence with an older producer, change the native allowlist or
+propose adoption. Existing artifacts and their claims remain immutable.
+
 After packaging, run the [archive readback](BUILD_READBACK.md) against its exact
 reported byte size. This verifies the archive and embedded files before running
 the packaged CLI startup checks in a fresh external evidence directory.

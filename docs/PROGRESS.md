@@ -752,3 +752,16 @@ Times are America/Chicago (CST).
 - Next integration dependency remains the owning lane's current native P0 and
   Game QA evidence. Shared decision/navigation groundwork is available without
   runtime wiring; do not promote it or the old comparison into native acceptance.
+
+## 2026-11-15 04:03 CST — future Rust producer association: PARTIAL
+
+- Source audit found that prior packages pin source/lock/binary identities but
+  retain no structured Rust invocation receipt and reuse the mutable root target
+  directory. This does not fill the historical f64 extractor identity gap.
+- Added a future-only producer receipt and fresh per-candidate target directory,
+  explicit host/compiler, tool/input stability checks, verbose invocation log
+  hash and binary association. Compiler wrappers are disabled only in this
+  packaging process. No shared configuration, native backend or allowlist edits.
+- Not yet validated or packaged at this checkpoint. Next correction: focused
+  receipt/refusal checks followed by one fresh candidate build/readback. This
+  is not a hermetic-build, producer-equivalence or native adoption claim.

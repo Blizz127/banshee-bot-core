@@ -1,5 +1,9 @@
 # Fixed-grid Recast tiles
 
+An opt-in [bounded batch command](NAV_BATCH.md) reuses decoded geometry for
+up to 16 cells. Individual-cell commands and the collection contract below
+remain available unchanged.
+
 This tool increment builds separate raw Detour tiles on an explicit common grid
 and diagnoses routes across their native portal connections. It does not change
 the existing single-tile `build-obj` contract. The current FFXI owning-lead

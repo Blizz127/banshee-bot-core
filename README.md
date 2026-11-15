@@ -38,6 +38,8 @@ triangle geometry and provides explicit WoW tile preflight; see
 [geometry intake contract](docs/GEOMETRY_CONTRACT.md). `bot-soak` validates and
 summarizes a server adapter's recorded metrics; see its
 [CSV contract and coverage checks](docs/BOT_SOAK.md). It does not spawn bots.
+An opt-in [tile batch command](docs/NAV_BATCH.md) reuses decoded geometry across
+up to 16 cells with an explicit completion record and retained partial outputs.
 
 The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds or verifies and
 reuses the existing pinned reader outside Git, with explicit zone/DAT selection.

@@ -980,3 +980,26 @@ Times are America/Chicago (CST).
   output and exercise partial-output refusal, then package a private candidate.
 - Existing single-cell/collection commands, shared core, native C1 intake,
   producer allowlists, rollout gates and NEVER restart FFXI remain unchanged.
+
+## 2026-11-15 06:23 CST — bounded tile batches: PASS, synthetic scope
+
+- Implemented one-decode native batches and an opt-in Rust front end for up to
+  16 cells. Per-cell geometry validation, padded selection and native bake stay
+  intact. Stream frames, tile coordinates/ABI, footer, EOF and child status must
+  pass before the final manifest is written. Partial outputs remain on failure.
+  Existing collection format and single-cell commands remain unchanged.
+- VERIFIED: reference32 and reference64 each pass 29 focused checks /32 commands,
+  including mixed built/empty output, two-tile query equality, the 16-cell upper
+  boundary, front-end/native guards and 16 small protocol refusals. One ordinary
+  single-tile control per ABI also matches retained bytes. Exact receipts and
+  unrun resource/filesystem/gameplay limits are recorded in `NAV_BATCH.md`.
+- One new batch of the retained sparse four-cell workload uses 0.288889 CPU
+  seconds versus the saved 1.496237-second separate-build baseline, with all
+  four tile bytes equal. No baseline replay. Host load differed (185.9 to86.7);
+  this observation establishes no general or real-game speedup. Result SHA256
+  `4d73e7f03235679ad489806755d161bb2d2640525174fd20656b1cfe5bc8842d`.
+- New native builds and a fresh release extractor build pass with one job each.
+  Shared core and existing C1 proof inputs are unchanged; no native FFXI job,
+  real asset or Game QA was run. Next correction: package/read back build0015
+  and submit one superseding private tool/source intake. Producer allowlists,
+  current C1/P0 work and all holds remain independent. NEVER restart FFXI.

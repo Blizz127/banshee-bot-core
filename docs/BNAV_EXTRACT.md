@@ -111,7 +111,8 @@ Smaller disconnected regions may be removed by the fixed region thresholds
 (minimum area 64 cells, merge area 400). Large maps can use the explicit
 [fixed-grid tiled builder and native portal queries](TILED_NAV.md). Tiled builds
 select triangles overlapping each padded cell before Recast processing while
-retaining full-input validation. Off-mesh connections, area costs, doors and
+retaining full-input validation. The opt-in [batch command](NAV_BATCH.md) reuses
+one geometry decode across at most 16 cells. Off-mesh connections, area costs, doors and
 water rules remain pending.
 Native memory depends on vertical geometry complexity as well as grid size.
 

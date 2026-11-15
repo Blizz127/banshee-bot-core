@@ -74,7 +74,9 @@ needs correction. No guard was relaxed and no MSET acceptance is claimed.
 Receipt: `ffxi-nav-compat-20261115-owned/result.json`, SHA-256
 `a563ffdf1278b4caeaad3f0dc1271a45d6e8f75d2265eeabd2698e81473898c1`.
 The owning lead must resolve this point/edge validation disagreement before
-native map adoption; source diagnosis is retained separately.
+native map adoption. The [source diagnosis](FFXI_NAV_COMPATIBILITY.md) localizes
+one extra boundary vertex about `1.16e-6` source units outside an edge. A
+floating-point boundary mismatch is INFERRED, not a confirmed safe correction.
 
 Next acceptance remains with the FFXI lead: reconcile the loader/source baseline,
 retain incomplete/calibration flags, verify character dimensions and real

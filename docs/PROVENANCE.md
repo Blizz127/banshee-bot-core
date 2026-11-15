@@ -51,3 +51,10 @@ source, exact licence, registry identities, binaries and owned assets stay
 external; only the original wrapper/driver are committed and packaged here.
 The [bounded bake evidence](FFXI_REGION_BAKE.md) records successful offline
 geometry processing without claiming a full map, native integration or Game QA.
+
+The [FFXI navigation compatibility check](FFXI_NAV_COMPATIBILITY.md) compiles
+the unchanged owning `a13dabcd` `detour_mset.rs` externally (SHA-256
+`5bf2638184ec007fde180a41f24646687572bb94185684056a7b39ec59c1fd5f`).
+That private source declares no independent public licence. Only the original
+test driver is committed here. Native detail-mesh source observations retain
+the Recast zlib notice and exact input hashes alongside external evidence.

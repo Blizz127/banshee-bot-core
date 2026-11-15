@@ -233,3 +233,18 @@ Times are America/Chicago (CST).
   data correction to the FFXI owner. No check bypass, guard relaxation, native
   adoption or Game QA claim. Correct the independently observed WoW 64-bit map
   preflight profile while that real adapter boundary remains unresolved.
+
+## 2026-11-15 02:18 AM CST — native geometry refusal diagnosis: PARTIAL
+
+- OBSERVED: the unchanged FFXI predicate refuses polygon20's first extra detail
+  vertex at approximately `1.16e-6` source units outside an edge. The point lies
+  on native boundary-marked detail segments. Native Recast edge interpolation
+  and boundary flagging use different numeric tolerances from this predicate.
+- INFERRED: floating-point boundary mismatch is a candidate cause. No guard
+  change or accepted real MSET exists. Exact points, pinned source and receipts
+  stay external; see `FFXI_NAV_COMPATIBILITY.md` for hashes and source locations.
+- Next correction: FFXI owner investigates a precision-aware check using the
+  retained failing fixture and clearly invalid controls, plus producer metadata
+  refresh. This geometry issue does not add a new gate to independent C1 pure
+  primitive adoption/P0. Package the export and explicit WoW profile increment
+  after its focused checks; retain all native and actual-client QA limits.

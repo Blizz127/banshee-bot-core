@@ -1,4 +1,12 @@
-# C0 bot readiness — refreshed 2026-11-15 03:19 CST
+# C0 bot readiness — refreshed 2026-11-15 04:28 CST
+
+The latest bounded refresh found **no new attributed scores**. E&B now reports
+85/152 visual placements exported in sector1705, 11 tiles and 9 empty cells in
+a 20-cell window, plus separate isolated quest/ability fixtures. Collision
+export stays empty, complete coverage stays 0/85 and behavior stays no (0).
+Current FFXI native C1/P0 acceptance and bot-core publication still have no
+completion receipt in the inspected summaries. See B3 below; no job or closed
+packet was replayed and no request was rebroadcast.
 
 One bounded coordinator snapshot and existing owning documents now establish an
 attributed E&B headless score of **yes (2)**; its row is **2/1/1/0, total 4/8**.
@@ -270,7 +278,39 @@ VERIFIED here: these retained metadata identities. The owning lead's reported
 checks, game-source pins and input hashes are attributed evidence, not tests or
 asset rehashes performed by this refresh. Fixed rollout C1–C6 is unchanged.
 
-### E0 and unreported rows
+### B3 — E&B sector1705 and isolated readiness fixtures, 04:28 refresh
+
+OBSERVED: task `d30281403634`, reported **04:14:22 CST**, retains **2/1/1/0**.
+Producer `ef8539c76d0c7c7c4c9f21480f6b9cd9a5ef9b0f` now exports 85/152 visual
+placements in sector1705: 12,681 vertices and 19,137 triangles. Its requested
+20-cell window has 11 built tiles, 9 explicit empty cells and zero missing cells;
+one query crosses two tiles/two corridor polygons. The bake finished 03:54:15
+CST. Outside cells are unrequested; declared-collision export remains zero.
+The explicit engineering cell height of 2 follows a refusal at 1 and establishes
+no native clearance or flight calibration. Complete coverage remains **0/85**;
+native compatibility/Game QA are unverified.
+
+Separate owning metadata reports 128 quest/reward/reload checks and 153 Sentinel
+PowerDown checks. These isolated synthetic native fixtures are not actual-client
+completeness, a general quest proof or a class-strategy library. They are not
+combined with geometry or headless counts and do not upgrade any score here.
+
+The same one-board refresh found no completed current C1/P0 receipt in task
+`0fcbfa0421bc`'s 04:20:59 summary. Its ongoing compilation/job state is not
+acceptance; no job or closed packet was rechecked. Publisher `3f9392ca5d00`
+still carries the historical Nov11 b148 LOCAL ONLY summary, without a bot-core
+publication receipt. These absence findings are limited to the inspected
+summaries and do not request an acknowledgement or release any hold.
+
+Retained under `~/.local/share/banshee-bot-core/evidence/c0-refresh-20261115-0428/`:
+
+| Record | SHA256 |
+| --- | --- |
+| `delta-summary.json` | `ec4a89e423c1a6b26cac8cf216a23266f8e795fcc2be776d074842103ff24669` |
+| `task-board.json` | `9d3f07ed272f16af04e6cf8b1080403ed8fa2eec3bfa1c251369225c4e15f69a` |
+| `enb-sector1705-verification.json` | `d39fa6ed5991a6b3d49054e8cf7e8344612d0ddff2de0fdf364df4966009435f` |
+
+### E0 and unreported rows (retained)
 
 ESO correction task `09ac1d65c8a2` was delivered at 00:50:27 CST; its board
 summary is only delivery acknowledgement. No scores can be derived from it.

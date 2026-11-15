@@ -91,10 +91,14 @@ def main():
         bits = int(match.group(1))
         if backend_record.get("reference_bits", bits) != bits:
             raise RuntimeError("backend manifest and executable ABI disagree")
+        licence_bytes = getattr(args, "backend" + suffix + "_license").read_bytes()
+        licence_source = str(Path(backend_record["dependency_root"]) / "License.txt")
+        if digest(licence_bytes) != backend_record["inputs_sha256"].get(licence_source):
+            raise RuntimeError("backend licence does not match its recorded dependency source")
         payload[f"bin/{binary_name}"] = (backend_bytes, 0o755)
         provenance_path = f"provenance/backend{suffix}-manifest.json"
         payload[provenance_path] = (backend_manifest, 0o644)
-        payload[f"provenance/Recast{suffix}-LICENSE.txt"] = (getattr(args, "backend" + suffix + "_license").read_bytes(), 0o644)
+        payload[f"provenance/Recast{suffix}-LICENSE.txt"] = (licence_bytes, 0o644)
         checks[f"bnav_recast{suffix}_help"] = command([str(backend.resolve()), "--help"]).decode()
         checks[f"bnav_recast{suffix}_version"] = version_text
         native_backends[f"bin/{binary_name}"] = {"reference_bits": bits,

@@ -38,6 +38,7 @@ Only these fixed destinations are materialized from archive payloads:
 
 - `bin/bnav-extract` and `bin/bot-soak`.
 - `bin/bnav-recast`, when included in the manifest.
+- `bin/bnav-recast64`, when separately included with a matching explicit ABI identity.
 - `synthetic-short.csv`, from the packaged soak example.
 
 Source, provenance and verification files are hashed without extraction. Files

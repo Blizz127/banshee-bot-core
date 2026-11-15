@@ -30,6 +30,18 @@ original bridge source hash against that manifest. Compatibility receipts with
 core file hashes must still match the packaged source. Version and build number
 identify the candidate; the tarball SHA-256 identifies its exact bytes.
 
+An additional `--backend64`, `--backend64-manifest`, `--backend64-license`
+triple packages a separate `bin/bnav-recast64`. Its version must report 64-bit
+references; it does not replace or change `bin/bnav-recast`. Both native
+identities, exact bridge source, dependency licence and startup versions are
+verified. The manifest records each ABI explicitly. Backend compilation can
+request `--reference-bits 64` to define `DT_POLYREF64` without modifying external
+headers; `--reference-bits 32` refuses a dependency that still builds as 64-bit.
+Omitting that compile option retains the selected header's existing behavior.
+
+New manifests also retain the current FFXI no-restart hold. A package never
+grants installation/reload permission, and zero players does not lift that hold.
+
 All candidates label live `/fb` P0 and Game QA as **NOT_RUN**, feature defaults
 as **OFF**, and deployment/publication as **NOT_PERFORMED**. Local checks cannot
 upgrade those fields. Publisher receipts and later Game QA verdicts are recorded

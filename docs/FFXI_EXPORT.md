@@ -2,8 +2,9 @@
 
 `scripts/export_ffxi_geometry.py` and `scripts/ffxi_geometry_driver.rs` are
 original Banshee entry points around the owning FFXI project's existing reader
-and bounded exporter. They do not implement a DAT decoder. The first supported
-selection is Southern San d'Oria, zone 230, with an explicit source-space AABB.
+and bounded exporter. They do not implement a DAT decoder. Select one zone ID,
+its expected source-backed DAT path and an explicit source-space AABB. The
+documented selections include East Ronfaure (101) and Southern San d'Oria (230).
 They build and run offline, without starting a client or server.
 Python 3.11+, the Rust toolchain and already cached pinned Cargo dependencies
 are required. Future invocations record compiler/Cargo versions, wrapper hash
@@ -32,9 +33,9 @@ private output. The owning FFXI workspace declares no blanket licence; this
 script does not invent one. See [the source audit](FFXI_GEOMETRY_EVIDENCE.md).
 
 After build/startup success, the script snapshots only `FFXiMain.dll`, available
-ROM index table files, and explicitly selected `ROM/1/31.DAT`. Each file is
+ROM index table files, and the explicitly selected expected DAT. Each file is
 bounded to 64 MiB, copied once with SHA256, and checked for changes during the
-copy. The existing `Client` resolves zone 230 against those snapshot tables; a
+copy. The existing `Client` resolves the chosen zone against those snapshot tables; a
 path other than the explicitly staged selection refuses extraction. No all-zone
 loader or runtime Lua export is used. These assets remain beneath
 `~/.local/share/banshee-bot-core/`, outside git.
@@ -55,6 +56,9 @@ python3 scripts/export_ffxi_geometry.py \
   --forever-client-source /home/blizz/dev/forever-client \
   --client-root '/home/blizz/dev/ffxi/client-dat/full-1.2.2/FINAL FANTASY XI' \
   --output-dir /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-region-NEW \
+  --zone-id 230 --zone-name "Southern San d'Oria" \
+  --region-name 'bounded homepoint-source region' \
+  --expected-asset-relative ROM/1/31.DAT \
   --bounds-min -110 -10 -90 --bounds-max -60 12 -40 \
   --metres-per-unit-assumption 1 \
   --format-evidence 'Existing pinned forever-audit reader source and its attributed format evidence; see docs/FFXI_GEOMETRY_EVIDENCE.md' \
@@ -76,6 +80,40 @@ contract. It does **not** scale coordinates or establish physical calibration.
 The resulting sidecar labels it uncalibrated. Navigation cell/agent settings
 must use the emitted source world units and remain separate experiment inputs.
 
+The four selection arguments are now required: `--zone-id`, `--zone-name`,
+`--region-name` and `--expected-asset-relative`. The names are caller declarations.
+The expected path is normalized, relative, traversal-free, and ends in `.DAT`.
+It is not derived from the zone ID. The existing owning reader must resolve the
+zone to exactly that path before loading its collision. Neither a filename guess
+nor a whole-client zone scan is used. Source tests at the pinned revision record
+101 → `ROM/0/121.DAT` and 230 → `ROM/1/31.DAT`; other selections need their own
+source and region evidence.
+
+## Reusing an immutable retained driver build
+
+Add `--reuse-build` pointing at an original successful build directory, for example
+`~/.local/share/banshee-bot-core/evidence/ffxi-sandoria230-export-20261115-02`.
+The script independently reads the pinned owning git objects and licence, then
+checks the retained source/build manifests, complete source inventory, every
+staged source file, reduced lockfile, original/staged driver and actual binary.
+A different current driver, changed executable, missing/changed source record,
+revision mismatch, changed lock, or path escaping the retained build refuses
+reuse. The original build must be beneath the private data root and outside Git.
+
+Only the verified executable and licence are copied to the fresh output. The
+executable is hashed again after startup and export. `source-reference.json`
+records the retained manifest paths and hashes, source revision, archive hash
+and verified source count, and explicitly states `source_snapshots_copied: false`.
+The new `build-manifest.json` labels its mode `retained_build_reuse` and makes no
+new compilation claim. There is no dependency resolution or compiler invocation
+in this path. A reused output lacks a source snapshot and is deliberately not a
+replacement original build for another `--reuse-build` call.
+
+Omit `--reuse-build` for the original fresh, offline, low-concurrency build path.
+Both paths retain the same private-output, no-overwrite, source identity, water,
+calibration and collision-coverage checks. These are local provenance consistency
+checks, not signed compiler attestations or gameplay verification.
+
 ## Outputs and refusal behavior
 
 On success, `geometry.json` is the `bnav-geometry-v1` input sidecar accepted by
@@ -83,13 +121,15 @@ On success, `geometry.json` is the `bnav-geometry-v1` input sidecar accepted by
 coordinates, source units, transform, coverage limitations and provenance
 artifacts. Additional evidence includes:
 
-- `source-identity.json`: git pin, every staged source digest and MIT provenance.
+- `source-identity.json` for fresh builds, or `source-reference.json` for verified
+  reuse: exact source provenance without claiming absent snapshots were copied.
 - `build-manifest.json`: driver binary/source hashes and exact reduced lock hash.
 - `owned-inputs.json`: original paths, snapshot paths, byte counts and SHA256.
 - `request.json`: exact region, units and format-evidence declaration.
 - `raw-observation.json`: resolved path, decoded counts, kinds and diagnostics.
 - `export-manifest.json`: owning exporter's exact counts, bounds and omissions.
-- `resolve`, `build`, `startup` and `export` JSON/log pairs: commands and exit codes.
+- `startup` and `export` JSON/log pairs: commands and exit codes; fresh builds
+  additionally retain `resolve` and `build` pairs.
 
 The owning exporter rejects any selected type-9 water bed, instead of silently
 dropping it or treating water as ordinary ground. It rejects invalid geometry,
@@ -167,3 +207,74 @@ Game QA. No completeness, physical calibration or navigation coverage upgrade
 is claimed. The whole-triangle output exceeds the requested bounds; any later
 grid that clips it at the requested outer region has less padding there and
 must report that loss separately.
+
+## 2026-11-15 CST zone selection and retained-build reuse result
+
+**VERIFIED:** ten focused synthetic tests cover exact relative paths and retained
+binary, driver, source inventory, source bytes, revision and lock integrity.
+Run `python3 -B scripts/tests/test_ffxi_geometry_export.py`. The Rust driver was
+unchanged, retaining SHA256
+`13f4aee4b62a197dd54f825915ae07cc339e43ab1f6443dfc62fa51d1256cd4d`.
+The actual new export verified and reused the original Southern San d'Oria
+build above; it created neither an `external-source` tree nor a `cargo-target`.
+The fresh build path remains available; it was not recompiled in this increment.
+
+The new region comes from historical source evidence at the same FFXI pin:
+`reports/2026-11-06-spawn-audit/points.tsv:621` records East Ronfaure zone 101,
+`(176,-20.002,-240)`, `PASS/ok`, ground delta `-0.00`, originating at
+`scripts/globals/unity.lua:21`. That report's SHA256 is
+`1faec81dbc44a330a6fb9f11ee9b25d7aed98cfb9065c1aac5a5e46e3e6f6bcf`.
+Its README defines the ground/water checks and excludes doors, subareas, moving
+platforms and server clamping. This is historical point evidence, not a fresh
+game observation or a certificate that a surrounding area is dry. The earlier
+open-field probe `(86.131,-65.817,273.861)` is historically a `DROP`; it was not
+used as the new standing fixture.
+
+The explicit experiment used:
+
+```text
+--zone-id 101 --zone-name 'East Ronfaure'
+--region-name 'unity destination historical PASS point, experimental surrounding crop'
+--expected-asset-relative ROM/0/121.DAT
+--reuse-build /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-sandoria230-export-20261115-02
+--bounds-min 166 -30.002 -250 --bounds-max 186 -10.002 -230
+--metres-per-unit-assumption 1
+```
+
+**OBSERVED:** new output is
+`~/.local/share/banshee-bot-core/evidence/ffxi-east-ronfaure101-export-20261115-01/`.
+It resolved the exact expected path with DAT SHA256
+`003e17cffcb940c88a015dbf02a56256507ef978cefa183e757ee93446dde488`.
+The decoder returned 385,748 triangles, a 440 × 400 grid, and no degenerate
+triangles. The crop contains 72 triangles (216 vertices), all stored kind 2,
+with every output face reversed to match transformed stored normals. All 4,221
+decoded water faces are outside this selection. No water was silently dropped.
+
+The actual Y-up bounds are `[164,19.5,227.5037537]` through
+`[188.0000458,23.8678703,252.0000153]`. The historical point becomes
+`(176,20.002,240)` under the unchanged `(x,-y,-z)` transform. Geometry completeness,
+non-water surface semantics, physical units and agent calibration remain
+unverified; the same door and dynamic-collision omissions apply.
+
+| Artifact | SHA256 |
+| --- | --- |
+| `region.obj` (10,187 bytes) | `9a67b137532e08e3c5935027ce7c400d7980ca2ab5290facf18957ed2d1e3329` |
+| `geometry.json` | `3fc130b165a5f2c00e6231eadbdd90a645d55d5c1e69b87fa904211ef5bc2789` |
+| `export-manifest.json` | `cad9ba2e329b900eac2506d92d4d116846cc977d9a68e80618da3e0cf61558f7` |
+| `source-reference.json` | `0b0e87c3a85f508ba4a3acd1a74f74d5c0340d8845b25bc5d96c17ab1ca8f7e9` |
+
+Two deliberate real-input negative probes retained their evidence:
+
+- `ffxi-zone-path-mismatch-20261115-01`: zone 101 with the explicitly supplied
+  zone-230 path `ROM/1/31.DAT` refused with the resolved path `ROM/0/121.DAT`.
+  No collision decode, `Raw` observation, OBJ or geometry sidecar resulted.
+- `ffxi-zone-water-refusal-20261115-01`: source bounds `[457,-18,-318]` through
+  `[460,-15,-315]` surround the existing river fixture
+  `(458.558,-16.5,-316.667)` in `forever-audit/tests/real_client.rs:26`.
+  The unchanged exporter refused `SelectedWater(121716)`; no OBJ or geometry
+  sidecar resulted. The refusal was retained, not avoided by filtering faces.
+
+The successful output's `focused-validation.json` records sidecar/OBJ validation,
+both expected refusal logs and their hashes, and absence of source/compiler
+snapshots on reuse. No new mesh bake, native query, runtime test or Game QA was
+performed by this exporter increment.

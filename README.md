@@ -30,6 +30,8 @@ The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds the existing pinne
 reader outside Git; its first bounded zone230 geometry has been
 [baked and queried locally](docs/FFXI_REGION_BAKE.md). Collision completeness,
 physical calibration and native/client QA remain unverified.
+Existing owner WoW artifacts have [explicit ABI preflight evidence](docs/WOW_NAV_PREFLIGHT.md);
+`cmangos-v8-ref64` selects the observed retained cMaNGOS map format.
 
 See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [adapter handoff](docs/C1_ADAPTER_HANDOFF.md),

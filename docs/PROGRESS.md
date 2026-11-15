@@ -248,3 +248,19 @@ Times are America/Chicago (CST).
   refresh. This geometry issue does not add a new gate to independent C1 pure
   primitive adoption/P0. Package the export and explicit WoW profile increment
   after its focused checks; retain all native and actual-client QA limits.
+
+## 2026-11-15 02:19 AM CST — observed WoW ABI correction: PASS preflight
+
+- OBSERVED: retained cMaNGOS v8 maps use 64-bit references and the generator's
+  fixed `maxPolys=0x80000000` field, unlike the earlier explicit 32-bit profile.
+  Owning CMake enables `DT_POLYREF64`; our direct standalone backend build does
+  not inherit that flag. Source pins are in `WOW_NAV_PREFLIGHT.md`.
+- VERIFIED: new `cmangos-v8-ref64` profile and profile-specific map inspection
+  pass six parser tests and ten actual-sample outcomes. Strict unprofiled and
+  legacy 32-bit behavior remains unchanged. Four sampled artifacts are unchanged.
+  Receipt: `evidence/wow-nav-preflight-20261115/corrected-samples/artifact-receipt.json`,
+  SHA-256 `b256e2f5b3dd5fdefc50f754cdc28f46d4623cc3b6374dca8e2e548f7769b079`.
+- PARTIAL: no actual AzerothCore artifacts found in the bounded documented
+  locations; no native WoW load/query, walking coverage or Game QA is inferred.
+  Next correction: package build0003, then repeat the changed profile check
+  using the extracted release executable and route the superseding tool intake.

@@ -58,3 +58,10 @@ the unchanged owning `a13dabcd` `detour_mset.rs` externally (SHA-256
 That private source declares no independent public licence. Only the original
 test driver is committed here. Native detail-mesh source observations retain
 the Recast zlib notice and exact input hashes alongside external evidence.
+
+The [actual WoW preflight](WOW_NAV_PREFLIGHT.md) pins the owning cMaNGOS CMake,
+MapBuilder and Detour reference-layout declarations. Its observed v8 artifacts
+use the explicitly enabled 64-bit ABI, while the earlier standalone helper
+compiles a 32-bit ABI. Both remain explicit profiles; no source implementation
+was copied into this repository. Actual map files and bounded raw-payload
+observations remain external and are not bundled with tool candidates.

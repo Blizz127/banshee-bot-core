@@ -171,7 +171,7 @@ Times are America/Chicago (CST).
   64-bit and known-source FFXI export evidence. FFXI's current native loader still
   accepts only a single tile; native adaptation and Game QA remain outstanding.
 
-## 2026-11-15 02:12 AM CST — 64-bit native pipeline: PASS offline
+## 2026-11-15 02:10 AM CST — 64-bit native pipeline: PASS offline
 
 - VERIFIED: the same original bridge builds against the owner's pinned
   AzerothCore dependency with 64-bit polygon references. Single and tiled

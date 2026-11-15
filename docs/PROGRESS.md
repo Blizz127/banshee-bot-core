@@ -817,3 +817,24 @@ Times are America/Chicago (CST).
 - Keep existing owning intakes and holds. The next independent shared-brain
   item is bounded strategy evaluation over a supplied snapshot, with frozen
   proposals before advice; it will not change native C1 behavior or open C2+.
+
+## 2026-11-15 04:30 CST — shared strategy frames: PASS offline
+
+- Added original `brain::strategy`: up to 32 uniquely identified callbacks on
+  one supplied snapshot, assigned priorities and a global 256-proposal bound.
+  Validation precedes callbacks. Sticky writer errors or strategy failures
+  discard the entire preparation; successful proposals freeze before advice.
+  Resolution uses existing decision policy without reevaluating callbacks.
+- VERIFIED: eight new focused Rust integration tests pass; 21 current core
+  inputs remain stable. Receipt
+  `evidence/strategy-frames-integrated-20261115-01/result.json`, SHA256
+  `7c857a92b15c5594c1e67925a7aadbc9c06b6a7ae09e733949a268e54655300b`.
+  Existing decision/nav module and test hashes match their saved receipts;
+  those checks and C1/native comparisons were not replayed or aggregated.
+- Existing C1 primitive files, flags, manifests and lock retain their bytes.
+  No native call site, model/network call, gameplay execution or C2+ rollout.
+  Callbacks are trusted adapter code: storage/count bounds do not enforce CPU
+  deadlines or undo callback side effects. Native execution revalidation stays
+  mandatory. Existing 04b/shared6ead intake and every operational hold persist.
+- Next correction: package/read back build0012, join its exact source and fresh
+  Rust producer record, and send one superseding private tool/source intake.

@@ -26,6 +26,8 @@ reserve the specified architecture without claiming later-phase behavior.
 The pure [decision policy](docs/DECISION_POLICY.md) adds bounded strategy
 proposal ordering and restricted optional advice for future adapters. Native
 FFXI integration and its existing C1 source candidate remain separate.
+The optional [strategy-frame interface](docs/STRATEGY_FRAMES.md) supplies bounded
+callback evaluation and immutable proposals for that selector.
 
 `bnav-extract` builds single or fixed-grid Recast/Detour tiles from extracted
 triangle geometry and provides explicit WoW tile preflight; see

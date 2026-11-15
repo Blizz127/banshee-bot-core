@@ -18,8 +18,9 @@ records the exact packet and saved logs. It supersedes only the partial 756eb165
 source adoption, retaining that earlier evidence. At the 03:23 intake, all 19
 local shared crate source/test files and their build0008 manifest entries matched
 the saved vendor pins; no native input or running job was rechecked. No patch
-was applied. The later [decision-policy API](DECISION_POLICY.md) and
-[navigation measurements](NAV_CORE_METRICS.md) add separate modules/exports
+was applied. The later [decision-policy API](DECISION_POLICY.md),
+[navigation measurements](NAV_CORE_METRICS.md) and
+[strategy frames](STRATEGY_FRAMES.md) add separate modules/exports
 without changing C1 primitive files. These are not an update to the
 owning native 6ead adoption candidate or a new C1 acceptance claim.
 

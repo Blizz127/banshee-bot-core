@@ -6,6 +6,9 @@ adapter's legal set. The selector chooses a deterministic fallback and can
 apply optional advice within a restricted set of equally ranked choices.
 It performs no gameplay mutation, network access, session creation or LLM call.
 
+The optional [strategy-frame interface](STRATEGY_FRAMES.md) evaluates bounded
+adapter callbacks and freezes their proposals before this selection step.
+
 This is shared architecture groundwork. No FFXI call site uses it, no feature
 switch changes, and no C2+ rollout or native C1/P0 acceptance follows. The owning
 FFXI source adoption stays on its existing coherent 6ead candidate.

@@ -70,3 +70,7 @@ Of the historical C1 comparison's 18 inputs, 16 remain byte-identical. Only
 implementations, feature flags, manifests and lock retain their bytes. The
 earlier comparison was not replayed or presented as whole-current-crate proof.
 Native platform/P0, gameplay and live navigation checks remain unrun here.
+
+The later [strategy-frame interface](STRATEGY_FRAMES.md) adds a separate module
+and brain export. This navigation receipt remains scoped to its original 20
+inputs and completed checks; it is not relabelled as a later whole-crate run.

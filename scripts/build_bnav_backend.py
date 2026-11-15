@@ -8,6 +8,7 @@ import argparse
 import concurrent.futures
 import hashlib
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -24,6 +25,8 @@ def main():
     parser.add_argument('--output-dir', required=True, type=Path)
     parser.add_argument('--jobs', type=int, default=2)
     parser.add_argument('--cxx', default='c++')
+    parser.add_argument('--reference-bits', type=int, choices=(32, 64),
+                        help='Explicit expected ABI; 64 also defines DT_POLYREF64. Never edits dependency headers.')
     args = parser.parse_args()
     if not 1 <= args.jobs <= 8:
         parser.error('--jobs must be between 1 and 8; size it to measured host pressure')
@@ -49,6 +52,8 @@ def main():
     # New output directories prevent replacing a previously published helper.
     output.mkdir(parents=True, exist_ok=False)
     flags = ['-std=c++17','-O2','-DNDEBUG','-I',str(source/'Recast/Include'),'-I',str(source/'Detour/Include')]
+    if args.reference_bits == 64:
+        flags.append('-DDT_POLYREF64')
     commands = []
     objects = []
     for index, path in enumerate(sources):
@@ -74,6 +79,12 @@ def main():
     if link['exit_code']:
         print(link['output'],file=sys.stderr)
         return 1
+    version = subprocess.check_output([str(binary), '--version'], text=True).strip()
+    match = re.search(r'\breference_bits=(32|64)\b', version)
+    if not match or (args.reference_bits is not None and int(match.group(1)) != args.reference_bits):
+        print('compiled backend does not match the explicitly requested reference ABI; output is not publishable', file=sys.stderr)
+        return 1
+    reference_bits = int(match.group(1))
     identity = subprocess.run(['git','-C',str(source),'rev-parse','HEAD'],text=True,capture_output=True)
     if {str(path):digest(path) for path in inputs} != source_identity:
         print('source inputs changed during compilation; output is not publishable',file=sys.stderr)
@@ -86,6 +97,8 @@ def main():
         'inputs_sha256': source_identity,
         'compiler': subprocess.check_output([args.cxx,'--version'],text=True).splitlines()[0],
         'flags': flags, 'jobs': args.jobs,
+        'requested_reference_bits': args.reference_bits, 'reference_bits': reference_bits,
+        'startup_version': version,
         'scope': 'single and fixed-grid tiled geometry-to-Recast/Detour; no game format decoder',
     }
     (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

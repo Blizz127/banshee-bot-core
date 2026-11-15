@@ -341,5 +341,26 @@ restart FFXI** instruction remain unchanged. No live action was requested.
    zone101 helper experiment; successful projection is not verified standing
    height. Actual-client routes and failures remain for Game QA.
 
+## G. Reported native four-check compile failure — 06:23 bounded refresh
+
+**OBSERVED, owning-lead summary only:** task `0fcbfa0421bc` at 06:18:52 CST
+reports abbreviated source `9d`, job `58813/300c79`, terminal `71259d`, outer
+exit 1 and Cargo exit 101 after 479.962 seconds. Four selected checks are
+**NOT RUN**, with null outcome counts. The reported diagnostic is one E0308
+in a test-only Pull `ERA.call_once` initializer missing a semicolon. It identifies
+no shared-core API failure. The correction is reported as `0be16626`; its
+successor checks were preparing and were not inspected. No fix pass is inferred.
+
+This refresh read one latest task-board snapshot and two task records; no
+native terminal, source/test body, packet, running job or publisher runtime was
+opened. Previous failures and the separate canonical C1 adoption remain in
+their original domains. No current C1/P0 acceptance or bot-core publication
+receipt was found in this bounded snapshot. Existing no-restart and other
+holds remain; this report creates no new worker or replay request.
+
+Evidence: `~/.local/share/banshee-bot-core/evidence/c1-metadata-refresh-20261115-062306cst/delta-summary.json`,
+SHA256 `747b4c9079485a84bb801f330a2dae2e82adb674f7e9976a48d68cd5227f17f1`.
+The next native boundary stays with the owning corrected four-check run.
+
 All source snapshots, binaries and game data remain external. Only original
 tooling is committed here. No owning checkout, runtime or player state changed.

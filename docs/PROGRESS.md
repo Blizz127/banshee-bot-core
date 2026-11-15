@@ -1003,3 +1003,10 @@ Times are America/Chicago (CST).
   real asset or Game QA was run. Next correction: package/read back build0015
   and submit one superseding private tool/source intake. Producer allowlists,
   current C1/P0 work and all holds remain independent. NEVER restart FFXI.
+
+- OBSERVED at 06:23 CST: a single bounded task-board refresh reports the native
+  four-check candidate failed compilation (Cargo101, outer1), tests NOT RUN and
+  counts null. The reported missing-semicolon diagnostic is native test code,
+  not a shared API repair intake. Its correction/successor remains unaccepted;
+  preparing work was not inspected. No publisher receipt found. Evidence and
+  exact limits are recorded in `FFXI_OFFLINE_INTAKE.md` section G. No replay.

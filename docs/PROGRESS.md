@@ -915,3 +915,27 @@ Times are America/Chicago (CST).
   native Cover/Follow work, producer allowlist and all holds remain unchanged.
   Next native boundary is owning adapter mapping/atomic-commit review and P0;
   no duplicate job or live action is requested. NEVER restart FFXI persists.
+
+## 2026-11-15 06:04 CST — padded tile candidate selection: PASS, offline scope
+
+- Added conservative padded X/Z triangle selection before tiled Recast slope
+  marking/rasterization. Source order, original vertex indices, global validation
+  and the single-tile path remain. Counts are emitted for candidate reduction;
+  full source parsing/scanning remains and no timed speedup is claimed.
+- VERIFIED: new reference32 and reference64 helpers each compile cleanly and
+  pass 17 synthetic cases / 38 commands. Each profile matches 15 retained raw
+  tile pairs, empty/refusal outcomes and a two-tile wall detour. Exact padded
+  boundaries, one-float-step outside, crossing faces, negative origin and
+  disjoint high-Y input are covered. Distant fixture candidates drop 34 to 2.
+  Receipts and hashes are recorded in `TILED_NAV.md`; game inputs were not used.
+- The 31 dependency inputs per profile, compiler version and flags match their
+  old manifests. Native helper identities change; this does not widen FFXI's
+  producer allowlist or establish general equivalence. Shared-core files and
+  native C1 adoption are unchanged; no prior native job/check was replayed.
+- OBSERVED: one 06:01 bounded status snapshot finds no new C1/P0 acceptance,
+  shared API failure or publication receipt. Running work was not inspected.
+  Evidence `evidence/c1-metadata-refresh-20261115-060107cst/delta-summary.json`,
+  SHA256 `10fb7ef1321fb3199531f63292d68064a7226ecd7d1f72c539cdf2dc457321c2`.
+- Next correction: package/read back build0014 with these new backend identities
+  and send one superseding private tool/source intake. Native mapping/adoption,
+  P0/Game QA, publication and every hold remain separate. NEVER restart FFXI.

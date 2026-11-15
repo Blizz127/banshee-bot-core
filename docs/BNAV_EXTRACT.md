@@ -108,8 +108,11 @@ Limits are deliberate: at most one million vertices and triangles, dimensions
 below 4,096 cells per horizontal axis and four million horizontal cells, 8,191
 vertical cells, fewer than 65,535 polygon vertices, and 64 MiB serialized output.
 Smaller disconnected regions may be removed by the fixed region thresholds
-(minimum area 64 cells, merge area 400). Large maps need tiling; off-mesh
-connections, area costs, doors, water rules and cross-tile stitching are pending.
+(minimum area 64 cells, merge area 400). Large maps can use the explicit
+[fixed-grid tiled builder and native portal queries](TILED_NAV.md). Tiled builds
+select triangles overlapping each padded cell before Recast processing while
+retaining full-input validation. Off-mesh connections, area costs, doors and
+water rules remain pending.
 Native memory depends on vertical geometry complexity as well as grid size.
 
 ## Geometry adapter seam

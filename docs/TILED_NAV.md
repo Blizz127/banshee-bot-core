@@ -143,4 +143,62 @@ backend SHA-256 is
 `e2d9f815d5354fc3612f4498ae424c76ef4ff461af3ad8fe293eb9ffb5c85818`.
 An initial source-changing compile correctly refused publishable status; its
 output was retained and a fresh stable compile supplied this verified backend.
-The 64-bit collection pipeline and real-game integration have not been run.
+At that milestone, the 64-bit collection pipeline and real-game integration
+had not been run. Later focused selector results are recorded separately below.
+
+## Padded triangle selection comparison
+
+The selection increment has a separate focused differential runner. Supply the
+new backend and a retained pre-selection backend with the **same reference ABI**
+and dependency source/configuration:
+
+```text
+python3 crates/bnav-extract/tests/smoke_tile_selection.py \
+  --extractor /absolute/path/to/bnav-extract \
+  --backend /absolute/path/to/new/bnav-recast \
+  --baseline-backend /absolute/path/to/retained/bnav-recast \
+  --output-dir /absolute/private/path/to/fresh-comparison
+```
+
+All geometry is synthetic and generated outside Git. The runner retains raw
+tiles, commands, identities and exact-byte comparisons rather than deriving
+expected geometry through a second copy of the selector. Counts describe
+candidates offered to Recast; they do not measure elapsed speed or coverage.
+New backend hashes remain distinct producer identities even if the tested
+output bytes match. No FFXI producer allowlist is widened by this comparison.
+
+**VERIFIED, 2026-11-15 06:03 CST:** 17 cases pass separately for reference32
+and reference64, each with 38 subprocess commands. Each profile produces 15
+byte-identical old/new tile pairs (14 tiled cases plus one single-tile control),
+one matching empty result and one matching global-Y refusal. All four padded
+X/Z faces retain exact-touch probes and exclude probes one binary32 step outside.
+Crossing triangles, negative origin, a border-only obstacle and interleaved
+distant faces retain expected candidate counts. The distant-face fixture sends
+2 of 34 triangles to Recast; each seam-wall cell sends 4 of 36. Zero candidates
+returns empty status without a file. The disjoint high-Y face still fails the
+full-input vertical-bounds check.
+
+Old/new seam-wall query JSON matches within each profile: a complete four-polygon
+corridor traverses two tiles and turns at `[20, 0.25, 15.5]` around the wall.
+Input tools, original test script, generated fixtures and raw outputs retain
+their before/after identities. Both helpers compiled with one low-priority job,
+19 compile commands plus link each, with no diagnostics. Their 31 dependency
+input hashes, compiler version and flags match the previous helpers; the bridge
+source and native executable identities changed. This is not a complete native
+loader regression, game query, general producer-equivalence or performance claim.
+
+Evidence under `~/.local/share/banshee-bot-core/evidence/tile-selection-20261115/`:
+
+| Receipt | SHA256 |
+| --- | --- |
+| `smoke32-v1/result.json` | `ce9717c44605c9ca4235f4478f416dfcc5ef401a61a77d72fe374d22d0b3cf61` |
+| `smoke64-v1/result.json` | `76304b73d480cccc922a88a88e91df514964bbd5adc81641124f6a18f4a5ca72` |
+| `build-input-association.json` | `e19340572af0bc3d0755755fa1ec66cd8563270f02b03d97299f4b4525ef1b00` |
+
+New reference32 helper SHA256:
+`a4837fe23d1620b430844172639707bc3719c86f939fb1faa0594aaf6f7d2ba7`.
+New reference64 helper SHA256:
+`99a851c69bd6df420cebc2cd1515a929a162712cfffc15c943c16bda477ce842`.
+Their build manifests and retained logs live in `backend32-v1/` and
+`backend64-v1/`. No owned game geometry, native FFXI jobs or prior source
+comparison was replayed. Current C1/P0 and Game QA remain separate.

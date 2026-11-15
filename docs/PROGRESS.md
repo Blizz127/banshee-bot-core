@@ -1010,3 +1010,21 @@ Times are America/Chicago (CST).
   not a shared API repair intake. Its correction/successor remains unaccepted;
   preparing work was not inspected. No publisher receipt found. Evidence and
   exact limits are recorded in `FFXI_OFFLINE_INTAKE.md` section G. No replay.
+
+## 2026-11-15 06:26 CST — private build0015: PASS, publication unconfirmed
+
+- VERIFIED: source73cd8da packages as **0.1.0-build0015**, 1136790 bytes,
+  SHA256 `7c8b21b540123f23462b62c7c60901bdb78833d262f0f81a540c6ed55ad93029`.
+  Readback verifies138 payloads and13 startup invocations. All118 tracked source
+  inputs/log/Rust outputs join to the fresh producer; the new extractor, both
+  backends and smoke script match completed proof. The cost observation pins
+  the same extractor/reference32 helper. See `BUILD_0015.md` for exact receipts.
+- All22 shared-core inputs and bot-soak retain their prior identities. No native
+  C1 suite, old cost baseline, game asset or live action was replayed. This
+  supersedes proposed0014 TOOL/SOURCE only, with earlier rollback artifacts kept.
+  Private publication and native P0/Game QA remain unconfirmed; features stay OFF.
+- Next independent item: opt-in batch integration with the existing collection
+  validator's hashes, receipts and explicit coverage contract, preserving its
+  default single-cell path. Owning native four-check correction and publisher
+  readback stay with their lanes. No new worker/restart/adoption authority is
+  inferred; C1 has no map gate and NEVER restart FFXI remains.

@@ -49,6 +49,8 @@ fn point(bytes: &[u8], offset: usize) -> Result<[f32; 3]> {
 pub enum Profile {
     /// cMaNGOS v8, 32-bit Detour polygon references, native wrapper size 20.
     CmangosV8,
+    /// cMaNGOS v8 with explicit DT_POLYREF64, native wrapper size 20.
+    CmangosV8Ref64,
     /// AzerothCore v20, 64-bit Detour polygon references, native wrapper size 56.
     AzerothCoreV20,
 }
@@ -57,27 +59,29 @@ impl Profile {
     pub fn parse(name: &str) -> Result<Self> {
         match name {
             "cmangos-v8" => Ok(Self::CmangosV8),
+            "cmangos-v8-ref64" => Ok(Self::CmangosV8Ref64),
             "acore-v20" => Ok(Self::AzerothCoreV20),
             _ => Err(Error(
-                "unsupported profile; use cmangos-v8 or acore-v20".into(),
+                "unsupported profile; use cmangos-v8, cmangos-v8-ref64 or acore-v20".into(),
             )),
         }
     }
     pub fn name(self) -> &'static str {
         match self {
             Self::CmangosV8 => "cmangos-v8",
+            Self::CmangosV8Ref64 => "cmangos-v8-ref64",
             Self::AzerothCoreV20 => "acore-v20",
         }
     }
     pub fn reference_bits(self) -> u32 {
         match self {
             Self::CmangosV8 => 32,
-            Self::AzerothCoreV20 => 64,
+            Self::CmangosV8Ref64 | Self::AzerothCoreV20 => 64,
         }
     }
     fn wrapper(self) -> (usize, u32) {
         match self {
-            Self::CmangosV8 => (20, 8),
+            Self::CmangosV8 | Self::CmangosV8Ref64 => (20, 8),
             Self::AzerothCoreV20 => (56, 20),
         }
     }
@@ -89,12 +93,27 @@ pub struct MapParams {
     pub tile_width: f32,
     pub tile_height: f32,
     pub max_tiles: u32,
+    /// Raw field bits. The explicit cMaNGOS ref64 profile also permits its
+    /// generator's 0x80000000 fixed 31-bit capacity encoding; no allocation is made.
     pub max_polygons: u32,
 }
 
 /// Reads the 28-byte native dtNavMeshParams layout. A .mmap has no magic/version;
 /// the caller must establish the producer separately before trusting these fields.
 pub fn inspect_mmap(bytes: &[u8]) -> Result<MapParams> {
+    inspect_mmap_with_profile(bytes, None)
+}
+
+/// Inspect map parameters under an explicitly supplied producer/ABI profile.
+/// Only cMaNGOS v8 ref64 permits maxPolys=0x80000000: its generator writes
+/// 1<<DT_POLY_BITS (31), while native Detour uses fixed 64-bit reference fields
+/// instead of deriving the polygon bit count from this signed int. This does
+/// not accept arbitrary negative counts or establish producer identity.
+pub fn inspect_mmap_profile(bytes: &[u8], profile: Profile) -> Result<MapParams> {
+    inspect_mmap_with_profile(bytes, Some(profile))
+}
+
+fn inspect_mmap_with_profile(bytes: &[u8], profile: Option<Profile>) -> Result<MapParams> {
     require(
         bytes.len() == 28,
         "expected exactly 28 bytes of little-endian dtNavMeshParams",
@@ -115,9 +134,16 @@ pub fn inspect_mmap(bytes: &[u8]) -> Result<MapParams> {
         "invalid maximum tile count",
     )?;
     require(
-        p.max_polygons > 0 && p.max_polygons <= i32::MAX as u32,
+        (p.max_polygons > 0 && p.max_polygons <= i32::MAX as u32)
+            || (profile == Some(Profile::CmangosV8Ref64) && p.max_polygons == 0x8000_0000),
         "invalid maximum polygon count",
     )?;
+    if profile == Some(Profile::CmangosV8Ref64) {
+        require(
+            p.max_tiles <= 1 << 21,
+            "maximum tile count exceeds cMaNGOS ref64 fixed 21-bit capacity",
+        )?;
+    }
     Ok(p)
 }
 
@@ -159,7 +185,7 @@ pub fn inspect_mmtile(bytes: &[u8], profile: Profile) -> Result<TileInspection> 
         "declared tile size differs from file length",
     )?;
     let liquid_flag = match profile {
-        Profile::CmangosV8 => word(bytes, 16)?,
+        Profile::CmangosV8 | Profile::CmangosV8Ref64 => word(bytes, 16)?,
         Profile::AzerothCoreV20 => bytes[16] as u32,
     };
     require(liquid_flag <= 1, "invalid usesLiquids flag")?;
@@ -430,7 +456,11 @@ mod tests {
 
     #[test]
     fn rejects_version_mismatch_truncation_and_wrong_abi() {
-        for profile in [Profile::CmangosV8, Profile::AzerothCoreV20] {
+        for profile in [
+            Profile::CmangosV8,
+            Profile::CmangosV8Ref64,
+            Profile::AzerothCoreV20,
+        ] {
             let mut bytes = tile(profile);
             assert_eq!(inspect_mmtile(&bytes, profile).unwrap().polygons, 1);
             assert!(inspect_mmtile(&bytes[..bytes.len() - 1], profile).is_err());
@@ -445,6 +475,26 @@ mod tests {
                 .unwrap_err()
                 .0
                 .contains("version"));
+        }
+    }
+
+    #[test]
+    fn cmangos_v8_requires_explicit_reference_width() {
+        assert_eq!(Profile::parse("cmangos-v8").unwrap().reference_bits(), 32);
+        assert_eq!(
+            Profile::parse("cmangos-v8-ref64").unwrap(),
+            Profile::CmangosV8Ref64
+        );
+        for (producer, wrong_abi) in [
+            (Profile::CmangosV8, Profile::CmangosV8Ref64),
+            (Profile::CmangosV8Ref64, Profile::CmangosV8),
+        ] {
+            let bytes = tile(producer);
+            assert!(inspect_mmtile(&bytes, wrong_abi)
+                .unwrap_err()
+                .0
+                .contains("section lengths"));
+            assert!(inspect_mmtile(&bytes, Profile::AzerothCoreV20).is_err());
         }
     }
 
@@ -475,6 +525,36 @@ mod tests {
         assert!(inspect_mmap(&bytes).is_err());
         assert!(inspect_mmap(&[0; 28]).is_err());
         assert!(inspect_mmap(&[0; 29]).is_err());
+    }
+
+    #[test]
+    fn fixed_31bit_map_capacity_is_explicit_and_not_a_negative_count_escape() {
+        let mut bytes = vec![0; 28];
+        for offset in [12, 16] {
+            put(&mut bytes, offset, 533.3333f32.to_bits());
+        }
+        put(&mut bytes, 20, 687);
+        put(&mut bytes, 24, 0x8000_0000);
+        assert!(inspect_mmap(&bytes).is_err());
+        for profile in [Profile::CmangosV8, Profile::AzerothCoreV20] {
+            assert!(inspect_mmap_profile(&bytes, profile).is_err());
+        }
+        let p = inspect_mmap_profile(&bytes, Profile::CmangosV8Ref64).unwrap();
+        assert_eq!(p.max_polygons, 0x8000_0000);
+        assert_eq!(p.max_tiles, 687);
+        for invalid in [0, 0x8000_0001, u32::MAX] {
+            put(&mut bytes, 24, invalid);
+            assert!(inspect_mmap_profile(&bytes, Profile::CmangosV8Ref64).is_err());
+        }
+        put(&mut bytes, 24, 0x8000_0000);
+        for invalid in [0, (1 << 21) + 1, 0x8000_0000, u32::MAX] {
+            put(&mut bytes, 20, invalid);
+            assert!(inspect_mmap_profile(&bytes, Profile::CmangosV8Ref64).is_err());
+        }
+        put(&mut bytes, 20, 1 << 21);
+        assert!(inspect_mmap_profile(&bytes, Profile::CmangosV8Ref64).is_ok());
+        put(&mut bytes, 0, f32::NAN.to_bits());
+        assert!(inspect_mmap_profile(&bytes, Profile::CmangosV8Ref64).is_err());
     }
 
     #[test]

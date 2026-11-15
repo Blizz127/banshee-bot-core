@@ -11,6 +11,8 @@ external materials referenced by OBJ files.
 cargo run -p bnav-extract -- --help
 cargo run -p bnav-extract -- inspect-mmap /path/to/000.mmap
 cargo run -p bnav-extract -- inspect-mmtile cmangos-v8 /path/to/tile.mmtile
+cargo run -p bnav-extract -- inspect-mmap cmangos-v8-ref64 /path/to/000.mmap
+cargo run -p bnav-extract -- inspect-mmtile cmangos-v8-ref64 /path/to/tile.mmtile
 cargo run -p bnav-extract -- inspect-mmtile acore-v20 /path/to/tile.mmtile
 cargo run -p bnav-extract -- check-obj /path/to/triangulated.obj
 cargo run -p bnav-extract -- inspect-detour 32 /path/to/generated.navtile
@@ -26,6 +28,8 @@ status 2. Do not put game inputs in this repo.
 |---|---|---|
 | `.mmap` | Exact 28-byte little-endian `dtNavMeshParams`, finite origin and positive dimensions/counts | Producer identity: this format has no magic/version; tile coverage or path validity |
 | `cmangos-v8` `.mmtile` | 20-byte v8 wrapper, Detour v7 header, 32-bit reference ABI, declared payload and section lengths, finite ordered bounds/counts | Polygon indices, adjacency, off-mesh links, connectivity, walkability or loaded-server compatibility |
+| `cmangos-v8-ref64` `.mmtile` | Same 20-byte v8 wrapper with explicitly selected 64-bit reference ABI | Same limitations; a v8 wrapper alone does not identify its reference width |
+| Explicit `cmangos-v8-ref64` `.mmap` | Ordinary strict map fields, plus the pinned producer's exact `maxPolys=0x80000000` fixed 31-bit capacity encoding and 21-bit tile capacity | Producer identity, extraction provenance or native load/path validity; no arbitrary negative count acceptance |
 | `acore-v20` `.mmtile` | 56-byte v20 wrapper, Detour v7 header, 64-bit reference ABI, declared payload and section lengths, finite recorded config/bounds/counts | Same limitations; matching the intended Recast generation settings is also not checked |
 | Raw Detour tile | Detour v7 header and section lengths for explicitly selected 32/64-bit references | Polygon adjacency, walkability or loaded-server compatibility |
 | Triangulated OBJ | Finite vertices, in-range face indices, nondegenerate triangles, bounds | Units, handedness, up-axis, winding correctness, collision completeness or walkability |
@@ -42,6 +46,14 @@ An unknown mmap version is not assumed equivalent to these versions, even if
 its file length looks familiar. Other architectures, endian layouts, modified
 Detour structures and reference-width combinations need separate profiles.
 No source assets or extracted meshes are bundled with this increment.
+
+Actual owner cMaNGOS v8 samples use 64-bit references because the owning build
+enables `DT_POLYREF64` through CMake. Their map parameters also use the fixed
+31-bit polygon-capacity encoding accepted only by the explicit new profile.
+See [the WoW artifact preflight](WOW_NAV_PREFLIGHT.md) for the original packaged
+failures, source pins and focused correction checks. The standalone Banshee
+cMaNGOS helper remains 32-bit; its direct compile does not inherit those CMake
+flags.
 
 ## Build and query extracted geometry
 
@@ -118,7 +130,9 @@ code. They are not vendored into this repository. Their parent CMake files are
 integrated into the game builds; the standalone Banshee script uses a separate
 output directory and source manifest without changing those projects.
 
-FFXI DAT and FFXIV sqpack readers and real game geometry validation are pending.
+Bounded FFXI export uses a separate [pinned-source offline wrapper](FFXI_EXPORT.md).
+An in-process FFXI DAT reader, FFXIV sqpack reader and game walking-map QA remain
+pending.
 No unknown geometry format was interpreted in this increment. Unknown format
 investigation must use REA under the governing instructions and retain evidence
 under `~/.local/share/banshee-bot-core/evidence/`. FF14 client files are still not

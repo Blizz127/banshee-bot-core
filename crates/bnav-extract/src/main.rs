@@ -1,4 +1,6 @@
-use bnav_extract::{inspect_detour, inspect_mmap, inspect_mmtile, read_obj, Error, Profile};
+use bnav_extract::{
+    inspect_detour, inspect_mmap, inspect_mmap_profile, inspect_mmtile, read_obj, Error, Profile,
+};
 use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Read, Write};
 use std::process::{Command, Stdio};
@@ -7,7 +9,8 @@ const MAX_INPUT_BYTES: u64 = 64 * 1024 * 1024;
 const HELP: &str = "bnav-extract 0.1.0 — offline navigation builder and preflight
 Usage:
   bnav-extract inspect-mmap PATH
-  bnav-extract inspect-mmtile <cmangos-v8|acore-v20> PATH
+  bnav-extract inspect-mmap <cmangos-v8|cmangos-v8-ref64|acore-v20> PATH
+  bnav-extract inspect-mmtile <cmangos-v8|cmangos-v8-ref64|acore-v20> PATH
   bnav-extract inspect-detour <32|64> PATH
   bnav-extract check-obj PATH
   bnav-extract build-obj BACKEND INPUT OUTPUT [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
@@ -15,6 +18,8 @@ Usage:
 
 Inspection is read-only; little-endian profiles only. Maximum input: 64 MiB.
 Tile inspection checks headers and section lengths, not connectivity or walkability.
+cmangos-v8 keeps its 32-bit ABI; cmangos-v8-ref64 explicitly selects the 64-bit ABI.
+Only profiled cmangos-v8-ref64 map inspection permits the fixed 31-bit capacity field.
 check-obj accepts triangulated geometry without transforms; it does not build navmesh.
 build-obj writes a new raw Detour v7 tile via an explicit external Recast backend.
 Input must be Y-up; all agent dimensions use the geometry's world units.
@@ -23,7 +28,8 @@ Build the backend with scripts/build_bnav_backend.py; see docs/BNAV_EXTRACT.md.
 build-tile-obj uses a fixed grid; TILE_CELLS is 8..1024 and tile indices are 0..4095.
 Exit 3 means a successfully processed empty tile; no output file is created.
 Tiled manifests and coverage checks are handled by the region orchestration tool.
-FFXI DAT and FFXIV sqpack readers are not implemented.";
+FFXI bounded export uses scripts/export_ffxi_geometry.py, a pinned-source offline wrapper.
+FFXIV sqpack reader is not implemented.";
 
 fn read(path: &str) -> Result<Vec<u8>, Error> {
     if !std::fs::metadata(path)
@@ -258,6 +264,17 @@ fn run(args: &[String]) -> Result<i32, Error> {
             let p = inspect_mmap(&read(path)?)?;
             println!("status=OBSERVED format=dtNavMeshParams-le scope=header-only origin={:?} tile_width={} tile_height={} max_tiles={} max_polygons={} producer_identity=unverified",
                 p.origin, p.tile_width, p.tile_height, p.max_tiles, p.max_polygons);
+        }
+        ["inspect-mmap", profile, path] => {
+            let profile = Profile::parse(profile)?;
+            let p = inspect_mmap_profile(&read(path)?, profile)?;
+            let semantics = if p.max_polygons == 0x8000_0000 {
+                "fixed-31bit-capacity"
+            } else {
+                "positive-i32"
+            };
+            println!("status=OBSERVED format=dtNavMeshParams-le scope=header-only profile={} reference_bits={} origin={:?} tile_width={} tile_height={} max_tiles={} max_polygons={} max_polygons_signed={} max_polygons_semantics={} producer_identity=unverified",
+                profile.name(), profile.reference_bits(), p.origin, p.tile_width, p.tile_height, p.max_tiles, p.max_polygons, p.max_polygons as i32, semantics);
         }
         ["inspect-mmtile", profile, path] => {
             let t = inspect_mmtile(&read(path)?, Profile::parse(profile)?)?;

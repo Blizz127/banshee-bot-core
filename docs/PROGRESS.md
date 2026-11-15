@@ -699,3 +699,18 @@ Times are America/Chicago (CST).
 - Next correction: package/read back build0009 with the scoped new-policy
   receipt and provide one superseding private tool/source candidate intake;
   do not duplicate the existing FFXI native adoption request.
+
+## 2026-11-15 03:48 CST — private build0009: PASS, runtime gates retained
+
+- VERIFIED: source 9b91ed21 packages as **0.1.0-build0009**, 1022615 bytes,
+  SHA256 `8a07a58e4de0f124ca24d5c9bcc1a9b294a3308f6f976ed8d6eab83bd8ce5bf4`.
+  All 107 payloads and 13 startup invocations pass. Nineteen current core files
+  and the policy test match the completed new-policy receipt. Build scope and
+  immutable evidence are in `BUILD_0009.md`.
+- Supersedes proposed0008 for the existing private publisher only, retaining
+  rollback. The FFXI 04b/shared6ead source-adoption intake stays canonical;
+  no new native acceptance, whole-crate C1 comparison or runtime wiring claim.
+  Private publication and Game QA remain unconfirmed. Every hold persists.
+- Next independent architecture item: expose bounded endpoint measurements
+  through the Rust navigation boundary for future adapters, preserving existing
+  Path/Navigation contracts and native C1/producer ownership.

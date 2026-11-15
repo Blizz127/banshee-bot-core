@@ -1,8 +1,17 @@
-# C0 bot readiness — refreshed 2026-11-15 02:29 CST
+# C0 bot readiness — refreshed 2026-11-15 03:19 CST
+
+One bounded coordinator snapshot and existing owning documents now establish an
+attributed E&B headless score of **yes (2)**; its row is **2/1/1/0, total 4/8**.
+This is isolated native-session acceptance, not live/companion readiness. New
+sector-coordinate visual geometry also produced seven tiles and a short
+cross-tile query, but collision export is empty and complete coverage stays
+**0/85**. Walking maps remain partial. See B2 below for exact evidence and limits.
+No other new attributed score or geometry coverage was found in this bounded
+read. No native job, closed packet or acceptance check was replayed.
 
 Independent offline-tool evidence later progressed: two bounded FFXI crops now
 load/query in the owning native library, and the shared pure C1 extraction
-passes comparison against observed source 5c73. See [the current build](BUILD_0006.md).
+passes comparison against observed source 5c73. See [the current build](BUILD_0008.md).
 These results do not change attributed readiness scores, establish complete
 zone maps or satisfy native C1 adoption/P0 or Game QA. No request was rebroadcast.
 
@@ -53,7 +62,7 @@ ordering and do not move a game ahead of its assigned phase.
 | ESO Rust | pending | pending | pending | pending | — | E0; correction delivered, no scored reply in inspected board |
 | GW2 Rust | partial (1) | partial (1) | partial (1) | partial (1) | 4/8 | G1; `claude-gw2-rust` |
 | LOTRO Rust | partial (1) | partial (1) | partial (1) | partial (1) | 4/8 | L1; `claude-lotro-rust` |
-| Earth & Beyond DIT | partial (1) | partial (1) | partial (1) | no (0) | 3/8 | B1; `claude-Earth-and-Beyond-DIT` |
+| Earth & Beyond DIT | yes (2) | partial (1) | partial (1) | no (0) | 4/8 | B2 (B1 historical); `claude-Earth-and-Beyond-DIT` |
 | Marvel Heroes | pending | pending | pending | pending | — | Catalog row unfilled |
 | Lineage II C4 / Interlude | pending | pending | pending | pending | — | Catalog row unfilled |
 
@@ -192,7 +201,7 @@ row supersedes `e83374f1b858`.
   real, 172 partial; creature AI and companion follow/attack/heal exist,
   no rotation/strategy library.
 
-### B1 — Earth & Beyond DIT
+### B1 — Earth & Beyond DIT, historical initial report
 
 Task `d30281403634`, lead `claude-Earth-and-Beyond-DIT`, updated 01:01:02 CST;
 roadmap `docs/ROADMAP.md` Track B, commit `706d610`.
@@ -220,11 +229,46 @@ See `docs/PATHING_B1_GEOMETRY_EXPORT.md` in that project and the saved paths/has
 in [the handoff refresh](HANDOFF_STATUS_20261115.md). No source check was rerun as
 a game/pathing test, and this is not yet a collision-triangle intake.
 
-**Pending design decision:** `SectorData.h:42–43` describes free 3D flight,
-so the lead proposes per-sector obstacle data plus a gate/route graph rather
-than a ground-only mesh. Geometry export proceeds independently. Keep that
-pathing-format choice pending with the coordinator; no confirmed decision was
-found in the inspected report.
+**Historical design question, resolved in the 02:26 report:**
+`SectorData.h:42–43` describes free 3D flight. The earlier proposal used sector
+obstacle data and a gate/route graph. The later owning decision requires per-tile
+Recast output, with those graphs supplemental; it is no longer an open choice.
+
+### B2 — E&B isolated headless acceptance and partial sector triangles
+
+OBSERVED: task `d30281403634` at **02:51:37 CST** attributes scores **2/1/1/0**.
+Its retained native acceptance document reports three connection-less Player
+bodies, 154/154 assertions and zero listener syscalls. Adapter commit
+`4a346aed2a2315f6fb8fd72be64fa7991e66e2e0`, native build
+`a96798280fdd1788195ad48b7e6a7a13447fce6a`, final parser/run-script commit
+`3cd37d30eb07845f9e4f82cbf325313d06f6050c`. This is an isolated three-avatar
+fixture on ILP32, not a client session, live service, class strategy, full timer
+dispatch or complete native shutdown proof. Native geometry is not established
+by the headless acceptance. Bot-core consumed the closed record without reruns.
+
+OBSERVED separately: producer `c0560002fed917f7cb344d9a7117b738a47d77af`'s
+**03:19 CST** sector 4115 record exports one of 100 visual placements as 120
+vertices/190 triangles. Seven tiles and five explicit empty cells build with
+zero missing cells; a short query traverses two tiles/seven corridor polygons.
+The declared-collision mode exports zero geometry; no terrain is covered.
+The remaining placements retain explicit scale, orientation, animation or
+representation omissions. Engineering axes and scale are not calibrated ship
+motion. Native compatibility remains NOT_VERIFIED, Game QA NOT_RUN, and complete
+verified coverage **0/85**. These candidates must not reject player movement.
+
+Retained metadata under
+`~/.local/share/banshee-bot-core/evidence/c0-refresh-20261115-0319/`:
+
+| Record | SHA-256 |
+| --- | --- |
+| `delta-summary.json` | `155fa208a3942d8f715aa0cca05e959be6194ce40bed2c8a07a50149a21aaa1c` |
+| `enb-headless-acceptance.json` | `0d44a071cfae7c618d4df15d9ef9a9a5de890b1698baae288faa22ee8841cb05` |
+| `enb-sector-verification.json` | `bcca6ae6fa3c50b13cc1234b26f9da6f87a07694014a00c81c9c1830ddf7b014` |
+| `task-board.json` | `608b775b629086fd38cbbbf561c399ce8424741049fcc8b4930a1b18de0a9f51` |
+
+VERIFIED here: these retained metadata identities. The owning lead's reported
+checks, game-source pins and input hashes are attributed evidence, not tests or
+asset rehashes performed by this refresh. Fixed rollout C1–C6 is unchanged.
 
 ### E0 and unreported rows
 
@@ -254,7 +298,7 @@ yet confirmed. No new worker/session was launched and no existing hold lifted.
 | --- | --- | --- |
 | SWTOR / `ddfa31d97341` | Walking maps no (0) | Reuse its queued collision-reader lane: inventory all 27 served packs, decode one representative collision source using REA when unknown, export triangles to the shared builder contract, then generate a first tile and coverage manifest. Keep extraction private; Game QA later checks obstacles/stairs/transitions. Companion hold remains separate. |
 | DCUO / `3e436176e74c` | Walking maps, headless, server, behavior all no (0) | Start with cooked-map geometry identification and a reproducible private per-zone coverage manifest; decode/export a representative zone when source evidence supports it. Keep existing milestone 2 holds. Behind the server's existing milestones, scope a headless session over its own action APIs, an actual-client quest/fight/loot/trade proof, then class/power behavior as data. Score each piece only after evidence arrives. |
-| Earth & Beyond DIT / `d30281403634` | Behavior no (0); zero generated pathing | Reuse Track B1 geometry export and B2 readiness work: resolve asset-to-W3D mapping, export one sector with obstacles/gates, record free-flight pathing decision via coordinator, and produce a data-backed per-class ability/role catalog with a headless legal-action smoke. Do not pretend ground tiles cover 3D flight. |
+| Earth & Beyond DIT / `d30281403634` | Behavior no (0); zero completely verified sectors | Continue the existing Track B1/B2 intake: resolve omitted collision/placements and transforms, use the already required per-tile Recast output with supplemental obstacle/gate graphs, and implement class strategy from the catalog using the accepted isolated headless seam. Calibrated ship movement, sector coverage and Game QA remain separate. This updates the canonical intake without dispatching a duplicate. |
 
 Maps-first follow-ups for partial rows reuse their already queued work:
 FFXI needs a reproducible DAT/MZB-to-mesh path and zone coverage; GW2 needs tiled

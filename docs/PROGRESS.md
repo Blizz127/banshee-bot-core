@@ -606,3 +606,20 @@ Times are America/Chicago (CST).
   games' geometry intakes retain their separate owning-lane dependencies. Do
   not create a map prerequisite for C1, poll running jobs or repeat closed work.
   The no-restart and all player/progress/access/schema/device holds persist.
+
+## 2026-11-15 03:19 CST snapshot — C0 evidence refresh: PARTIAL readiness
+
+- OBSERVED new owning E&B score: headless 1 to 2, row **2/1/1/0 = 4/8**.
+  The closed isolated native fixture reports three bodies, 154 assertions and
+  zero listener syscalls; this is not live companion/population acceptance.
+- OBSERVED separate sector 4115 evidence: one of 100 visual placements builds
+  seven tiles/five empty cells; query traverses two tiles/seven polygons. Declared
+  collision export is empty, complete coverage stays 0/85, and walking-map score
+  remains partial. Calibration, native movement and Game QA are unverified.
+- VERIFIED retained metadata identities and updated `BOT-READINESS.md`; exact
+  evidence hashes are in B2. No other new score/coverage found in the bounded
+  read, no broadcast or duplicate intake, and no native jobs/checks replayed.
+  The E&B output choice remains resolved, not reopened. Fixed rollout and all
+  holds remain. Build0008 stays immutable; this later metadata is not inside it.
+- Next correction remains owning collision/placement coverage and class strategy
+  evidence under the existing intakes; C1 native adoption/P0 stays independent.

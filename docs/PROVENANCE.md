@@ -92,3 +92,11 @@ The zone101 experiment uses an existing historical source-audit point and
 explicit owner DAT path. Its source/asset identities, water/path refusals and
 incomplete region limits are recorded in [the export evidence](FFXI_EXPORT.md).
 No new format implementation or external code was imported into this repository.
+
+The later C1 comparison explicitly pins owning FFXI source
+`5c73a8751940ba767c7b86a50bb96b38b5d1e4f6`: six pure reference modules now include
+`formation.rs`. Shared control, command, order and setting implementations are
+original; native world placement is excluded. Reference sources and binaries
+remain external under `evidence/c1-current-compat-5c73a875-attempt1/`. The same
+private-source licence limitation applies; no external implementation is vendored
+or included in the source archive. Historical36b907 receipts are not relabelled.

@@ -40,12 +40,16 @@ Receipts beneath `/home/blizz/.local/share/banshee-bot-core/evidence/`:
 
 ## Owning-lead follow-ups
 
-1. **C1 remains independent; current source alignment is in progress.** A
+1. **C1 remains independent; current source comparison now passes.** A
    bounded check found that observed owner source `5c73a875` adds command,
    fallback and formation-order contracts beyond the old `36b90715` extraction.
    The old compatibility receipts remain valid only for their original pin.
-   Bot-core is updating original implementations and the focused comparison;
-   see [the adapter handoff](C1_ADAPTER_HANDOFF.md). Native baseline acceptance,
+   Bot-core now supplies original implementations and a passing focused
+   comparison for the explicit newer candidate, including fallback transitions,
+   command precedence and formation settings. Receipt SHA-256
+   `dcecb524ad08d1c2c43e5ce009b9b3578270a299aad51003939086e76dbc38ea`;
+   see [the adapter handoff](C1_ADAPTER_HANDOFF.md). This supersedes the old
+   grammar-only/source36b907 proposal. Native baseline acceptance,
    coherent type adoption and `/fb` P0 stay with the owning lead. Navigation
    work does not gate C1, satisfy P0 or advance C2.
 2. **Review the general native capacity API separately.** Source allocates

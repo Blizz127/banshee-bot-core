@@ -4,18 +4,51 @@ Status: **PARTIAL, not deployed or Game QA verified**. This is an actionable
 source integration proposal for the existing FFXI lead, routed through Devbox
 task `dcc9a63a40ab`. It does not authorize a restart or alter any live gate.
 
-**02:46 CST source reconciliation:** the latest observed owning source candidate
+**02:51 CST source reconciliation — VERIFIED offline:** the latest observed owning source candidate
 is `5c73a8751940ba767c7b86a50bb96b38b5d1e4f6`. It changes command grammar,
 fallback control transitions and geometry-setting orders relative to the
-original pin below. Authority and selection remain byte-identical. The existing
-shared extraction does not yet cover those additions; its earlier equivalence
-receipts apply only to `36b90715`. An original implementation and expanded
-comparison against the explicit newer candidate are in progress. This candidate
-is not a confirmed live baseline or native C1 acceptance receipt.
+original pin below. Authority and selection remain byte-identical. The shared
+extraction now covers those additions and passes the expanded comparison against
+that exact candidate. Earlier equivalence receipts still apply only to
+`36b90715`. This candidate is not a confirmed live baseline or native C1
+acceptance receipt.
 Evidence: `evidence/c1-source-drift-20261115-0247/result.json`, SHA-256
 `85b39bb843aeb0e5cf7aeb36a75513df7aa3442c2abd65e2d1d04f6be1fee80b`,
-beneath the private data root. Do not adopt the older seam as if it already
-matched the observed newer source. Native geometry placement remains native.
+beneath the private data root. Use the current source and receipt below when
+integrating; do not substitute the older seam. Native geometry placement remains native.
+
+The current comparison receipt is
+`evidence/c1-current-compat-5c73a875-attempt1/result.json`, SHA-256
+`dcecb524ad08d1c2c43e5ce009b9b3578270a299aad51003939086e76dbc38ea`.
+It verifies97,032 parser and70 directed precedence comparisons,87,040 clock
+result/state comparisons,112,802 authority/selection/order comparisons, and
+1,136,900 formation-setting comparisons. Eleven original pure reference tests
+and the shared overflow check pass. All six native files and shared-core inputs
+remain byte-identical before/after. Nineteen integrated changed-core checks
+also pass (`evidence/c1-current-integrated-20261115-01/result.json`, SHA-256
+`579df0f17bc9cd8e006db0207bb5ac2bbe401f59b9a5186dfef4ce0a05206c87`).
+These are finite offline checks, not whole-program equivalence or native P0.
+
+Native `formation` should re-export the coherent shared `Shape`, `Setting`,
+`Config` and `decimal` types/functions while retaining native `desired` placement.
+This avoids mixing nominally different setting types in `Order::Geometry` and
+`Directive::Geometry`. Geometry directives retain the native setting readiness
+exception after authority/session/control checks; they do not move a bot.
+The new grammar covers fill/rally/pullback/fallback; native effects stay native.
+Fallback replacement, owner-order interruption and binding loss preserve the
+observed cancellation-clock semantics; durable operation fences remain closed
+until native reconciliation.
+
+```sh
+python3 scripts/check_ffxi_compat.py --profile ffxi-5c73a875 \
+  --source /home/blizz/dev/ffxi-platform-detour-detail-boundary-20261115/server/crates/xi-map/src/fb \
+  --evidence /absolute/private/path/to/new-receipt-directory
+```
+
+The selected working source must match all six immutable pins. A later owning
+change requires a new comparison, not an automatic profile upgrade. The command
+unit tests use a recorded enum-only Role shim; full pinned modules are used by
+the differential binaries. Native placement is excluded from the comparison.
 
 ## Exact extraction boundary
 
@@ -26,6 +59,7 @@ matched the observed newer source. Native geometry placement remains native.
 | `authority` pure contracts | `banshee_bot_core::brain::authority` | Supply authoritative owner binding, actor/session and party facts. Tickets remain opaque and cannot grant authority without fresh native facts. |
 | `selection` pure contracts | `banshee_bot_core::brain::selection` | Supply the current owned candidate set; preserve unavailable-member feedback and private name resolution. |
 | `orders` pure contracts, including `prepare` and `revalidate` | `banshee_bot_core::brain::orders` (`Role` also in `roles`) | Re-export the coherent authority/selection/planner type set together; retain native `ORDER_HELP`, scene collection, ability mapping, queues and execution. |
+| `formation::{Shape,Setting,Config,decimal}` | `banshee_bot_core::brain::formation` | Re-export these pure setting contracts; retain `desired`, game coordinates, rotation, placement and movement natively. |
 
 The first source candidate is commit
 `36b90715b29728ecbccd2fee95493bbc7c14db29` from
@@ -102,6 +136,7 @@ shared primitives change:
 
 ```sh
 python3 scripts/check_ffxi_compat.py \
+  --profile ffxi-36b907 --core /absolute/path/to/historical-core \
   --source /absolute/path/to/xi-map/src/fb \
   --evidence /absolute/private/path/to/new-receipt-directory
 ```

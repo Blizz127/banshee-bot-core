@@ -430,3 +430,22 @@ Times are America/Chicago (CST).
 - Next correction: integrate current-source control/grammar and pure geometry
   settings, run the expanded pinned comparison, and update the owning intake.
   Private publication has no receipt here; all owner holds remain unchanged.
+
+## 2026-11-15 02:51 AM CST — current-source C1 pure extraction: PASS offline
+
+- VERIFIED: original implementations now preserve observed5c73 fallback clock,
+  fill/rally/pullback/fallback grammar, and pure formation-setting orders.
+  Native placement, execution and all runtime mutations remain adapter-owned.
+- Explicit profile `ffxi-5c73a875` passes97,032 parser comparisons plus70 directed
+  precedence checks,87,040 clock result/state comparisons,112,802 pure authority/
+  selection/order comparisons, and1,136,900 formation-setting comparisons.
+  Eleven original pure tests and shared overflow pass; all native/core input
+  hashes are stable. Receipt SHA-256
+  `dcecb524ad08d1c2c43e5ce009b9b3578270a299aad51003939086e76dbc38ea` at
+  `evidence/c1-current-compat-5c73a875-attempt1/result.json`.
+- VERIFIED:19 integrated changed-core tests pass separately. Source candidate
+  acceptance, native adoption/P0 and Game QA remain unverified. Old36b907
+  comparison is historical, not evidence for the new implementations.
+- Next correction: package/read back build0006, route one superseding source
+  and offline-navigation intake to the owning lead and the concrete tool
+  candidate to the existing private publisher. C2 remains behind native C1.

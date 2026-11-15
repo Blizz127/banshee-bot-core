@@ -101,6 +101,7 @@ the differential binaries. Native placement is excluded from the comparison.
 | `selection` pure contracts | `banshee_bot_core::brain::selection` | Supply the current owned candidate set; preserve unavailable-member feedback and private name resolution. |
 | `orders` pure contracts, including `prepare` and `revalidate` | `banshee_bot_core::brain::orders` (`Role` also in `roles`) | Re-export the coherent authority/selection/planner type set together; retain native `ORDER_HELP`, scene collection, ability mapping, queues and execution. |
 | `formation::{Shape,Setting,Config,decimal}` | `banshee_bot_core::brain::formation` | Re-export these pure setting contracts; retain `desired`, game coordinates, rotation, placement and movement natively. |
+| **Additive candidate, not adopted:** pure `world::bot_roles::elect` choices | `banshee_bot_core::roles::election` | Map native jobs to preferences; retain accepted-binding filtering, cached facts/manual choices, native setter rules, exclusive group preflight/commit and order continuity. See [role boundary](ROLE_ELECTION.md). |
 
 The first source candidate is commit
 `36b90715b29728ecbccd2fee95493bbc7c14db29` from

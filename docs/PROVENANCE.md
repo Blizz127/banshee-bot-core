@@ -101,3 +101,13 @@ original; native world placement is excluded. Reference sources and binaries
 remain external under `evidence/c1-current-compat-5c73a875-attempt1/`. The same
 private-source licence limitation applies; no external implementation is vendored
 or included in the source archive. Historical 36b907 receipts are not relabelled.
+
+The additive pure role-election candidate studies owning `world/bot_roles.rs`
+at `f7c9662fc5bcfc3f37ce00db82e1fc2c00ccee74`, SHA256
+`63c7a2001f063d9620e1719928433bd98f887fec296f33ff51b46d8bea370ed5`.
+The file is byte-identical at the existing 04b C1 adoption source. Only the pure
+priority/election functions are reference inputs; native storage, authorization,
+role setters and clock commits remain excluded. The existing private-source
+licence limitation applies. Exact source/shim/binary evidence stays external;
+the shared implementation and committed comparison tools are original. See
+[the role-election boundary](ROLE_ELECTION.md) for mapping and acceptance scope.

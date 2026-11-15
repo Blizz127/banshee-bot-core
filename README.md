@@ -28,6 +28,9 @@ proposal ordering and restricted optional advice for future adapters. Native
 FFXI integration and its existing C1 source candidate remain separate.
 The optional [strategy-frame interface](docs/STRATEGY_FRAMES.md) supplies bounded
 callback evaluation and immutable proposals for that selector.
+The additive [role-election helper](docs/ROLE_ELECTION.md) computes pure choices
+from adapter-supplied preferences; native FFXI role state and atomic updates
+remain unchanged pending separate adoption.
 
 `bnav-extract` builds single or fixed-grid Recast/Detour tiles from extracted
 triangle geometry and provides explicit WoW tile preflight; see

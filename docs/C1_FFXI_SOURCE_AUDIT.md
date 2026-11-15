@@ -4,6 +4,13 @@
 read-only source audit for original implementation of the shared core, not an
 FFXI adapter change, runtime verification, or completed C1 migration.
 
+The original audit below is historical. The later observed source candidate
+`5c73a875` changes grammar, fallback control and formation orders; the current
+original extraction and passing explicit comparison are recorded in
+[the adapter handoff](C1_ADAPTER_HANDOFF.md). Current native adoption/P0 remains
+unverified. Do not interpret the old source identities below as latest-source
+equivalence or current deployment identity.
+
 ## Source identity and limits
 
 **OBSERVED:** `/home/blizz/dev/ffxi-platform` is on `main` at

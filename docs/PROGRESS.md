@@ -347,7 +347,7 @@ Times are America/Chicago (CST).
 
 ## 2026-11-15 02:37 AM CST — corrected FFXI native-library consumption: PASS
 
-- VERIFIED: selected owner source5c73 accepts all12 retained compatibility
+- VERIFIED: selected owner source 5c73 accepts all12 retained compatibility
   cases and six focused owner tests; its newer-producer refusal remains intact.
   The exact owning native library loads1/1 real tile, returns valid refs for46
   mesh-derived nearest queries, and completes a corridor and straight path.
@@ -415,7 +415,7 @@ Times are America/Chicago (CST).
   `85b39bb843aeb0e5cf7aeb36a75513df7aa3442c2abd65e2d1d04f6be1fee80b`.
 - Next correction: package the completed offline-tool increment as build0005;
   continue original C1 extraction and differential verification for explicit
-  observed source5c73. No live-baseline or adoption/P0 claim is made. Native
+  observed source 5c73. No live-baseline or adoption/P0 claim is made. Native
   geometry placement/movement stays in the adapter and no later phase opens.
 
 ## 2026-11-15 02:48 AM CST — private build0005: PASS, QA pending
@@ -449,3 +449,18 @@ Times are America/Chicago (CST).
 - Next correction: package/read back build0006, route one superseding source
   and offline-navigation intake to the owning lead and the concrete tool
   candidate to the existing private publisher. C2 remains behind native C1.
+
+## 2026-11-15 02:53 AM CST — private build0006: PASS, native QA pending
+
+- VERIFIED: source 9226e567 packages as **0.1.0-build0006**, 997148 bytes,
+  SHA-256 `1de3a13c018c3e1703e73aece6ba295fe89ead73185b02f43ff0ba6a7c7a98f7`.
+  Readback verifies 98 payloads/nine tool invocations. The explicit profile CLI
+  starts, and all 18 packaged core/workspace identities match the completed
+  current-source comparison. Receipts and scope are in `BUILD_0006.md`.
+- Supersedes proposed0004/intermediate0005 for private publisher intake; retains
+  rollback candidates. The consolidated FFXI source/navigation intake replaces
+  the old extraction and historical failure-only report, without claiming P0.
+- Next C1 boundary: owning-lead baseline acceptance and native adapter adoption,
+  focused `/fb` P0, then Game QA. New features remain OFF. The explicit standing
+  no-restart hold remains; zero players does not lift it. Publication still
+  lacks an owning-channel receipt. No C2 or live deployment is claimed.

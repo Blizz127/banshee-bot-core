@@ -1,5 +1,11 @@
 # C0 bot readiness — refreshed 2026-11-15 02:29 CST
 
+Independent offline-tool evidence later progressed: two bounded FFXI crops now
+load/query in the owning native library, and the shared pure C1 extraction
+passes comparison against observed source 5c73. See [the current build](BUILD_0006.md).
+These results do not change attributed readiness scores, establish complete
+zone maps or satisfy native C1 adoption/P0 or Game QA. No request was rebroadcast.
+
 At 02:29 CST the attributed scores are still unchanged. E&B now reports four
 model-local Recast tiles and a short two-tile path; per-tile Recast is its
 required output and the earlier output-model choice is reported resolved.

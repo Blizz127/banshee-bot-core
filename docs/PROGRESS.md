@@ -1178,3 +1178,21 @@ Times are America/Chicago (CST).
   tool/source intake. Native C1/P0/Game QA and private publication still need
   owning-lane receipts; there is no new shared-core defect from the last bounded
   summary. NEVER restart FFXI, including at zero players; all holds persist.
+
+## 2026-11-15 07:57 CST — private build0018: PASS, publication unconfirmed
+
+- VERIFIED: source 8153d3b packages as **0.1.0-build0018**, 1197956 bytes,
+  SHA256 `508ca3863fae576558ed719797d9a887146c323c4c1b31e690c7a4013ef03fc2`.
+  Readback passes149 payloads /14 startup calls, including new report modes and
+  wrapper options in packaged help. All128 tracked source files/log/Rust outputs
+  join the fresh producer; current native, fixture and wrapper proof matches.
+- Both new native hashes remain distinct producers; no FFXI allowlist changed.
+  Rust executables and22 shared-core pins remain unchanged. All exact receipts,
+  scoped comparisons and unrun cases are in `BUILD_0018.md`. This supersedes
+  proposed0017 TOOL/SOURCE only, retaining prior rollback artifacts.
+- This closes named probes and typed-refusal groundwork. C1 completion still
+  narrowly requires the owning lane's current adapter/P0 and Game QA result.
+  Its latest inspected native claim-passing summary supplies no shared-core
+  defect to repair here. No duplicate native check/job or second status snapshot
+  was launched. C2+ stays gated, maps are no prerequisite for C1, and private
+  publication still requires the existing publisher's receipt. All holds remain.

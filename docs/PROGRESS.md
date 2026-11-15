@@ -197,3 +197,24 @@ Times are America/Chicago (CST).
   Next correction: finish the known-source FFXI geometry export and bounded bake,
   then test the existing single-tile consumer contract against actual output.
   No feature enabled, server changed or game data put in Git.
+
+## 2026-11-15 02:13 AM CST — first owned FFXI geometry bake: PASS offline / maps PARTIAL
+
+- OBSERVED: pinned existing FFXI source decodes zone230 and exports 1,821
+  triangles from the explicit source AABB `[-110,-10,-90]..[-60,12,-40]`.
+  The OBJ is 261651 bytes, SHA-256
+  `df8acf8bbb3f16386d07e4ad5d595dce12f432d220ca4b0e20d5b0d87fa1685a`.
+  Data, immutable source staging, dependency identities and source limitations
+  remain in `evidence/ffxi-sandoria230-export-20261115-02/` under the private root.
+- VERIFIED: packaged build0002 produces/reloads a single raw32 tile and a
+  complete four-cell collection. Both native route diagnostics reach projected
+  endpoints; the tiled corridor traverses four tiles. Single-tile SHA-256:
+  `4ad75760178b7f7c2f518994a466df2f2b95e7e96780134598674ffa02378fb4`.
+- Receipt: `evidence/ffxi-sandoria230-nav-20261115-01/result.json`, SHA-256
+  `dbf2608d1b0dfc4c023274f3f087abd734bd6e185d33ac4ca5fade7f3a49e711`.
+  Completion concerns snapped navmesh endpoints, not exact gameplay arrival.
+  Source units and agent dimensions are uncalibrated; static geometry is
+  incomplete and no server/client check occurred. C0 coverage is not upgraded.
+- Next correction: integrate the original reproducible export wrapper, validate
+  the existing FFXI raw32 consumer against this exact output, package the tool
+  increment and route geometry/calibration/QA evidence to the owning lead.

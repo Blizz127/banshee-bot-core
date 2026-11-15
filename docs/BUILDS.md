@@ -11,6 +11,10 @@ the exact source commit, tools, provenance and supplied verification receipts.
 Every file has a SHA-256/size entry in the manifest. New output directories and
 archives are created without replacing an earlier candidate.
 
+After packaging, run the [archive readback](BUILD_READBACK.md) against its exact
+reported byte size. This verifies the archive and embedded files before running
+the packaged CLI startup checks in a fresh external evidence directory.
+
 ```sh
 python3 scripts/package_build.py --build 0001 \
   --output /home/blizz/.local/share/banshee-bot-core/builds \

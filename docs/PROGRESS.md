@@ -183,7 +183,7 @@ Times are America/Chicago (CST).
 - Next correction: read back build0002 (bundled helper remains 32-bit), then
   retain the first known-source FFXI export and query evidence. No server changes.
 
-## 2026-11-15 02:13 AM CST — build0002: PASS locally / publication PARTIAL
+## 2026-11-15 02:12 AM CST — build0002: PASS locally / publication PARTIAL
 
 - VERIFIED: clean release build and startup, archive readback of all 64 payloads,
   and packaged tiled routing/refusal smoke pass. Candidate source:

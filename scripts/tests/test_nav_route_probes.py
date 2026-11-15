@@ -74,14 +74,35 @@ def response(selected_probe=None, kind="collection", bits=32):
 def invocation(value=None, exit_code=None):
     value = response() if value is None else value
     if exit_code is None:
-        exit_code = 3 if value["status"] == "PROJECTION_LIMIT_EXCEEDED" else 0
+        exit_code = 3 if value["status"] in ("PROJECTION_LIMIT_EXCEEDED", "QUERY_REFUSED") else 0
     return {"exit_code": exit_code, "stdout": json.dumps(value), "stderr": "", "output_truncated": False}
 
 
+def refusal(reason="START_POLYGON_NOT_FOUND", stage="nearest_start", bits=32):
+    return {"format": "bnav-query-refusal-v1", "complete": False, "reference_bits": bits,
+            "reason": reason, "stage": stage, "node_limit": 2048, "path_limit": 256,
+            "nearest_extents": [2, 4, 2]}
+
+
+def negative_probe(outcome="start_polygon_not_found"):
+    value = probe()
+    value["expect"] = {"outcome": outcome}
+    return value
+
+
+def refusal_response(selected_probe, diagnostic=None):
+    return {"status": "QUERY_REFUSED", "diagnostic": refusal() if diagnostic is None else diagnostic,
+            "requested_start": list(selected_probe["start"]), "requested_end": list(selected_probe["end"]),
+            "game_qa": "NOT_RUN"}
+
+
 class NamedRouteProbeTests(unittest.TestCase):
-    def assert_verdict(self, selected_probe, call, kind, bits, expected, actual=None):
+    def assert_verdict(self, selected_probe, call, kind, bits, expected, actual=None, *, allow_refusals=None):
         before_probe, before_call = copy.deepcopy(selected_probe), copy.deepcopy(call)
-        result = probes.assess(selected_probe, call, kind, bits)
+        if allow_refusals is None:
+            result = probes.assess(selected_probe, call, kind, bits)
+        else:
+            result = probes.assess(selected_probe, call, kind, bits, allow_refusals=allow_refusals)
         self.assertIsInstance(result, dict)
         self.assertEqual(result.get("verdict"), expected, result)
         self.assertIsInstance(result.get("reasons"), list)
@@ -111,7 +132,7 @@ class NamedRouteProbeTests(unittest.TestCase):
         mutations = (
             lambda value: value.update(extra="unexpected"),
             lambda value: value.pop("manifest_sha256"),
-            lambda value: value.update(format="bnav-route-probes-v2"),
+            lambda value: value.update(format="bnav-route-probes-v3"),
             lambda value: value.update(target_kind="automatic"),
             lambda value: value.update(manifest_sha256="g" * 64),
             lambda value: value.update(manifest_sha256="a" * 63),
@@ -265,6 +286,162 @@ class NamedRouteProbeTests(unittest.TestCase):
         self.assert_verdict(probe(), invocation(exit_code=3), "collection", 32, "ERROR")
         selected = probe(0.5, "projection_limit_exceeded")
         self.assert_verdict(selected, invocation(response(selected), exit_code=0), "collection", 32, "ERROR")
+
+    def test_valid_native_refusal_shapes_preserve_inputs(self):
+        for bits in (32, 64):
+            for reason, stage in (("START_POLYGON_NOT_FOUND", "nearest_start"),
+                                  ("END_POLYGON_NOT_FOUND", "nearest_end"),
+                                  ("NO_COMPLETE_CORRIDOR", "find_path"),
+                                  ("QUERY_BUDGET_EXCEEDED", "find_path"),
+                                  ("QUERY_BUDGET_EXCEEDED", "straight_path")):
+                value = refusal(reason, stage, bits)
+                before = copy.deepcopy(value)
+                with self.subTest(bits=bits, reason=reason, stage=stage):
+                    self.assertEqual(probes.validate_query_refusal(value, bits), value)
+                    self.assertEqual(value, before)
+        value = refusal()
+        value["nearest_extents"] = [2.0, 4.0, 2.0]
+        self.assertEqual(probes.validate_query_refusal(value, 32), value)
+
+    def test_native_refusal_schema_is_exact_and_strict(self):
+        mutations = (
+            lambda value: value.pop("reason"),
+            lambda value: value.update(extra="unknown"),
+            lambda value: value.update(points=[[0, 0, 0], [1, 0, 0]]),
+            lambda value: value.update(format="bnav-query-refusal-v2"),
+            lambda value: value.update(complete=True),
+            lambda value: value.update(complete=0),
+            lambda value: value.update(reference_bits=64),
+            lambda value: value.update(reference_bits=32.0),
+            lambda value: value.update(reference_bits=True),
+            lambda value: value.update(reason="UNKNOWN"),
+            lambda value: value.update(reason="COMPLETE"),
+            lambda value: value.update(reason=[]),
+            lambda value: value.update(stage="find_path"),
+            lambda value: value.update(reason="END_POLYGON_NOT_FOUND", stage="nearest_start"),
+            lambda value: value.update(reason="NO_COMPLETE_CORRIDOR", stage="straight_path"),
+            lambda value: value.update(reason="QUERY_BUDGET_EXCEEDED", stage="nearest_end"),
+            lambda value: value.update(node_limit=2049),
+            lambda value: value.update(node_limit=2048.0),
+            lambda value: value.update(node_limit=True),
+            lambda value: value.update(path_limit=257),
+            lambda value: value.update(path_limit=256.0),
+            lambda value: value.update(nearest_extents=[2, 4]),
+            lambda value: value.update(nearest_extents=[2, 4, 3]),
+            lambda value: value.update(nearest_extents=[True, 4, 2]),
+            lambda value: value.update(nearest_extents=[2, float("nan"), 2]),
+            lambda value: value.update(nearest_extents=(2, 4, 2)),
+        )
+        for index, change in enumerate(mutations):
+            value = refusal()
+            change(value)
+            with self.subTest(index=index), self.assertRaises(ValueError):
+                probes.validate_query_refusal(value, 32)
+        for bits in (16, 32.0, True, None):
+            with self.subTest(expected_bits=bits), self.assertRaises(ValueError):
+                probes.validate_query_refusal(refusal(), bits)
+
+    def test_v2_allows_only_spatial_refusal_expectations(self):
+        outcomes = ("start_polygon_not_found", "end_polygon_not_found", "no_complete_corridor")
+        for kind in ("collection", "wow-selection"):
+            value = suite(kind)
+            value["format"] = "bnav-route-probes-v2"
+            self.assertEqual(probes.validate_suite(value), value)
+            for outcome in outcomes:
+                value = suite(kind)
+                value["format"] = "bnav-route-probes-v2"
+                value["probes"] = [negative_probe(outcome)]
+                before = copy.deepcopy(value)
+                with self.subTest(kind=kind, outcome=outcome):
+                    self.assertEqual(probes.validate_suite(value), value)
+                    self.assertEqual(value, before)
+                value["format"] = "bnav-route-probes-v1"
+                with self.assertRaises(probes.Invalid):
+                    probes.validate_suite(value)
+                value["probes"][0]["expect"] = {**probe()["expect"], "outcome": outcome}
+                with self.assertRaises(probes.Invalid):
+                    probes.validate_suite(value)
+        for expectation in ({"outcome": "query_budget_exceeded"},
+                            {"outcome": "query_budget_exceeded", "direct_path_blocked": False, "min_traversed_tiles": 1},
+                            {"outcome": "complete"},
+                            {"outcome": "no_complete_corridor", "direct_path_blocked": True},
+                            {"outcome": "no_complete_corridor", "min_traversed_tiles": 1}):
+            value = suite()
+            value["format"] = "bnav-route-probes-v2"
+            value["probes"][0]["expect"] = expectation
+            with self.subTest(expectation=expectation), self.assertRaises(probes.Invalid):
+                probes.validate_suite(value)
+        for limit in (None, True, -1, float("nan")):
+            value = suite()
+            value["format"] = "bnav-route-probes-v2"
+            value["probes"] = [negative_probe()]
+            value["probes"][0]["max_projection_distance"] = limit
+            with self.subTest(negative_limit=limit), self.assertRaises(probes.Invalid):
+                probes.validate_suite(value)
+
+    def test_typed_spatial_refusals_require_opt_in_and_match_exactly(self):
+        for kind in ("collection", "wow-selection"):
+            for bits in (32, 64):
+                for reason, stage in (("START_POLYGON_NOT_FOUND", "nearest_start"),
+                                      ("END_POLYGON_NOT_FOUND", "nearest_end"),
+                                      ("NO_COMPLETE_CORRIDOR", "find_path")):
+                    outcome = reason.lower()
+                    selected = negative_probe(outcome)
+                    call = invocation(refusal_response(selected, refusal(reason, stage, bits)))
+                    call["stderr"] = "An unrelated END_POLYGON_NOT_FOUND string must not determine the outcome"
+                    with self.subTest(kind=kind, bits=bits, reason=reason):
+                        self.assert_verdict(selected, call, kind, bits, "MATCH", outcome, allow_refusals=True)
+                        self.assert_verdict(probe(), call, kind, bits, "ERROR")
+                        self.assert_verdict(probe(), call, kind, bits, "ERROR", allow_refusals=False)
+                        self.assert_verdict(probe(), call, kind, bits, "MISMATCH", outcome, allow_refusals=True)
+        selected = negative_probe("end_polygon_not_found")
+        self.assert_verdict(selected, invocation(refusal_response(selected)), "collection", 32,
+                            "MISMATCH", "start_polygon_not_found", allow_refusals=True)
+
+    def test_budget_refusals_are_errors_not_connectivity_expectations(self):
+        for kind in ("collection", "wow-selection"):
+            for bits in (32, 64):
+                for stage in ("find_path", "straight_path"):
+                    diagnostic = refusal("QUERY_BUDGET_EXCEEDED", stage, bits)
+                    for selected in (probe(), negative_probe("no_complete_corridor")):
+                        with self.subTest(kind=kind, bits=bits, stage=stage, expected=selected["expect"]):
+                            result = self.assert_verdict(selected, invocation(refusal_response(selected, diagnostic)),
+                                                         kind, bits, "ERROR", allow_refusals=True)
+                            self.assertEqual(result.get("diagnostic"), diagnostic)
+                            self.assertTrue(any("budget" in reason for reason in result["reasons"]))
+                            self.assertNotIn("actual_outcome", result)
+
+    def test_typed_refusal_transport_and_request_binding_fail_closed(self):
+        selected = negative_probe()
+        for code in (0, 2, False):
+            self.assert_verdict(selected, invocation(refusal_response(selected), exit_code=code),
+                                "collection", 32, "ERROR", allow_refusals=True)
+        self.assert_verdict(selected, invocation(refusal_response(selected)),
+                            "collection", 32, "ERROR", allow_refusals=1)
+        for change in (lambda value: value.pop("diagnostic"),
+                       lambda value: value["diagnostic"].update(complete=True),
+                       lambda value: value["diagnostic"].update(reference_bits=64),
+                       lambda value: value.update(requested_start=[False, 1, 0]),
+                       lambda value: value.update(requested_start=[0, 1]),
+                       lambda value: value.update(requested_end=[99, 1, 0]),
+                       lambda value: value.update(game_qa="VERIFIED")):
+            value = refusal_response(selected)
+            change(value)
+            self.assert_verdict(selected, invocation(value), "collection", 32, "ERROR", allow_refusals=True)
+        for change in (lambda call: call.update(timed_out=True),
+                       lambda call: call.update(output_truncated=True),
+                       lambda call: call.update(exit_code=2, stdout="", stderr=json.dumps(refusal()))):
+            call = invocation(refusal_response(selected))
+            change(call)
+            self.assert_verdict(selected, call, "collection", 32, "ERROR", allow_refusals=True)
+
+    def test_valid_routes_mismatch_negative_expectations(self):
+        for kind in ("collection", "wow-selection"):
+            for limit, actual in ((2.0, "complete"), (0.5, "projection_limit_exceeded")):
+                selected = negative_probe("no_complete_corridor")
+                selected["max_projection_distance"] = limit
+                self.assert_verdict(selected, invocation(response(selected, kind, 32)), kind, 32,
+                                    "MISMATCH", actual, allow_refusals=True)
 
 
 if __name__ == "__main__":

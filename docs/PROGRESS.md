@@ -117,3 +117,19 @@ Times are America/Chicago (CST).
 - Next correction: consume native integration/QA and geometry artifacts when
   they arrive, then advance in the specified order. Do not wait in a polling
   turn for publisher/lead acknowledgement.
+
+## 2026-11-15 02:03 AM CST — C1 pure planner expansion: PARTIAL
+
+- VERIFIED: original ownership/selection implementation passes five focused
+  tests; original order preparation/revalidation passes four focused tests for
+  claim changes, stale binding/target, role metadata, main-tank assist and
+  unavailable owned members. No runtime action is performed by these APIs.
+- Evidence: `~/.local/share/banshee-bot-core/evidence/c1-authority-selection-20261115/result.json`
+  and `c1-order-planning-20261115/result.json`. Existing pinned-source differential
+  workflow is being extended before declaring local equivalence for this seam.
+- OBSERVED: one handoff-board refresh found no C1 adoption/P0 or build0001
+  publication receipt. FFXI `a13dabcd` is a separate single-tile MSET adapter;
+  preserve that format while developing tiled tools. See `HANDOFF_STATUS_20261115.md`.
+- Next correction: expanded differential check, tiled bake/query and immutable
+  collection receipts. Actual FFXI DAT extraction retains the prior REA startup
+  failure boundary until the precise recovery requirement is resolved.

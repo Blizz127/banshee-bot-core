@@ -1,7 +1,8 @@
 //! In-process bot primitives. This crate has no network, database or game runtime.
 //! Adapters own authentication, authoritative snapshots, queues and all mutations.
-//! C1 extracts cancellation identities and the existing FFXI command vocabulary;
-//! it does not replace the native authority, order planner or executor.
+//! C1 extracts cancellation identities, FFXI grammar and pure ownership/order
+//! contracts. Native adapters still authenticate facts, enforce game-specific
+//! readiness and perform every mutation; no server integration is implicit.
 
 #![forbid(unsafe_code)]
 

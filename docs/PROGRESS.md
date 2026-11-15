@@ -589,3 +589,20 @@ Times are America/Chicago (CST).
   `c726b340f25cecbb00dcf9309c4102dce04d14fd2f8e5fd6d04d9db82c3e6ef8`.
 - Next correction: include the automated checker in the next private candidate;
   existing gameplay gates, native jobs, source/adoption intake and holds remain.
+
+## 2026-11-15 03:19 AM CST — private build0008: PASS, native gates unchanged
+
+- VERIFIED: source 71fdbc3e packages as **0.1.0-build0008**, 1011108 bytes,
+  SHA256 `5c800fe7bab050053cc1d96e35f9e90795fa31d41aa0a63b40d3eb21c2c8ac0b`.
+  All 103 payloads and 13 packaged invocations pass, including four automatic
+  Python startup checks. Completed source proofs match the archive's 18 core,
+  three projection and two checker/test files. See `BUILD_0008.md`.
+- Supersedes proposed0007 for the existing private publisher only; retains
+  every rollback candidate. Existing FFXI source/adoption intake stays canonical.
+  No native job, producer pin, terrain mask or game state changed. No replay of
+  platform checks and no claim of private publication or actual-client QA.
+- Remaining C1 boundary is the owning lead's actual adoption/current native P0,
+  then Game QA; C2 is not opened. Walking-map calibration/coverage and other
+  games' geometry intakes retain their separate owning-lane dependencies. Do
+  not create a map prerequisite for C1, poll running jobs or repeat closed work.
+  The no-restart and all player/progress/access/schema/device holds persist.

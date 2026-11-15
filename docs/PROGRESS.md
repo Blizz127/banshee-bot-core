@@ -1283,3 +1283,18 @@ Times are America/Chicago (CST).
 - Next correction: package/read back build0020 and route one superseding
   TOOL/SOURCE candidate to the existing publisher. Native adoption, full C1/P0,
   Game QA and publication remain owning results. All holds persist.
+
+## 2026-11-15 08:47 CST — private build0020: PASS, publication unconfirmed
+
+- VERIFIED: source `c8d44b9085412ad01c174ab25e533246556371da` packages as **0.1.0-build0020**,
+  1199906 bytes, SHA256
+  `e69e6821415a1a4652a23e35bc695122c7853f2f4557869c744d8acadc7340b1`.
+  Readback passes 151 payloads /14 startup invocations. All 137 source files/log/
+  Rust outputs join the fresh producer; all 30 focused core input hashes match.
+- Eight new shared-brain checks pass. All four CLI binary hashes and navigation,
+  telemetry and packaging-tool source retain build0019 identities. Existing C1
+  primitive implementations are unchanged; only brain module export is added.
+  No native adoption, old comparison replay, model service, game action or QA.
+- Next correction: route one superseding TOOL/SOURCE intake to the existing
+  publisher. Current full C1/P0 and Game QA remain owning-lane results; the new
+  scoped Pull pass is not full acceptance. All holds persist; NEVER restart FFXI.

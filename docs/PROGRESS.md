@@ -365,3 +365,18 @@ Times are America/Chicago (CST).
 - Next correction: private build0004 and publisher/owning-lead evidence intake;
   continue explicit zone selection and verified driver reuse offline. Native
   server P0, installation, full-zone calibration and Game QA remain unrun.
+
+## 2026-11-15 02:41 AM CST — private build0004: PASS, QA pending
+
+- VERIFIED: source `fe57f224` packages as **0.1.0-build0004**, 975402 bytes,
+  SHA-256 `ec77350799557ccc7f2ad083a3c2651dbbbab2c3e1f642dc29443a9e5f12bf21`.
+  Readback validates90 payloads and nine startup checks. Twenty packaged
+  navigation checks and three real-tile import/readback/query commands pass.
+  Exact receipts and limits are in `BUILD_0004.md`.
+- VERIFIED offline: corrected FFXI wrapper/native-library consumption succeeds
+  under the retained producer pin. No C1 native P0, Game QA or private
+  publication receipt exists. Features stay OFF and the no-restart hold is
+  embedded. Candidate supersedes0003 for publisher intake, retaining rollback.
+- Next correction: finish explicit-zone export and verified decoder/harness
+  reuse, then consume the bounded zone101 crop. These common-tool checks are
+  independent of owning-lead native C1 adoption and publisher work.

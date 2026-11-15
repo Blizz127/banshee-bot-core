@@ -5,6 +5,9 @@ original Banshee entry points around the owning FFXI project's existing reader
 and bounded exporter. They do not implement a DAT decoder. The first supported
 selection is Southern San d'Oria, zone 230, with an explicit source-space AABB.
 They build and run offline, without starting a client or server.
+Python 3.11+, the Rust toolchain and already cached pinned Cargo dependencies
+are required. Future invocations record compiler/Cargo versions, wrapper hash
+and CST build time; the retained initial export predates those metadata fields.
 
 ## Source and data boundaries
 

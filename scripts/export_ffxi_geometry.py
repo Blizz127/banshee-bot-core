@@ -6,6 +6,7 @@ Sources, asset snapshots, compiler output and geometry stay in a fresh private
 directory. No server/client processes, dependency downloads or source edits.
 """
 import argparse
+from datetime import datetime
 import hashlib
 import io
 import json
@@ -16,6 +17,7 @@ import subprocess
 import sys
 import tarfile
 import tomllib
+from zoneinfo import ZoneInfo
 
 SOURCE_REVISION = "a13dabcd550e0a777be5077804ba3d51683cfa19"
 UPSTREAM_REVISION = "a8c75ab4e981d6056cd2860d8f8e12eacfff7671"
@@ -176,6 +178,10 @@ def main():
     binary = output / "cargo-target/debug/bnav-ffxi-export-driver"
     run_logged([binary, "--help"], output, "startup")
     write_json(output / "build-manifest.json", {"status": "VERIFIED", "scope": "offline driver build and startup only",
+        "created_cst": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
+        "rustc": subprocess.check_output(["rustc", "--version"], text=True).strip(),
+        "cargo": subprocess.check_output(["cargo", "--version"], text=True).strip(),
+        "wrapper_sha256": sha(Path(__file__).read_bytes()),
         "binary": str(binary), "binary_sha256": sha(binary.read_bytes()), "source_revision": SOURCE_REVISION,
         "original_driver_sha256": sha(driver_bytes), "locked_resolution_sha256": lock_before,
         "jobs": args.jobs, "offline": True, "external_source_edited": False,

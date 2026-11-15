@@ -60,8 +60,10 @@ requests have already been dispatched; do not rebroadcast. New later-phase
 behavior must not jump C1 acceptance. C2+ remains gated.
 
 Private publication stays with `claude-banshee-realm-client`, task `3f9392ca5d00`.
-Route one actionable build0016 intake through the coordinator, superseding only
-build0015 TOOL/SOURCE; do not wait for acknowledgement or report it as published.
+The one actionable build0016 intake is queued through the coordinator, superseding
+only build0015 TOOL/SOURCE. Its response is retained at
+`evidence/build0016-readback/coordinator-response.json`; do not resend it or wait
+for acknowledgement. Publication is still unconfirmed.
 A queued status is not a publisher receipt. No native queue status-only messages.
 
 **NEVER restart FFXI**, including at zero players. No package grants install,

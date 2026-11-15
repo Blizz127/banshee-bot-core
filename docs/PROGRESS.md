@@ -1101,3 +1101,8 @@ Times are America/Chicago (CST).
   Pull failure; no shared-core correction is identified. Publication needs the
   existing publisher's receipt. Neither dependency authorizes a restart or gates
   source readiness on maps. C2+ stays gated; all features remain OFF.
+- The one build0016 publisher intake is queued through the existing coordinator
+  task; `evidence/build0016-readback/coordinator-response.json` records the task
+  response, not publication. Final link/identity/source-status closeout passes;
+  `evidence/build0016-readback/closeout.json` retains that narrower check. No
+  other lane was polled or contacted through a native status queue.

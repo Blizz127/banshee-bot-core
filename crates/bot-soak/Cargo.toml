@@ -1,0 +1,8 @@
+[package]
+name = "bot-soak"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Offline validation of per-tick bot soak telemetry"
+
+[dependencies]

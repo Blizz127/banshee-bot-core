@@ -1,0 +1,4 @@
+source,tick,elapsed_ms,zone_id,bots,tick_ms,cpu_percent,rss_bytes,stuck_bots,deaths_total,bot_currency_units,human_target_conflicts_total
+synthetic,0,0,100,20,0,,1048576,0,0,1000,0
+synthetic,1,1000,100,20,10,125,2097152,0,0,1000,0
+synthetic,2,2000,100,20,12,130,2097152,0,0,1000,0

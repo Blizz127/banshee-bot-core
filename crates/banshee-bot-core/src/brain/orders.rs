@@ -4,6 +4,7 @@
 
 use super::authority::{self, Denial, Mutation, MutationTicket, RequesterSnapshot};
 use super::command;
+use super::formation::{self, Setting, Shape};
 use super::selection::{self, Candidate, SelectionError, MAX_CANDIDATES};
 pub use crate::roles::Role;
 
@@ -15,6 +16,7 @@ pub enum Order {
     Attack,
     Pull,
     Assist,
+    Geometry(Setting),
     Role { name: String, role: Role },
 }
 
@@ -23,6 +25,7 @@ pub enum ParseError {
     Grammar(command::ParseError),
     MissingArgument,
     InvalidRole,
+    InvalidGeometry,
 }
 
 /// Preserve first-slice ownership of its successes AND argument errors.
@@ -56,6 +59,32 @@ pub fn parse(input: &[u8]) -> Result<Option<Order>, ParseError> {
         } else {
             Err(ParseError::Grammar(Grammar::TooManyArguments))
         };
+    }
+    if matches!(verb.as_slice(), b"formation" | b"spacing" | b"distance") {
+        if words.len() < 3 {
+            return Err(ParseError::MissingArgument);
+        }
+        if words.len() > 3 {
+            return Err(ParseError::Grammar(Grammar::TooManyArguments));
+        }
+        let value = words[2];
+        let setting = match verb.as_slice() {
+            b"formation" => Setting::Shape(match value.to_ascii_lowercase().as_slice() {
+                b"circle" => Shape::Circle,
+                b"arrow" => Shape::Arrow,
+                b"line" => Shape::Line,
+                b"none" => Shape::None,
+                _ => return Err(ParseError::InvalidGeometry),
+            }),
+            b"spacing" => {
+                Setting::Spacing(formation::decimal(value).ok_or(ParseError::InvalidGeometry)?)
+            }
+            _ => Setting::Distance(formation::decimal(value).ok_or(ParseError::InvalidGeometry)?),
+        };
+        formation::Config::default()
+            .with(setting)
+            .ok_or(ParseError::InvalidGeometry)?;
+        return Ok(Some(Order::Geometry(setting)));
     }
     if verb != b"role" {
         return Err(ParseError::Grammar(Grammar::UnknownSubcommand));
@@ -150,6 +179,7 @@ pub enum Directive {
     Rest,
     Engage { mob: u32 },
     SetRole(Role),
+    Geometry(Setting),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -268,6 +298,7 @@ fn group_decision(
         Order::Stay => Directive::Stay,
         Order::Rest => Directive::Rest,
         Order::Role { role, .. } => Directive::SetRole(*role),
+        Order::Geometry(setting) => Directive::Geometry(*setting),
         Order::Attack | Order::Pull => Directive::Engage {
             mob: target_ready(scene.owner_target, owner.zone)?,
         },
@@ -306,7 +337,10 @@ fn candidate_ready(
     if candidate.control == Control::Closed {
         return Err(Refusal::ControlClosed);
     }
-    if matches!(decision.directive, Directive::SetRole(_)) {
+    if matches!(
+        decision.directive,
+        Directive::SetRole(_) | Directive::Geometry(_)
+    ) {
         return Ok(());
     }
     first_failure(&[
@@ -395,6 +429,55 @@ pub fn revalidate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn geometry_grammar_preserves_bounds_and_argument_error_precedence() {
+        for (text, setting) in [
+            (" /FB  Formation CiRcLe ", Setting::Shape(Shape::Circle)),
+            ("/fb formation arrow", Setting::Shape(Shape::Arrow)),
+            ("/fb formation line", Setting::Shape(Shape::Line)),
+            ("/fb formation none", Setting::Shape(Shape::None)),
+            ("/fb spacing 02.5", Setting::Spacing(25)),
+            ("/fb spacing 6", Setting::Spacing(60)),
+            ("/fb distance 2.0", Setting::Distance(20)),
+            ("/fb distance 08.0", Setting::Distance(80)),
+        ] {
+            assert_eq!(parse(text.as_bytes()), Ok(Some(Order::Geometry(setting))));
+        }
+        for text in [
+            "/fb formation square",
+            "/fb spacing 2.4",
+            "/fb spacing 6.1",
+            "/fb distance 1.9",
+            "/fb distance 8.1",
+            "/fb spacing 2.50",
+            "/fb spacing .5",
+            "/fb distance 002.0",
+            "/fb distance +3",
+        ] {
+            assert_eq!(
+                parse(text.as_bytes()),
+                Err(ParseError::InvalidGeometry),
+                "{text}"
+            );
+        }
+        for verb in ["formation", "spacing", "distance"] {
+            assert_eq!(
+                parse(format!("/fb {verb} ").as_bytes()),
+                Err(ParseError::MissingArgument)
+            );
+            assert_eq!(
+                parse(format!("/fb {verb} invalid all").as_bytes()),
+                Err(ParseError::Grammar(command::ParseError::TooManyArguments))
+            );
+        }
+        assert_eq!(
+            parse(b"/fb spacing 3\t"),
+            Err(ParseError::Grammar(command::ParseError::InvalidText))
+        );
+        assert_eq!(parse(b"/fbar spacing 3"), Ok(None));
+    }
+
     #[test]
     fn compatibility_precedence_and_scope() {
         for unrelated in [

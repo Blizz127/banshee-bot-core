@@ -1,4 +1,9 @@
-use banshee_bot_core::brain::{authority::*, orders::*, selection::Candidate};
+use banshee_bot_core::brain::{
+    authority::*,
+    formation::{Setting, Shape},
+    orders::*,
+    selection::Candidate,
+};
 
 fn fixture() -> (
     RequesterSnapshot,
@@ -173,5 +178,70 @@ fn following_other_zone_is_only_a_plan_and_unavailable_owned_bots_remain_visible
             target: 8,
             reason: Refusal::Authority(Denial::TargetUnavailable)
         }])
+    );
+}
+
+#[test]
+fn geometry_settings_select_all_owned_bots_and_keep_the_setting_readiness_exception() {
+    let (owner, session, mut bot, mut scene) = fixture();
+    bot.session.as_mut().unwrap().alive = false;
+    bot.session.as_mut().unwrap().zone = 101;
+    scene.owner_target = None;
+    scene.main_tank = MainTank::Ambiguous;
+    let mut second = bot;
+    second.identity.name = "Jindrak";
+    second.identity.target.actor_id = 9;
+    let setting = Setting::Shape(Shape::Line);
+    let order = Order::Geometry(setting);
+    let outcomes = prepare(&owner, Some(session), &order, &[bot, second], &scene).unwrap();
+    assert_eq!(outcomes.len(), 2);
+    for (outcome, candidate) in outcomes.into_iter().zip([bot, second]) {
+        let TargetOutcome::Prepared(plan) = outcome else {
+            panic!("expected geometry plan")
+        };
+        assert_eq!(plan.directive(), Directive::Geometry(setting));
+        assert_eq!(
+            revalidate(&plan, &owner, Some(session), &order, &candidate, &scene),
+            Ok(Directive::Geometry(setting))
+        );
+    }
+}
+
+#[test]
+fn geometry_revalidates_control_session_binding_and_the_exact_setting() {
+    let (owner, session, mut bot, scene) = fixture();
+    let order = Order::Geometry(Setting::Spacing(30));
+    let plan = one_plan(prepare(&owner, Some(session), &order, &[bot], &scene).unwrap());
+    assert_eq!(
+        revalidate(
+            &plan,
+            &owner,
+            Some(session),
+            &Order::Geometry(Setting::Distance(30)),
+            &bot,
+            &scene
+        ),
+        Err(Refusal::StaleOrder)
+    );
+    bot.session.as_mut().unwrap().alive = false;
+    bot.control = Control::Closed;
+    assert_eq!(
+        revalidate(&plan, &owner, Some(session), &order, &bot, &scene),
+        Err(Refusal::ControlClosed)
+    );
+    bot.session.as_mut().unwrap().event_active = true;
+    assert_eq!(
+        revalidate(&plan, &owner, Some(session), &order, &bot, &scene),
+        Err(Refusal::EventActive)
+    );
+    bot.session.as_mut().unwrap().transition_pending = true;
+    assert_eq!(
+        revalidate(&plan, &owner, Some(session), &order, &bot, &scene),
+        Err(Refusal::TransitionPending)
+    );
+    bot.identity.target.binding.as_mut().unwrap().revision += 1;
+    assert_eq!(
+        revalidate(&plan, &owner, Some(session), &order, &bot, &scene),
+        Err(Refusal::Authority(Denial::StaleTicket))
     );
 }

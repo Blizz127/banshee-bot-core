@@ -1,9 +1,11 @@
 # bnav-extract groundwork — 2026-11-15 (CST)
 
-This first increment is a read-only input preflight, **not yet a navmesh builder**.
-It establishes explicit WoW format profiles and a canonical triangle input for
-the future Recast backend. It has no external Rust dependencies and does not
-contact a server or read external materials referenced by OBJ files.
+This increment provides input preflight and an offline **single-tile
+Recast/Detour builder** for already extracted, triangulated OBJ geometry. It
+establishes explicit WoW format profiles and a canonical triangle input. It has
+no external Rust dependencies. The optional native backend links explicitly
+selected external Recast/Detour sources; it does not contact a server or read
+external materials referenced by OBJ files.
 
 ```sh
 cargo run -p bnav-extract -- --help
@@ -11,10 +13,12 @@ cargo run -p bnav-extract -- inspect-mmap /path/to/000.mmap
 cargo run -p bnav-extract -- inspect-mmtile cmangos-v8 /path/to/tile.mmtile
 cargo run -p bnav-extract -- inspect-mmtile acore-v20 /path/to/tile.mmtile
 cargo run -p bnav-extract -- check-obj /path/to/triangulated.obj
+cargo run -p bnav-extract -- inspect-detour 32 /path/to/generated.navtile
 ```
 
-Inputs are capped at 64 MiB by the CLI. Files are opened read-only; all output is
-on stdout/stderr. Errors return status 2. Do not put game inputs in this repo.
+Inputs are capped at 64 MiB by the CLI. Inspection is read-only. `build-obj`
+creates a new file and refuses to overwrite any existing output. Errors return
+status 2. Do not put game inputs in this repo.
 
 ## Supported evidence
 
@@ -23,6 +27,7 @@ on stdout/stderr. Errors return status 2. Do not put game inputs in this repo.
 | `.mmap` | Exact 28-byte little-endian `dtNavMeshParams`, finite origin and positive dimensions/counts | Producer identity: this format has no magic/version; tile coverage or path validity |
 | `cmangos-v8` `.mmtile` | 20-byte v8 wrapper, Detour v7 header, 32-bit reference ABI, declared payload and section lengths, finite ordered bounds/counts | Polygon indices, adjacency, off-mesh links, connectivity, walkability or loaded-server compatibility |
 | `acore-v20` `.mmtile` | 56-byte v20 wrapper, Detour v7 header, 64-bit reference ABI, declared payload and section lengths, finite recorded config/bounds/counts | Same limitations; matching the intended Recast generation settings is also not checked |
+| Raw Detour tile | Detour v7 header and section lengths for explicitly selected 32/64-bit references | Polygon adjacency, walkability or loaded-server compatibility |
 | Triangulated OBJ | Finite vertices, in-range face indices, nondegenerate triangles, bounds | Units, handedness, up-axis, winding correctness, collision completeness or walkability |
 
 OBJ accepts `v x y z` and triangular `f` records, including negative indices and
@@ -38,14 +43,66 @@ its file length looks familiar. Other architectures, endian layouts, modified
 Detour structures and reference-width combinations need separate profiles.
 No source assets or extracted meshes are bundled with this increment.
 
-## Next implementation seam
+## Build and query extracted geometry
 
-`TriangleMesh` is the input boundary: a per-game reader returns validated
-vertices/triangles in a declared common coordinate system. An original native
-bridge can pass that mesh through Recast rasterization, walkability filters,
-compact heightfield, erosion, region/contour/polygon/detail construction and
-`dtCreateNavMeshData`. The backend must then reload its result through Detour
-and query across obstacles before claiming a usable map.
+Compile the native dependency and the original Banshee bridge in a new external
+output directory. The script defaults to two low-priority compiler jobs, hashes
+all dependency sources/headers and the bridge, checks that those sources remain
+unchanged through compilation, and retains `manifest.json` plus the external
+dependency's `RECAST-LICENSE.txt` alongside the binary.
+
+```sh
+python3 scripts/build_bnav_backend.py \
+  --recast-root /home/blizz/dev/cmangos-classic/mangos-classic/dep/recastnavigation \
+  --output-dir /home/blizz/.local/share/banshee-bot-core/builds/recast-example \
+  --jobs 2
+
+cargo run -p bnav-extract -- build-obj \
+  /home/blizz/.local/share/banshee-bot-core/builds/recast-example/bnav-recast \
+  /path/to/triangulated.obj /path/to/new-output.navtile
+
+/home/blizz/.local/share/banshee-bot-core/builds/recast-example/bnav-recast \
+  query /path/to/new-output.navtile 2 0 10 18 0 10
+```
+
+`build-obj` requires Y-up geometry with upward-facing floor triangles; it performs
+no coordinate or unit conversion. Agent dimensions and voxel sizes are in the
+same world units as the geometry. The six optional positional settings are
+`CELL_SIZE CELL_HEIGHT AGENT_HEIGHT AGENT_RADIUS AGENT_CLIMB MAX_SLOPE_DEGREES`;
+defaults are `0.3 0.2 2.0 0.6 0.9 45`. These are synthetic demo settings, **not
+per-game calibrated values**. All six must be supplied together when changing
+them. Height must cover at least three vertical voxels. Finite positive cell
+sizes/height and nonnegative radius/climb are required; slope is below 90 degrees.
+
+The backend rasterizes triangles, filters low clearance/ledges, builds and
+erodes a compact heightfield, constructs regions/contours/polygons/detail meshes,
+and serializes using `dtCreateNavMeshData`. It reloads the result through Detour
+before returning it. Rust validates the returned header/section sizes and strips
+the private IPC envelope before saving. The saved `.navtile` is actual raw
+Detour v7 data, with **no custom navmesh container and no WoW mmap wrapper**.
+The matching dependency reference ABI (32 or 64 bits) must accompany the tile.
+
+Only query tiles produced by this helper with the matching backend ABI. The
+query command is a local diagnostic, not a loader for arbitrary untrusted tiles.
+It projects endpoints to nearby polygons using extents `[2,4,2]`, rejects an
+incomplete path or exhausted query budget, and reports the resulting straight
+path plus whether the direct ray was obstructed. A success describes the
+**projected endpoints**; it does not prove reachability at the exact input height.
+
+Limits are deliberate: at most one million vertices and triangles, dimensions
+below 4,096 cells per horizontal axis and four million horizontal cells, 8,191
+vertical cells, fewer than 65,535 polygon vertices, and 64 MiB serialized output.
+Smaller disconnected regions may be removed by the fixed region thresholds
+(minimum area 64 cells, merge area 400). Large maps need tiling; off-mesh
+connections, area costs, doors, water rules and cross-tile stitching are pending.
+Native memory depends on vertical geometry complexity as well as grid size.
+
+## Geometry adapter seam
+
+`TriangleMesh` is the input boundary: a per-game reader must return validated
+vertices/triangles in a declared common coordinate system before entering this
+pipeline. The synthetic floor/obstacle tests establish this backend seam, not
+the correctness or completeness of any game's geometry extractor.
 
 Recast/Detour sources already present locally, available for a standalone build
 without editing their owning repositories:
@@ -58,10 +115,10 @@ without editing their owning repositories:
 
 Those sources are third-party zlib-licensed dependencies, not original Banshee
 code. They are not vendored into this repository. Their parent CMake files are
-integrated into the game builds; a Banshee backend should use a separate output
-directory, an explicit dependency revision and its own narrow build recipe.
+integrated into the game builds; the standalone Banshee script uses a separate
+output directory and source manifest without changing those projects.
 
-FFXI DAT and FFXIV sqpack readers and geometry-to-Recast generation are pending.
+FFXI DAT and FFXIV sqpack readers and real game geometry validation are pending.
 No unknown geometry format was interpreted in this increment. Unknown format
 investigation must use REA under the governing instructions and retain evidence
 under `~/.local/share/banshee-bot-core/evidence/`. FF14 client files are still not
@@ -97,6 +154,21 @@ version deployed on any server.
   synthetic square using upstream `dtCreateNavMeshData`; it contains no game
   data and is not a geometry-to-Recast builder. Generated fixtures stay outside
   git. It checks the chosen profile's actual `sizeof(dtPolyRef)` before writing.
+- **VERIFIED (2026-11-15, 01:14 CST):** the native backend built against the
+  cMaNGOS dependency and passed synthetic floor bake/reload/direct path, wall
+  avoidance with a complete five-point detour, and disconnected-floor rejection.
+  Oversized grids, zero cell size, non-finite height, negative radius, wrong
+  reference ABI and output overwrite attempts were rejected. The overwrite
+  check also verified the original tile's SHA256 remained unchanged. The focused
+  smoke is reproducible with `crates/bnav-extract/tests/smoke_backend.py`.
+  Retained evidence:
+  `~/.local/share/banshee-bot-core/evidence/nav-backend-20261115/smoke-final/result.json`
+  and `commands.json`. Native helper SHA256:
+  `d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c`.
+  Build manifest and third-party licence are in
+  `~/.local/share/banshee-bot-core/evidence/nav-backend-20261115/build-cmangos-final/`.
+  Only this 32-bit-reference backend was exercised through the full Recast
+  pipeline; the earlier fixture compatibility check covered both wrapper ABIs.
 - **Not run:** real game geometry extraction, a live-world map query, Game QA,
-  stairs/obstacles/zone transitions or deployment. Existing live WoW coverage
+  game stairs/obstacles/zone transitions or deployment. Existing live WoW coverage
   reports are useful readiness evidence, but were not a local map test here.

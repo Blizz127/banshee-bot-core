@@ -169,7 +169,39 @@ pub fn inspect_mmtile(bytes: &[u8], profile: Profile) -> Result<TileInspection> 
             scalar(bytes, offset)?;
         }
     }
-    let data = &bytes[wrapper_len..];
+    let tile = inspect_detour(&bytes[wrapper_len..], profile.reference_bits())?;
+    Ok(TileInspection {
+        profile,
+        uses_liquids: liquid_flag == 1,
+        payload_bytes: tile.payload_bytes,
+        coordinates: tile.coordinates,
+        polygons: tile.polygons,
+        vertices: tile.vertices,
+        bounds_min: tile.bounds_min,
+        bounds_max: tile.bounds_max,
+    })
+}
+
+#[derive(Debug, PartialEq)]
+pub struct DetourInspection {
+    pub reference_bits: u32,
+    pub payload_bytes: usize,
+    pub coordinates: [i32; 3],
+    pub polygons: u32,
+    pub vertices: u32,
+    pub bounds_min: [f32; 3],
+    pub bounds_max: [f32; 3],
+}
+
+/// Inspect raw dtCreateNavMeshData output with an explicit reference ABI.
+/// Checks header and section lengths only, not polygon adjacency or path validity.
+pub fn inspect_detour(data: &[u8], reference_bits: u32) -> Result<DetourInspection> {
+    require(
+        reference_bits == 32 || reference_bits == 64,
+        "reference width must be 32 or 64",
+    )?;
+    require(data.len() >= 100, "truncated Detour tile header")?;
+    let payload_bytes = data.len();
     require(
         word(data, 0)? == 0x444e4156,
         "invalid little-endian Detour DNAV magic",
@@ -212,11 +244,7 @@ pub fn inspect_mmtile(bytes: &[u8], profile: Profile) -> Result<TileInspection> 
     }
     // Native sections use dtAlign4; all these element sizes are already 4-aligned.
     // dtLink is 12 bytes with 32-bit references and 16 bytes with 64-bit references.
-    let link_size = if profile.reference_bits() == 32 {
-        12
-    } else {
-        16
-    };
+    let link_size = if reference_bits == 32 { 12 } else { 16 };
     let sections = [
         (vertices, 12u64),
         (polygons, 32),
@@ -236,9 +264,8 @@ pub fn inspect_mmtile(bytes: &[u8], profile: Profile) -> Result<TileInspection> 
         expected == payload_bytes as u64,
         "Detour section lengths do not match selected ABI and payload size",
     )?;
-    Ok(TileInspection {
-        profile,
-        uses_liquids: liquid_flag == 1,
+    Ok(DetourInspection {
+        reference_bits,
         payload_bytes,
         coordinates: [
             word(data, 8)? as i32,

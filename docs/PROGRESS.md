@@ -12,4 +12,41 @@ Times are America/Chicago (CST).
 - Features ship off until verified; finished features then follow Blizz's on-by-default rule, except real-player servers (CrazyAsian) stay off by default.
 - Next: scaffold the Rust workspace (`banshee-bot-core`, `bnav-extract`, `bot-soak`), locate FFXI `/fb` (read only), start C1, and post the C0 table as scores arrive.
 
-No milestone verdict yet.
+## 2026-11-15 01:07 AM CST — discovery milestone: PARTIAL
+
+- VERIFIED: governing spec SHA-256 matches the supplied hash; repository initially
+  contains instructions/docs only and no remote. Rust 1.98.1 is available.
+- OBSERVED: `~/dev/ffxi-platform` is behind the `/fb` implementation. A readable
+  candidate is `ffxi-platform-tank-add-rescue-composed-20261115`, commit
+  `36b90715b29728ecbccd2fee95493bbc7c14db29`. This is not certified as deployed.
+- OBSERVED: `/fb` Clock is a cancellation epoch, with fencing and binding revision
+  checks, not a scheduling timer. Order grammar and role vocabulary are pure;
+  authority, selection, order planning and native execution stay with FFXI.
+- Next correction: differential-check the original shared implementation against
+  that pin and route the exact seam to the FFXI owner for baseline confirmation,
+  adapter integration and native P0/client QA. C1 remains incomplete until then.
+- Parallel isolated worktrees: C0 score audit, navmesh input validation, soak
+  telemetry reporting. No game repo/config/runtime changes. Host load exceeded
+  220; use low-priority two-job focused builds.
+
+## 2026-11-15 01:09 AM CST — C0 consolidation: PARTIAL
+
+- OBSERVED: six corrected 0/1/2 lead scorecards consolidated with evidence in
+  `BOT-READINESS.md`; unreported lanes remain pending, not scored by inference.
+- Missing-piece intakes are concrete for SWTOR maps, DCUO's four pieces and
+  Earth & Beyond behavior/pathing. Preserve SWTOR's companion hold, DCUO's
+  runtime holds and E&B's pending free-flight format decision.
+- Next correction: route these through the coordinator, consume later scores,
+  and replace partial pathing evidence with per-zone bakes and Game QA results.
+
+## 2026-11-15 01:09 AM CST — C1 first library build: PARTIAL
+
+- VERIFIED: original dependency-free Rust library builds; four focused local
+  tests pass (grammar boundaries, stale/fenced work, rebind reconciliation,
+  nonmutating overflow preflight and terminal exhaustion). `cargo fmt` passes.
+- Shared surfaces: cancellation Clock; exact legacy role and command/order
+  vocabulary. New flags all default off. Navigation query trait added; later
+  planner/economy/chat/persona modules explicitly reserved, not implemented.
+- No native server adapter, actual-client check or P0 gate has run. Next:
+  pinned-source differential harness, concrete FFXI integration intake, tool
+  integration and private QA-candidate packaging.

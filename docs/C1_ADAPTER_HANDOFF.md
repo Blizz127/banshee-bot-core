@@ -1,0 +1,63 @@
+# C1 FFXI adapter intake — 2026-11-15
+
+Status: **PARTIAL, not deployed or Game QA verified**. This is an actionable
+source integration proposal for the existing FFXI lead, routed through Devbox
+task `dcc9a63a40ab`. It does not authorize a restart or alter any live gate.
+
+## Exact extraction boundary
+
+| Existing `xi-map/src/fb` surface | Shared surface | Adapter responsibility |
+| --- | --- | --- |
+| `control::{Clock,Token,Operation,Phase,Refusal,Snapshot}` | `banshee_bot_core::sched::control` | Retain one clock for the whole registered bot/map lifetime; supply verified binding revisions, cancel queues, verify actual operation completion. |
+| `command::{parse,Command,Target,ParseError,MAX_COMMAND_BYTES,MAX_NAME_BYTES}` | `banshee_bot_core::brain::command` | Re-export types to preserve callers; consume errors as private system feedback. |
+| `orders::{parse,Order,ParseError,Role}` | `banshee_bot_core::brain::orders` (`Role` also in `roles`) | Re-export only these pure grammar types/functions; retain native help text, planning, preparation/revalidation and directives. |
+
+The first source candidate is commit
+`36b90715b29728ecbccd2fee95493bbc7c14db29` from
+`~/dev/ffxi-platform-tank-add-rescue-composed-20261115`. The full hash manifest
+and observed contracts are in [the audit](C1_FFXI_SOURCE_AUDIT.md). This checkout
+was selected for readable `/fb` source, not because it was verified as the live
+or current integrator baseline. The owning lead must reconcile its actual
+baseline before accepting the seam; changed files require a fresh comparison.
+
+## No-behavior-change obligations
+
+1. Preserve existing `/fb` feature flags and exact off path. Shared
+   `FeatureFlags::default()` enables nothing and does not override server policy.
+2. Keep native authority, owner binding, PartyBook, session generation and target
+   selection checks. A parsed name or cancellation token is not permission.
+3. Preserve two checks of controlled work (admission and execution), and retain
+   login generation separately from cancellation epochs. Never reconstruct the
+   clock on logout, toggle or rebind. Disable/adoption must preserve or invalidate
+   pending native work through the existing single writer.
+4. Role changes preflight the entire group before advancing any clock, retain
+   explicit owner orders and keep native election semantics. `Puller` and
+   `Dps` remain accepted; the broader `PolicyRole::Support` is not an FFXI verb.
+5. Leave native prepare/revalidate, ability mapping, claims, pull continuation,
+   queues, packets and all gameplay mutation unchanged. `Assist` remains native
+   target resolution; role metadata must not overwrite an owner order.
+6. Keep summon/gear/dismiss fences closed on unknown outcomes. A queued transfer
+   is not arrival; a queued leave is not completed dismissal. Reconciliation
+   requires the current token and actual native state.
+
+The crate's `Clock::initially_detached` and `Clock::can_order` are public so the
+adapter can use the same formerly crate-private helpers across the crate boundary.
+Their semantics remain unchanged. The clock is intentionally not `Clone` and
+does not expose deserialization, reset or token injection APIs.
+
+## Focused acceptance
+
+- Differential comparison of both parsers and public clock transitions against
+  the pinned source, including malformed input and stale/rebound work.
+- Pure local tests cover overflow without wrapping and nonmutating group
+  preflight. These are not real-server P0 results.
+- FFXI lead runs its authoritative focused `/fb` native checks on its current
+  composed baseline, including role preservation, stale work, lifecycle fences
+  and first invitation. Existing test names are listed in the source audit.
+- Game QA Bot checks `/fb` in the actual supported server/client and reports
+  the build identity. C1 must pass before C2 persona adoption.
+
+Any live installation remains owned by the FFXI lead, with zero players,
+backup/readback/rollback and all existing holds. This repo has made no live
+changes and cannot certify that those deployment conditions are satisfied.
+

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import struct
+import sys
 import tempfile
 import unittest
 
@@ -14,6 +15,7 @@ import unittest
 SCRIPT = Path(os.environ.get(
     "BNAV_COLLECTION_SCRIPT", Path(__file__).resolve().parents[1] / "bake_nav_collection.py"
 ))
+sys.path.insert(0, str(SCRIPT.resolve().parent))
 SPEC = importlib.util.spec_from_file_location("nav_collection", SCRIPT)
 nav = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(nav)

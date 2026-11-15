@@ -13,6 +13,8 @@ import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
+from nav_route_metrics import RouteError, measure_route, validate_projection_limit
+
 
 FORMAT = "bnav-collection-v1"
 SOURCE_FORMAT = "bnav-geometry-v1"
@@ -405,6 +407,7 @@ def check(args):
 
 
 def query(args):
+    limit = validate_projection_limit(args.max_projection_distance)
     manifest_path = args.manifest.expanduser().resolve(strict=True)
     manifest_hash = sha(read_file(manifest_path, MAX_JSON_BYTES))
     manifest, paths = validate_collection(manifest_path)
@@ -419,13 +422,16 @@ def query(args):
     need(result["exit_code"] == 0, f"native query failed: {result['stderr'].strip()}")
     native = decode_json(result["stdout"])
     need(native.get("complete") is True, "native query did not report a complete snapped-endpoint path")
+    metrics = measure_route(args.start, args.end, native, limit)
     need(file_identity(backend)["sha256"] == manifest["tools"]["backend"]["sha256"], "backend changed during query")
     validate_collection(manifest_path)
     need(sha(read_file(manifest_path, MAX_JSON_BYTES)) == manifest_hash, "collection changed during query")
-    print(json.dumps({"status": "COMPLETE_PROJECTED_PATH", "game": manifest["game"], "zone": manifest["zone"],
-                      "coverage": manifest["coverage"], "result": native, "game_qa": "NOT_RUN",
+    exceeded = metrics["within_projection_limit"] is False
+    print(json.dumps({"status": "PROJECTION_LIMIT_EXCEEDED" if exceeded else "COMPLETE_PROJECTED_PATH",
+                      "game": manifest["game"], "zone": manifest["zone"],
+                      "coverage": manifest["coverage"], "result": native, "route_metrics": metrics, "game_qa": "NOT_RUN",
                       "native_adapter_compatibility": "NOT_VERIFIED"}))
-    return 0
+    return 3 if exceeded else 0
 
 
 def main():
@@ -451,11 +457,13 @@ def main():
     route.add_argument("--backend", required=True, type=Path)
     route.add_argument("--start", nargs=3, type=float, required=True)
     route.add_argument("--end", nargs=3, type=float, required=True)
+    route.add_argument("--max-projection-distance", type=float,
+                       help="optional maximum 3D endpoint projection distance in source coordinate units")
     route.set_defaults(action=query)
     args = parser.parse_args()
     try:
         return args.action(args)
-    except (Invalid, OSError, KeyError, TypeError, json.JSONDecodeError, subprocess.TimeoutExpired) as error:
+    except (Invalid, RouteError, OSError, KeyError, TypeError, json.JSONDecodeError, subprocess.TimeoutExpired) as error:
         print(f"bake_nav_collection: {error}", file=sys.stderr)
         return 2
 

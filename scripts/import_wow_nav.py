@@ -13,6 +13,8 @@ import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
+from nav_route_metrics import measure_route, validate_projection_limit
+
 
 FORMAT = "bnav-wow-selection-v1"
 PROFILES = {"cmangos-v8": (20, 8, 32), "cmangos-v8-ref64": (20, 8, 64), "acore-v20": (56, 20, 64)}
@@ -358,6 +360,7 @@ def check(args):
 
 
 def query(args):
+    limit = validate_projection_limit(args.max_projection_distance)
     flags_policy(args.include_flags, args.exclude_flags)
     path = args.manifest.expanduser().resolve(strict=True)
     manifest_hash = sha(read(path, MAX_JSON))
@@ -377,13 +380,16 @@ def query(args):
     need(native.get("profile") == manifest["profile"] and native.get("reference_bits") == manifest["reference_bits"]
          and native.get("include_flags") == args.include_flags and native.get("exclude_flags") == args.exclude_flags,
          "native query profile/flag policy differs from request")
+    metrics = measure_route(args.start, args.end, native, limit)
     validate_selection(path)
     need(sha(read(path, MAX_JSON)) == manifest_hash, "selection changed during query")
     need(identity(backend, limit=128 * 1024 * 1024)["sha256"] == backend_hash, "backend changed during query")
-    print(json.dumps({"status": "SELECTED_REGION_PROJECTED_PATH", "map_id": manifest["map_id"], "scope": SCOPE,
+    exceeded = metrics["within_projection_limit"] is False
+    print(json.dumps({"status": "PROJECTION_LIMIT_EXCEEDED" if exceeded else "SELECTED_REGION_PROJECTED_PATH",
+                      "map_id": manifest["map_id"], "scope": SCOPE,
                       "include_flags": args.include_flags, "exclude_flags": args.exclude_flags,
-                      "result": native, "game_qa": "NOT_RUN"}))
-    return 0
+                      "result": native, "route_metrics": metrics, "game_qa": "NOT_RUN"}))
+    return 3 if exceeded else 0
 
 
 def main():
@@ -406,6 +412,8 @@ def main():
     route.add_argument("--exclude-flags", type=int, required=True)
     route.add_argument("--start", type=float, nargs=3, required=True)
     route.add_argument("--end", type=float, nargs=3, required=True)
+    route.add_argument("--max-projection-distance", type=float,
+                       help="optional maximum 3D endpoint projection distance in source coordinate units")
     route.set_defaults(action=query)
     args = parser.parse_args()
     try:

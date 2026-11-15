@@ -417,3 +417,16 @@ Times are America/Chicago (CST).
   continue original C1 extraction and differential verification for explicit
   observed source5c73. No live-baseline or adoption/P0 claim is made. Native
   geometry placement/movement stays in the adapter and no later phase opens.
+
+## 2026-11-15 02:48 AM CST — private build0005: PASS, QA pending
+
+- VERIFIED: source7489a03 packages as **0.1.0-build0005**,983475 bytes,
+  SHA-256 `d9fa0f83011ea5c359f86ec5b46974fa60eb0980f700107bddc02fd9ca2d205a`.
+  Readback validates94 payloads/nine tool invocations; both changed Python
+  entrypoints start from manifest-verified archive bytes. See `BUILD_0005.md`.
+- The pure core remains the historical source extraction; current-source C1
+  reconciliation is ongoing in isolated worktrees. This package does not claim
+  equivalence with the observed newer FFXI source or satisfy native P0/Game QA.
+- Next correction: integrate current-source control/grammar and pure geometry
+  settings, run the expanded pinned comparison, and update the owning intake.
+  Private publication has no receipt here; all owner holds remain unchanged.

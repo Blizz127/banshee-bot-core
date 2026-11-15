@@ -45,8 +45,9 @@ The backend targets bounded ground geometry, with single-tile and explicit
 fixed-grid tiled modes. Synthetic cross-tile routes pass, but this does not
 establish complete game-world coverage, doors/lifts, dynamic
 obstacles, liquid traversal, off-mesh links or free-space flight. Preserve
-Earth & Beyond's pending free-flight pathing decision; ground polygons cannot
-stand in for that choice.
+Earth & Beyond's owning decision: its 02:26 CST report now requires per-tile
+Recast output, with obstacle/gate graphs supplemental. Ground polygons alone
+still do not establish calibrated 3D ship movement or native-game acceptance.
 
 A tile candidate needs both a reproducible build and a matching native Detour
 reload/query. Record dependency revision, reference width/ABI, tool and output

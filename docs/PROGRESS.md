@@ -305,3 +305,26 @@ Times are America/Chicago (CST).
   artifact bytes remain unchanged. Final bounded scorecard refresh records
   E&B preparation progress without changing any readiness scores. No C1
   adoption/P0 or publication receipt was found in that snapshot.
+
+## 2026-11-15 02:32 AM CST — resumed offline input tooling: PASS/PARTIAL
+
+- VERIFIED: `extract-mmtile` validates an explicit wrapper/ABI and preserves
+  every raw payload byte. One focused Rust test and seven actual CLI cases
+  pass, including wrong-profile, truncation, overwrite and Git-output refusal.
+  Evidence: `evidence/wow-extract-0231/result.json`, SHA-256
+  `18d17d1ecce1db4879456d7a864e4c4185913f2754613777f37281899a90672e`.
+- VERIFIED: package metadata now supports a separately identified 64-bit
+  helper; two compatible and five invalid identity manifests exercise the
+  pre-execution readback boundary. Evidence: `evidence/dual-abi-manifest-0232/`.
+  Native32/64 builds and selected-map query integration remain in progress.
+- OBSERVED: the owning FFXI correction `5c73a875` arrived. Exact packet/source
+  checks pass; reported compatibility now accepts the retained real tile.
+  Our independent corrected-source consumption/native-library smoke is underway.
+  This does not establish C1 seam adoption, P0, game runtime or Game QA.
+- OBSERVED: E&B's lead now requires per-tile Recast output and reports four
+  model-local tiles. The former output-model choice is reported resolved;
+  scores and complete sector coverage are unchanged. See `HANDOFF_0230.md`.
+- Next correction: finish bounded imported-map receipts and explicit native
+  query filters, consume the corrected FFXI source, then package build0004.
+  These are offline common-tool improvements; C2/C5 rollout is not advanced.
+  The current no-restart hold remains unchanged.

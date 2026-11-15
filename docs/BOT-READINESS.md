@@ -1,4 +1,11 @@
-# C0 bot readiness — refreshed 2026-11-15 02:20 CST
+# C0 bot readiness — refreshed 2026-11-15 02:29 CST
+
+At 02:29 CST the attributed scores are still unchanged. E&B now reports four
+model-local Recast tiles and a short two-tile path; per-tile Recast is its
+required output and the earlier output-model choice is reported resolved.
+Sector transforms, calibration, native loading and complete coverage remain
+unverified (`0/85`). The FFXI corrected geometry-wrapper packet is a source
+handoff, not C1 adoption/P0. See [the latest refresh](HANDOFF_0230.md).
 
 The bounded 02:20:40 CST refresh found no new attributed scores. E&B's lead
 now reports 3,446 bounded placements across 77 sectors, 339 unresolved, and a

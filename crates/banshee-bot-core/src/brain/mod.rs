@@ -3,6 +3,7 @@
 //! Future strategy ordering: safety, owner order, role, goals, optional advice.
 pub mod authority;
 pub mod command;
+pub mod decision;
 pub mod formation;
 pub mod orders;
 pub mod selection;

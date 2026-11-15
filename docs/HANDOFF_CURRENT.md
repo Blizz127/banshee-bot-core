@@ -1,24 +1,33 @@
-# Current handoff — 2026-11-15 07:46 CST
+# Current handoff — 2026-11-15 07:58 CST
 
 Task `dcc9a63a40ab` remains **working**. The sole root integrator owns this
 repository; helper changes are integrated. Current candidate source is
-`5576d1eb08c2c7db270f87db55a05da20bad846b`. Historical source/test receipts retain
+`8153d3be6f1d986a173601bb758fa9361ad3cae1`. Historical source/test receipts retain
 their original scope; this continuation does not reopen them.
 
 ## Completed boundary
 
-[Build0017](BUILD_0017.md) is the current proposed private tool/source candidate:
-archive SHA256 `1436afa61ec5b7c2feaf91aea60cb2424792c19c339332d221bc082296085d3c`,
-1168931 bytes. Named offline route probes now bind explicit expectations to an
-exact collection/selected-map manifest and retained commands. Ten pure tests,
-seven archive fixture tests and 12 actual synthetic outer commands pass; each
-ABI records 15 runner commands. Readback passes 143 payloads /14 startup calls.
-All four executables and all 22 shared-core input pins remain unchanged.
+[Build0018](BUILD_0018.md) is the current proposed private tool/source candidate:
+archive SHA256 `508ca3863fae576558ed719797d9a887146c323c4c1b31e690c7a4013ef03fc2`,
+1197956 bytes. Named route probes and opt-in typed refusal diagnostics are now
+complete as offline tool groundwork. Existing commands keep their default
+behavior; new report modes distinguish missing nearby polygons, an incomplete
+corridor and exhausted query resources. Probe v2 can expect spatial diagnostics;
+budget failures remain ERROR and stop later probes. No global unreachability
+or native-game acceptance is inferred.
 
-The opt-in collection batch work and its evidence remain closed. New probe
-smoke reuses retained synthetic tiles and wraps them in documented containers;
-no geometry, native FFXI job or benchmark was replayed. Exact source/tool proof
-and limits are in the build note. Prior candidates remain for rollback.
+Each ABI passes21 checks /33 native commands with scoped legacy byte equivalence.
+Seventeen pure tests and18 outer wrapper/probe commands pass, including a real
+path-buffer exhaustion case that is not misclassified as disconnected. Readback
+passes149 payloads /14 startup calls; all128 source files join the fresh producer.
+Both native hashes change, with dependency/compiler inputs unchanged. The Rust
+executables and all22 shared-core input pins remain unchanged. Exact receipts
+and unrun limits are in the build note; old proofs keep their original scope.
+
+This turn produced build0017 (named probes) and then build0018 (typed refusals).
+Old artifacts stay available for rollback. Collection batching and its cost
+experiment remain closed; no C1 job, game asset or old benchmark was replayed.
+The new synthetic island and300-quad fixtures remain external to Git.
 
 ## Boundaries that remain with their owners
 
@@ -49,26 +58,27 @@ provided; compare changed shared inputs only if its source pins actually differ.
 Do not duplicate checks merely because an older handoff names them as future work.
 The source/extraction proposal remains ready independently of navigation.
 
-Current independent work: **opt-in structured native query refusal diagnostics**.
-Existing errors conflate missing endpoint polygons, disconnected loaded regions,
-resource exhaustion and invalid tool/input failures. Preserve legacy commands;
-new report commands should emit only explicitly classified native refusals, with
-budget failure kept separate from connectivity. Then add opt-in wrapper/probe
-support without accepting arbitrary stderr as an expected blocked outcome.
-The current v1 probe runner intentionally cannot make that inference. Root owns
-integration; the existing native helper works only on its disjoint native file.
-No FFXI adapter, producer allowlist or source adoption is part of this increment.
+The hold-free named-probe and typed-refusal increments are closed. Their
+negative observations deliberately stop short of world-level reachability or
+calibrated movement. Further map coverage/calibration needs owned geometry and
+owning-game evidence; unknown formats require REA under existing permission
+boundaries. There is no measured need for another spatial-index optimization,
+benchmark replay or routine full suite. Preserve the supplied failure evidence
+and do not generate more checks simply to replace pending native acceptance.
 
-The batch cost experiment remains closed; no spatial-index benchmark replay.
-Unknown game formats require REA and owned inputs; existing permission/setup
-refusals persist. C0 missing-piece requests are already dispatched. C2+ remains
-gated behind native C1/P0 and Game QA acceptance.
+For continued work, prioritize a concrete shared-library correction if a new
+closed owning result identifies one; otherwise consume such evidence once and
+retain the native ownership boundary. No shared-core defect is presently
+identified by the supplied native summaries. C0 missing-piece requests are
+already dispatched. C2+ stays gated behind current C1/P0 and Game QA acceptance;
+none of these tool increments removes that gate or creates a map prerequisite.
 
 Private publication stays with `claude-banshee-realm-client`, task `3f9392ca5d00`.
-One build0017 TOOL/SOURCE intake supersedes proposed0016 only, with old artifacts
+One build0018 TOOL/SOURCE intake supersedes proposed0017 only, with old artifacts
 retained for rollback. Its coordinator response belongs at
-`evidence/build0017-readback/coordinator-response.json`; do not resend once
-queued or wait for acknowledgement. Publication is still unconfirmed.
+`evidence/build0018-readback/coordinator-response.json`; do not resend once
+queued or wait for acknowledgement. No current bot-core feed/publication receipt
+is available from that owning publisher. This repo does not own its feed/config.
 A queued status is not a publisher receipt. No native queue status-only messages.
 
 **NEVER restart FFXI**, including at zero players. No package grants install,

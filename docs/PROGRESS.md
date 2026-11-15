@@ -939,3 +939,21 @@ Times are America/Chicago (CST).
 - Next correction: package/read back build0014 with these new backend identities
   and send one superseding private tool/source intake. Native mapping/adoption,
   P0/Game QA, publication and every hold remain separate. NEVER restart FFXI.
+
+## 2026-11-15 06:05 CST — private build0014: PASS, publication unconfirmed
+
+- VERIFIED: source b50b18eb packages as **0.1.0-build0014**, 1092864 bytes,
+  SHA256 `a9b1b578b57e438b92565becb552a1a5a8a5fc42d52f42717bfe7398c5bae1f6`.
+  All 131 payloads and 13 startup invocations pass. Fresh producer/source/log
+  associations cover 113 tracked files; both Rust binaries match0013. New native
+  binaries and the selector test match their separately passing comparison
+  receipts. All 22 core inputs retain their saved role-comparison hashes.
+  See `BUILD_0014.md` for exact identities, scope and receipts.
+- No game assets, full native suite, old C1 comparison or live action was used.
+  This supersedes proposed0013 as a private tool/source candidate only, retaining
+  rollback artifacts. The publisher owns feed acceptance/readback; publication
+  remains unconfirmed. New native producer hashes do not widen any allowlist.
+- Next owning boundary: publisher intake/readback and the existing native
+  adapter/P0 result. Running work is not duplicated or polled. C1 remains
+  PARTIAL, with no map prerequisite; C2+ and Game QA gates persist. Independent
+  nav groundwork remains available. NEVER restart FFXI; all holds remain.

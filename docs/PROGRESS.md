@@ -838,3 +838,20 @@ Times are America/Chicago (CST).
   mandatory. Existing 04b/shared6ead intake and every operational hold persist.
 - Next correction: package/read back build0012, join its exact source and fresh
   Rust producer record, and send one superseding private tool/source intake.
+
+## 2026-11-15 04:32 CST — private build0012: PASS, native gates retained
+
+- VERIFIED: source 3d4dc8ef packages as **0.1.0-build0012**, 1052951 bytes,
+  SHA256 `ba5768378c3df12b3406a4f234b2d2e738327029fb7d67102b3b11cb74a1048b`.
+  All 120 payloads and 13 startup checks pass. Twenty-one core inputs and the
+  new strategy test match the completed eight-test receipt. All 106 tracked
+  source files, log and Rust outputs join to the fresh producer record; five
+  saved compiler invocations use its pinned compiler. See `BUILD_0012.md`.
+- Existing policy/nav source/test pins and four executables remain unchanged.
+  No prior C1/native/strategy test was replayed or aggregate acceptance inferred.
+  Supersedes proposed0011 for the existing private publisher only; retain prior
+  rollback artifacts. Publication and current native P0/Game QA lack receipts.
+- Native adoption stays with the existing 04b/shared6ead intake. No producer
+  adoption, allowlist change, native worker/job or live action. NEVER restart
+  FFXI and every hold persists. Next integration dependency is the owning lane's
+  completed current P0/Game QA evidence; C1 has no map gate and C2+ stays closed.

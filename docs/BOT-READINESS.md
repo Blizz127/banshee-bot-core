@@ -1,9 +1,13 @@
-# C0 bot readiness — 2026-11-15 01:07 CST
+# C0 bot readiness — refreshed 2026-11-15 02:00 CST
 
 **Verdict: PARTIAL.** Six corrected lead scorecards have arrived. Their reports
 are recorded below; this consolidation did not run a server, client, navmesh bake
 or Game QA check. No readiness request was rebroadcast and no other project was
 edited. C1 and the shared builder may proceed while the remaining rows arrive.
+
+The 02:00 CST refresh leaves all scores unchanged. New E&B geometry preparation,
+GW2 sequencing and the narrow FFXI adapter/publication boundaries are recorded
+in [the handoff refresh](HANDOFF_STATUS_20261115.md); none is a new Game QA pass.
 
 The owner's 2026-11-15 00:46 CST correction uses **0 = no, 1 = partial,
 2 = yes**. It supersedes the initial 0–3 request; do not translate old 0–3
@@ -70,6 +74,13 @@ Task `0fcbfa0421bc`, lead `claude-ffxi-platform`, updated 00:58:03 CST.
   encounters and job coverage remain incomplete. Lead distinguishes inspected
   `5d9bed62` (unrun) from rc180 / `0c866f43` (one native check plus 79 kit checks).
 
+Refresh at 02:00:19 CST: this task's 02:00:17 report describes current native
+checks and an independent offline raw32-to-MSET adapter (`a13dabcd`); it does
+not report shared Clock/grammar adoption or a completed P0/client gate. Its
+source note marks actual builder output unconsumed and the five synthetic tests
+unrun; the newer board report says those tests were launched and still in
+progress. This does not upgrade the row or geometry coverage.
+
 ### S1 — SWTOR
 
 Task `ddfa31d97341`, lead `claude-swtor-preservation`, updated 00:51:54 CST;
@@ -135,6 +146,11 @@ row supersedes `ce5cebc9912f`.
 - Behavior: species AI, `game_observe/eir_ally.rs`, and deeper Mesmer support
   (`mesmer_clone.rs`); no player-bot strategy library.
 
+Refresh: the same task at 01:59:24 CST explicitly retains 1/1/1/1 and zero
+navmesh zones. Geometry/readiness work is queued behind Norn opening builds and
+handed to the Codex lead (`~/re/gw2/notes/codex-handoff-20261115.md`); no new map
+artifact is reported.
+
 ### L1 — LOTRO Rust
 
 Task `92b6773cbc68`, lead `claude-lotro-rust`, updated 00:52:13 CST; corrected
@@ -171,6 +187,17 @@ roadmap `docs/ROADMAP.md` Track B, commit `706d610`.
   quest/reward/relog on the current host was not run.
 - Behavior: `MOBClass.cpp:376` is NPC AI; no player-class combat/strategy
   library, and current DIT controllers are noncombat.
+
+Refresh: task `d30281403634` at 01:20:34 CST and observed local commit `8f3a551`
+add a concrete geometry-preparation artifact at
+`~/dev/Earth-and-Beyond-DIT/evidence/pathing-b1/geometry-v1/`. It retains 85
+sectors/4,660 placements and bounds 1,974 static candidates in 71 sectors;
+1,811 static candidates remain unresolved. The manifest is explicitly
+`pathing_ready: false`; visual bind-pose spheres are not collision-verified,
+and generated pathing remains **0/85 sectors**. Readiness stays 1/1/1/0.
+See `docs/PATHING_B1_GEOMETRY_EXPORT.md` in that project and the saved paths/hashes
+in [the handoff refresh](HANDOFF_STATUS_20261115.md). No source check was rerun as
+a game/pathing test, and this is not yet a collision-triangle intake.
 
 **Pending design decision:** `SectorData.h:42–43` describes free 3D flight,
 so the lead proposes per-sector obstacle data plus a gate/route graph rather

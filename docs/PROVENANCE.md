@@ -41,3 +41,13 @@ FFXI collision source lineage, source licence scope, coordinate conventions and
 owner asset identities are recorded in [the geometry audit](FFXI_GEOMETRY_EVIDENCE.md).
 That audit establishes available source interfaces; it does not claim a decoded
 asset or tested walking map.
+
+The later [FFXI export wrapper](FFXI_EXPORT.md) uses an immutable external
+snapshot of owning source `a13dabcd550e0a777be5077804ba3d51683cfa19`, including
+`forever-audit::geometry_export` and the existing reader attributed to
+MIT-licensed `forever-client` `a8c75ab4e981d6056cd2860d8f8e12eacfff7671`.
+The owning FFXI workspace has no blanket licence declaration. All dependency
+source, exact licence, registry identities, binaries and owned assets stay
+external; only the original wrapper/driver are committed and packaged here.
+The [bounded bake evidence](FFXI_REGION_BAKE.md) records successful offline
+geometry processing without claiming a full map, native integration or Game QA.

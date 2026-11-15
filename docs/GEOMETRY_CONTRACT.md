@@ -63,8 +63,10 @@ straight-line movement through obstacles.
 
 ## Current missing extractors
 
-- FFXI: reproducible owner DAT/MZB collision export and per-zone coverage remain
-  pending; current cached safety tables are not this build pipeline.
+- FFXI: a [pinned-source bounded export](FFXI_EXPORT.md) and
+  [zone230 offline bake](FFXI_REGION_BAKE.md) now succeed. Physical calibration,
+  complete collision coverage and native/Game QA remain pending; cached safety
+  tables are not substitutes for those checks.
 - FF14: client files are not available yet. Lumina-documented sqpack formats are
   a future source, not a prerequisite for C1 or the common builder.
 - WoW: existing mmaps can be inspected under explicit profiles. Rebuilding or

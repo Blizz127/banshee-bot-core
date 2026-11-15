@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/banshee-bot-core"]
+members = ["crates/banshee-bot-core", "crates/bnav-extract", "crates/bot-soak"]
 resolver = "2"
 
 [profile.release]

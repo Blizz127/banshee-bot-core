@@ -2,7 +2,7 @@
 """Compare original core contracts with a pinned, read-only FFXI source snapshot.
 
 Example:
-  python3 scripts/check_ffxi_compat.py --source /path/to/xi-map/src/fb \
+  python3 scripts/check_ffxi_compat.py --profile ffxi-5c73a875 --source /path/to/xi-map/src/fb \
       --evidence ~/.local/share/banshee-bot-core/evidence/compat-build-0001
 
 Evidence must be a NEW directory outside both repositories. This is an offline
@@ -19,29 +19,46 @@ import subprocess
 import sys
 
 
-PINS = {
+HISTORICAL_PINS = {
     "control.rs": "6db0a98b3b14ebaff78354192400b2d92591cfa7fef50c39617c2eb16020835e",
     "command.rs": "34480a234e86b7a28731ebd56d1135bd42771cfba513a8f1bf81ef81ce2939be",
     "orders.rs": "b236c09b5c9f88b102560106ccfe4de3bf979d8d045c31fdf4157ad8c10db469",
     "authority.rs": "cfaca0c0e4019ddbdeecdcdb47896d3ea105fadf7704efaa0d7e1bb6a4e8e46b",
     "selection.rs": "840f9dd8f3261d5ef014909fe55a88451ae16b14929ab2b269d1bde926c7ffc9",
 }
-PINNED_CANDIDATE = "36b90715b29728ecbccd2fee95493bbc7c14db29"
+PROFILES = {
+    "ffxi-36b907": {
+        "candidate": "36b90715b29728ecbccd2fee95493bbc7c14db29",
+        "historical_only": True,
+        "pins": HISTORICAL_PINS,
+    },
+    "ffxi-5c73a875": {
+        "candidate": "5c73a8751940ba767c7b86a50bb96b38b5d1e4f6",
+        "historical_only": False,
+        "pins": {
+            **HISTORICAL_PINS,
+            "control.rs": "850037b04e0cc1f3f2bd94dc2fbcab6dbaa977e822a885ecad74e1b2e9be519c",
+            "command.rs": "3bae356a0845340a6752cd90b218bd35ba39c1459b5855237a319b9166241e51",
+            "orders.rs": "c04794d836e55f935327c86d036e7f9443e05e76ab5e5d0575b3bb72f01574d1",
+            "formation.rs": "617546945cac90e821eef00bcc4dd09be000457c23ef97e8d9346e100ac25faa",
+        },
+    },
+}
 
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def read_sources(source):
+def read_sources(source, pins, verify=True):
     files = {}
-    for name, expected in PINS.items():
+    for name, expected in pins.items():
         path = source / name
         if path.is_symlink() or not path.is_file():
             raise ValueError(f"reference must be an ordinary file: {path}")
         data = path.read_bytes()
         actual = sha(data)
-        if actual != expected:
+        if verify and actual != expected:
             raise ValueError(f"reference hash mismatch: {name}: {actual}, expected {expected}")
         files[name] = data
     return files
@@ -72,11 +89,16 @@ def git_info(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", required=True, choices=PROFILES,
+                        help="Explicit reference contract; historical profiles do not establish current parity")
     parser.add_argument("--source", required=True, type=Path, help="explicit native fb directory")
     parser.add_argument("--core", type=Path, default=Path(__file__).resolve().parents[1],
                         help="core workspace root (default: script repository)")
     parser.add_argument("--evidence", required=True, type=Path, help="fresh external evidence directory")
     args = parser.parse_args()
+    profile = PROFILES[args.profile]
+    pins = profile["pins"]
+    latest = not profile["historical_only"]
     source, core, evidence = (p.expanduser().resolve() for p in (args.source, args.core, args.evidence))
     source_git = git_info(source)
     forbidden = [source, core]
@@ -88,7 +110,7 @@ def main():
         parser.error("evidence directory already exists; choose a fresh path to preserve previous receipts")
     # Validate everything before making any evidence artifact or invoking a compiler.
     try:
-        references = read_sources(source)
+        references = read_sources(source, pins)
         core_before = core_identity(core)
     except (OSError, ValueError) as error:
         parser.error(str(error))
@@ -98,26 +120,50 @@ def main():
     for name, data in references.items():
         (reference_dir / name).write_bytes(data)
     (reference_dir / "mod.rs").write_text(
-        "#![allow(dead_code)]\n" + "".join(f"pub mod {Path(name).stem};\n" for name in PINS),
+        "#![allow(dead_code)]\n" + "".join(f"pub mod {Path(name).stem};\n" for name in pins),
         encoding="utf-8",
     )
     harness = Path(__file__).with_name("ffxi_compat.rs").read_bytes()
     (evidence / "ffxi_compat.rs").write_bytes(harness)
     orders_harness = Path(__file__).with_name("ffxi_orders_compat.rs").read_bytes()
     (evidence / "ffxi_orders_compat.rs").write_bytes(orders_harness)
+    formation_harness = None
+    if latest:
+        formation_harness = Path(__file__).with_name("ffxi_formation_compat.rs").read_bytes()
+        (evidence / "ffxi_formation_compat.rs").write_bytes(formation_harness)
+        # Only the Role data type is needed by the original command unit tests.
+        # The actual differential harness above uses the entire pinned orders
+        # module. Avoid enabling unrelated native orders_tests.rs through cfg(test).
+        (evidence / "reference-command-tests.rs").write_text(
+            '#![allow(dead_code)]\nmod orders {\n'
+            '    #[derive(Clone, Copy, Debug, PartialEq, Eq)]\n'
+            '    pub enum Role { Tank, Healer, Dps, Puller }\n}\n'
+            '#[path = "reference/command.rs"] mod command;\n', encoding="utf-8")
     report = {
         "status": "RUNNING",
         "started_cst": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))).isoformat(),
-        "scope": "Offline pure grammar, cancellation, authority, selection and order planning contracts; no native adapter/P0 or Game QA claim.",
+        "scope": "Offline pure grammar, cancellation, authority, selection, order planning and profile-specific formation settings; no native movement placement, adapter/P0 or Game QA claim.",
         "source": str(source), "source_git": source_git,
-        "reference_candidate": PINNED_CANDIDATE, "reference_sha256": PINS,
+        "reference_profile": args.profile, "historical_only": profile["historical_only"],
+        "reference_candidate": profile["candidate"], "reference_sha256": pins,
+        "reference_files_before": {name: sha(data) for name, data in references.items()},
         "core": str(core), "core_git": git_info(core), "core_files_before": core_before,
         "harness_sha256": sha(harness), "script_sha256": sha(Path(__file__).read_bytes()),
         "orders_harness_sha256": sha(orders_harness),
+        "formation_harness_sha256": sha(formation_harness) if formation_harness else None,
+        "command_unit_test_shim": {
+            "path": "reference-command-tests.rs",
+            "sha256": sha((evidence / "reference-command-tests.rs").read_bytes()),
+            "bytes": (evidence / "reference-command-tests.rs").stat().st_size,
+            "scope": "Role data type only; full pinned orders module used by differential binaries",
+        } if latest else None,
         "commands": [],
         "limitations": ["Finite deterministic corpus is not exhaustive proof.",
                         "Reference runtime deployment identity is not verified.",
-                        "Overflow is checked by focused private-state tests, not seeded public traces."]
+                        "Overflow is checked by focused private-state tests, not seeded public traces.",
+                        "Formation world-coordinate placement remains native and is not compared."]
+                       + (["Command unit tests use an enum-only Role shim; differential comparison uses full pinned modules."]
+                          if latest else ["Historical source profile does not establish latest native compatibility."])
     }
 
     def save():
@@ -152,22 +198,35 @@ def main():
         if not rlib.is_file():
             raise RuntimeError(f"expected library missing: {rlib}")
         report["rlib_sha256"] = sha(rlib.read_bytes())
+        profile_cfg = ["--cfg", "native_latest"] if latest else []
         run("compile-differential", ["rustc", "--edition=2021", evidence / "ffxi_compat.rs",
+                                     *profile_cfg,
                                      "--extern", f"banshee_bot_core={rlib}",
                                      "-L", f"dependency={target / 'debug/deps'}",
                                      "-o", evidence / "ffxi-compat"])
         differential_log = run("differential", [evidence / "ffxi-compat"])
         report["differential"] = json.loads(differential_log.read_text())
         run("compile-orders-differential", ["rustc", "--edition=2021", evidence / "ffxi_orders_compat.rs",
+                                            *profile_cfg,
                                             "--extern", f"banshee_bot_core={rlib}",
                                             "-L", f"dependency={target / 'debug/deps'}",
                                             "-o", evidence / "ffxi-orders-compat"])
         orders_log = run("orders-differential", [evidence / "ffxi-orders-compat"])
         report["orders_differential"] = json.loads(orders_log.read_text())
+        if latest:
+            run("compile-formation-differential", ["rustc", "--edition=2021", evidence / "ffxi_formation_compat.rs",
+                                                   "--extern", f"banshee_bot_core={rlib}",
+                                                   "-L", f"dependency={target / 'debug/deps'}",
+                                                   "-o", evidence / "ffxi-formation-compat"])
+            formation_log = run("formation-differential", [evidence / "ffxi-formation-compat"])
+            report["formation_differential"] = json.loads(formation_log.read_text())
         for module in ("control", "command"):
             binary = evidence / f"reference-{module}-tests"
+            test_source = (evidence / "reference-command-tests.rs" if latest and module == "command"
+                           else reference_dir / f"{module}.rs")
             run(f"compile-reference-{module}", ["rustc", "--edition=2021", "--test",
-                                                reference_dir / f"{module}.rs", "-o", binary])
+                                                "--crate-name", f"reference_{module}_tests",
+                                                test_source, "-o", binary])
             log = run(f"reference-{module}-tests", [binary, "--test-threads=1"])
             expected_count = 6 if module == "control" else 5
             if f"{expected_count} passed; 0 failed; 0 ignored" not in log.read_text():
@@ -177,21 +236,31 @@ def main():
                                    "--", "--exact", "--test-threads=1"])
         if "1 passed; 0 failed" not in (evidence / "core-overflow-test.log").read_text():
             raise RuntimeError("core overflow filter did not execute its one expected test")
-        read_sources(source)
-        report["core_files_after"] = core_identity(core)
-        if report["core_files_after"] != core_before:
-            raise RuntimeError("core source changed during verification; this receipt cannot establish a stable candidate")
         report["status"] = "PASS"
     except (OSError, ValueError, RuntimeError) as error:
         report["status"] = "FAIL"
         report["error"] = str(error)
     finally:
+        # Record stability even after a comparison/compiler failure; never turn
+        # a changing source or an interrupted run into a reusable PASS receipt.
+        try:
+            report["reference_files_after"] = {
+                name: sha(data) for name, data in read_sources(source, pins, verify=False).items()}
+            report["core_files_after"] = core_identity(core)
+            if report["reference_files_after"] != report["reference_files_before"]:
+                raise RuntimeError("reference source changed during verification; this receipt cannot establish a stable candidate")
+            if report["core_files_after"] != core_before:
+                raise RuntimeError("core source changed during verification; this receipt cannot establish a stable candidate")
+        except (OSError, ValueError, RuntimeError) as error:
+            report["status"] = "FAIL"
+            report["stability_error"] = str(error)
         report["finished_cst"] = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))).isoformat()
         report["artifacts_sha256"] = {str(p.relative_to(evidence)): sha(p.read_bytes())
                                      for p in sorted(evidence.iterdir()) if p.is_file() and p.name != "result.json"}
         save()
     print(json.dumps({"status": report["status"], "evidence": str(evidence / "result.json"),
                       "differential": report.get("differential"),
+                      "profile": args.profile, "formation_differential": report.get("formation_differential"),
                       "orders_differential": report.get("orders_differential"), "error": report.get("error")}))
     return 0 if report["status"] == "PASS" else 1
 

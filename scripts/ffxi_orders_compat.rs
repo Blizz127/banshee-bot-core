@@ -121,6 +121,22 @@ fn role(value: no::Role) -> co::Role {
     }
 }
 
+#[cfg(native_latest)]
+fn geometry(value: reference::formation::Setting) -> banshee_bot_core::brain::formation::Setting {
+    use banshee_bot_core::brain::formation as cf;
+    use reference::formation as nf;
+    match value {
+        nf::Setting::Spacing(value) => cf::Setting::Spacing(value),
+        nf::Setting::Distance(value) => cf::Setting::Distance(value),
+        nf::Setting::Shape(shape) => cf::Setting::Shape(match shape {
+            nf::Shape::Circle => cf::Shape::Circle,
+            nf::Shape::Arrow => cf::Shape::Arrow,
+            nf::Shape::Line => cf::Shape::Line,
+            nf::Shape::None => cf::Shape::None,
+        }),
+    }
+}
+
 fn order(value: &no::Order) -> co::Order {
     match value {
         no::Order::Follow => co::Order::Follow,
@@ -129,6 +145,8 @@ fn order(value: &no::Order) -> co::Order {
         no::Order::Attack => co::Order::Attack,
         no::Order::Pull => co::Order::Pull,
         no::Order::Assist => co::Order::Assist,
+        #[cfg(native_latest)]
+        no::Order::Geometry(value) => co::Order::Geometry(geometry(*value)),
         no::Order::Role { name, role: value } => co::Order::Role {
             name: name.clone(),
             role: role(*value),
@@ -667,6 +685,20 @@ fn orders() -> Vec<no::Order> {
             role,
         });
     }
+    #[cfg(native_latest)]
+    {
+        use reference::formation::{Setting, Shape};
+        for shape in [Shape::Circle, Shape::Arrow, Shape::Line, Shape::None] {
+            orders.push(no::Order::Geometry(Setting::Shape(shape)));
+        }
+        // Planning receives already-parsed settings. Invalid direct enum
+        // values deliberately verify that it does not silently add validation
+        // belonging to the grammar/configuration boundary.
+        for value in [0, 19, 20, 24, 25, 30, 60, 61, 80, 81, u16::MAX] {
+            orders.push(no::Order::Geometry(Setting::Spacing(value)));
+            orders.push(no::Order::Geometry(Setting::Distance(value)));
+        }
+    }
     orders
 }
 
@@ -837,6 +869,17 @@ fn prepare_case(counts: &mut Counts, case: &Scenario) {
         &scene(case.scene),
     );
     counts.result("orders.prepare", &old, &new, case);
+    #[cfg(native_latest)]
+    if matches!(case.order, no::Order::Geometry(_)) {
+        let result = match &old {
+            Ok(_) => "Ok".to_owned(),
+            Err(error) => format!("Err({error:?})"),
+        };
+        *counts
+            .coverage
+            .entry(format!("geometry.prepare:{result}"))
+            .or_default() += 1;
+    }
     if let (Ok(old), Ok(new)) = (&old, &new) {
         for (old, new) in old.iter().zip(new) {
             match (old, new) {
@@ -973,6 +1016,98 @@ fn planner(counts: &mut Counts) {
     }
 }
 
+#[cfg(native_latest)]
+fn geometry_readiness(counts: &mut Counts) {
+    use reference::formation::{Setting, Shape};
+    for setting in [
+        Setting::Shape(Shape::None),
+        Setting::Spacing(25),
+        Setting::Distance(80),
+        Setting::Spacing(0),
+    ] {
+        let mut base = baseline(no::Order::Geometry(setting));
+        base.owner_session.as_mut().unwrap().alive = false;
+        base.scene.owner_target = None;
+        base.scene.main_tank = no::MainTank::Ambiguous;
+        for bot in &mut base.bots {
+            let session = bot.session.as_mut().unwrap();
+            session.alive = false;
+            session.zone = 101;
+        }
+        let prepared = no::prepare(
+            &base.owner,
+            base.owner_session,
+            &base.order,
+            &base.bots,
+            &base.scene,
+        )
+        .unwrap();
+        assert_eq!(prepared.len(), 2);
+        assert!(prepared
+            .iter()
+            .all(|item| matches!(item, no::TargetOutcome::Prepared(_))));
+        prepare_case(counts, &base);
+        *counts
+            .coverage
+            .entry("geometry.readiness:dead_other_zone_setting_accepted".into())
+            .or_default() += 1;
+        // Settings still require a current, ready session and open control.
+        // Competing failures establish the same refusal precedence as actions.
+        for (variant, refusal) in [
+            (0, no::Refusal::Unavailable),
+            (1, no::Refusal::StaleSession),
+            (2, no::Refusal::ClosingSession),
+            (3, no::Refusal::TransitionPending),
+            (4, no::Refusal::EventActive),
+            (5, no::Refusal::ControlClosed),
+        ] {
+            let mut case = base.clone();
+            let bot = &mut case.bots[0];
+            bot.control = no::Control::Closed;
+            let session = bot.session.as_mut().unwrap();
+            session.event_active = variant <= 4;
+            session.transition_pending = variant <= 3;
+            session.shutting_down = variant <= 2;
+            if variant <= 1 {
+                session.generation = 0;
+            }
+            if variant == 0 {
+                bot.session = None;
+            }
+            let outcomes = no::prepare(
+                &case.owner,
+                case.owner_session,
+                &case.order,
+                &case.bots,
+                &case.scene,
+            )
+            .unwrap();
+            assert!(
+                matches!(&outcomes[0], no::TargetOutcome::Refused { reason, .. } if *reason == refusal)
+            );
+            assert!(matches!(&outcomes[1], no::TargetOutcome::Prepared(_)));
+            prepare_case(counts, &case);
+            *counts
+                .coverage
+                .entry(format!("geometry.readiness:precedence({refusal:?})"))
+                .or_default() += 1;
+        }
+        let mut owner_event = base.clone();
+        owner_event.owner_session.as_mut().unwrap().event_active = true;
+        assert_eq!(
+            no::prepare(
+                &owner_event.owner,
+                owner_event.owner_session,
+                &owner_event.order,
+                &owner_event.bots,
+                &owner_event.scene
+            ),
+            Err(no::PlanError::Requester(no::Refusal::EventActive))
+        );
+        prepare_case(counts, &owner_event);
+    }
+}
+
 fn quoted(value: &str) -> String {
     let mut out = String::from("\"");
     for ch in value.chars() {
@@ -992,6 +1127,8 @@ fn main() {
     authority(&mut counts);
     selection(&mut counts);
     planner(&mut counts);
+    #[cfg(native_latest)]
+    geometry_readiness(&mut counts);
     assert!(
         counts.prepared > 0 && counts.refused > 0,
         "must cover both executable plans and per-bot refusals"
@@ -1011,6 +1148,23 @@ fn main() {
         assert!(
             counts.coverage.get(key).copied().unwrap_or(0) > 0,
             "missing contract coverage: {key}"
+        );
+    }
+    #[cfg(native_latest)]
+    for key in [
+        "geometry.prepare:Ok",
+        "geometry.prepare:Err(Requester(EventActive))",
+        "geometry.readiness:dead_other_zone_setting_accepted",
+        "geometry.readiness:precedence(Unavailable)",
+        "geometry.readiness:precedence(StaleSession)",
+        "geometry.readiness:precedence(ClosingSession)",
+        "geometry.readiness:precedence(TransitionPending)",
+        "geometry.readiness:precedence(EventActive)",
+        "geometry.readiness:precedence(ControlClosed)",
+    ] {
+        assert!(
+            counts.coverage.get(key).copied().unwrap_or(0) > 0,
+            "missing geometry coverage: {key}"
         );
     }
     let entries = counts

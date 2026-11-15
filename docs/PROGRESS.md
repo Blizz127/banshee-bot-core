@@ -957,3 +957,26 @@ Times are America/Chicago (CST).
   adapter/P0 result. Running work is not duplicated or polled. C1 remains
   PARTIAL, with no map prerequisite; C2+ and Game QA gates persist. Independent
   nav groundwork remains available. NEVER restart FFXI; all holds remain.
+
+## 2026-11-15 06:17 CST — bounded tiled cost observation: PASS, batch work PARTIAL
+
+- VERIFIED: one sequential nice19 observation of 32,768 synthetic triangles
+  across four cells. Rust OBJ check uses 0.063239 CPU seconds; native deliberate
+  global-Y refusal after decoding/validation/bounds uses 0.241333 CPU seconds.
+  Four successful extractor builds use 1.496237 CPU seconds, four matching
+  direct-native builds 1.028619. Four tile pairs are byte-identical. No baseline
+  repetitions, game inputs or native FFXI jobs ran. Load was about185 on48 CPUs.
+- The refusal uses 93.8% of mean successful native tile CPU on this deliberately
+  sparse fixture. This supports decoded-geometry reuse as the next experiment;
+  it does not isolate text parsing from validation/bounds or establish a general
+  performance ratio. Inputs, counters and commands remain external in
+  `evidence/tile-cost-20261115-skzmpfno/`; result SHA256
+  `e79a6123cff278250d0bfeb538e338a625fb9991820cf3b261652414b9ca8618`.
+- Added an opt-in Rust batch front end for at most16 cells, with bounded stream
+  validation and a final manifest only after complete frames/footer/EOF and
+  successful child exit. Focused cargo check passes. Native implementation and
+  focused batch validation remain pending; this is not a completed batch build.
+  Next correction: integrate the one-decode native mode, compare saved baseline
+  output and exercise partial-output refusal, then package a private candidate.
+- Existing single-cell/collection commands, shared core, native C1 intake,
+  producer allowlists, rollout gates and NEVER restart FFXI remain unchanged.

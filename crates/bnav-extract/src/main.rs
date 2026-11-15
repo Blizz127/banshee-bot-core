@@ -6,6 +6,8 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Read, Write};
 use std::process::{Command, Stdio};
 
+mod batch;
+
 const MAX_INPUT_BYTES: u64 = 64 * 1024 * 1024;
 const HELP: &str = "bnav-extract 0.1.0 — offline navigation builder and preflight
 Usage:
@@ -17,6 +19,7 @@ Usage:
   bnav-extract check-obj PATH
   bnav-extract build-obj BACKEND INPUT OUTPUT [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
   bnav-extract build-tile-obj BACKEND INPUT OUTPUT ORIGIN_X ORIGIN_Z MIN_Y MAX_Y TILE_CELLS TILE_X TILE_Z [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
+  bnav-extract build-tiles-obj BACKEND INPUT OUTPUT_DIR ORIGIN_X ORIGIN_Z MIN_Y MAX_Y TILE_CELLS X_MIN X_MAX Z_MIN Z_MAX [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
 
 Inspection is read-only; little-endian profiles only. Maximum input: 64 MiB.
 Tile inspection checks headers and section lengths, not connectivity or walkability.
@@ -30,6 +33,8 @@ Default settings: 0.3 0.2 2.0 0.6 0.9 45. Outputs are never overwritten.
 Build the backend with scripts/build_bnav_backend.py; see docs/BNAV_EXTRACT.md.
 build-tile-obj uses a fixed grid; TILE_CELLS is 8..1024 and tile indices are 0..4095.
 Exit 3 means a successfully processed empty tile; no output file is created.
+build-tiles-obj reuses decoded geometry for 1..16 cells in a new external directory.
+Batch exit 0 includes empty cells; manifest.json is written only after full completion.
 Tiled manifests and coverage checks are handled by the region orchestration tool.
 FFXI bounded export uses scripts/export_ffxi_geometry.py, a pinned-source offline wrapper.
 FFXIV sqpack reader is not implemented.";
@@ -351,6 +356,17 @@ fn run(args: &[String]) -> Result<i32, Error> {
                 output,
                 config,
                 Some(&[origin_x, origin_z, min_y, max_y, cells, tile_x, tile_z]),
+            )
+        }
+        ["build-tiles-obj", backend, input, output, origin_x, origin_z, min_y, max_y, cells, xmin, xmax, zmin, zmax, config @ ..] => {
+            return batch::build(
+                backend,
+                input,
+                output,
+                &[
+                    origin_x, origin_z, min_y, max_y, cells, xmin, xmax, zmin, zmax,
+                ],
+                config,
             )
         }
         _ => return Err(Error(format!("unsupported command or arguments\n{HELP}"))),

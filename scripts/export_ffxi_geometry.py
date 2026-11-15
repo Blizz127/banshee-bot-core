@@ -99,6 +99,8 @@ def stage_sources(repo, output):
 
 
 def main():
+    wrapper_path = Path(__file__).resolve()
+    wrapper_sha256 = sha(wrapper_path.read_bytes())
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ffxi-source", required=True, type=Path)
     parser.add_argument("--forever-client-source", required=True, type=Path, help="MIT licence provenance only; never launched")
@@ -177,11 +179,13 @@ def main():
             raise RuntimeError(f"external source changed during build: {entry['path']}")
     binary = output / "cargo-target/debug/bnav-ffxi-export-driver"
     run_logged([binary, "--help"], output, "startup")
+    if sha(wrapper_path.read_bytes()) != wrapper_sha256:
+        raise RuntimeError("export wrapper changed during build; refuse mismatched provenance")
     write_json(output / "build-manifest.json", {"status": "VERIFIED", "scope": "offline driver build and startup only",
         "created_cst": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
         "rustc": subprocess.check_output(["rustc", "--version"], text=True).strip(),
         "cargo": subprocess.check_output(["cargo", "--version"], text=True).strip(),
-        "wrapper_sha256": sha(Path(__file__).read_bytes()),
+        "wrapper_sha256": wrapper_sha256,
         "binary": str(binary), "binary_sha256": sha(binary.read_bytes()), "source_revision": SOURCE_REVISION,
         "original_driver_sha256": sha(driver_bytes), "locked_resolution_sha256": lock_before,
         "jobs": args.jobs, "offline": True, "external_source_edited": False,

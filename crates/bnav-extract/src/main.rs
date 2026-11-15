@@ -11,6 +11,7 @@ Usage:
   bnav-extract inspect-detour <32|64> PATH
   bnav-extract check-obj PATH
   bnav-extract build-obj BACKEND INPUT OUTPUT [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
+  bnav-extract build-tile-obj BACKEND INPUT OUTPUT ORIGIN_X ORIGIN_Z MIN_Y MAX_Y TILE_CELLS TILE_X TILE_Z [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
 
 Inspection is read-only; little-endian profiles only. Maximum input: 64 MiB.
 Tile inspection checks headers and section lengths, not connectivity or walkability.
@@ -19,7 +20,10 @@ build-obj writes a new raw Detour v7 tile via an explicit external Recast backen
 Input must be Y-up; all agent dimensions use the geometry's world units.
 Default settings: 0.3 0.2 2.0 0.6 0.9 45. Outputs are never overwritten.
 Build the backend with scripts/build_bnav_backend.py; see docs/BNAV_EXTRACT.md.
-FFXI DAT and FFXIV sqpack readers and multi-tile stitching are not implemented.";
+build-tile-obj uses a fixed grid; TILE_CELLS is 8..1024 and tile indices are 0..4095.
+Exit 3 means a successfully processed empty tile; no output file is created.
+Tiled manifests and coverage checks are handled by the region orchestration tool.
+FFXI DAT and FFXIV sqpack readers are not implemented.";
 
 fn read(path: &str) -> Result<Vec<u8>, Error> {
     if !std::fs::metadata(path)
@@ -42,7 +46,90 @@ fn read(path: &str) -> Result<Vec<u8>, Error> {
     Ok(bytes)
 }
 
-fn build_obj(backend: &str, input: &str, output: &str, config: &[&str]) -> Result<(), Error> {
+#[derive(Clone, Copy, Debug)]
+struct TileGrid {
+    x: i32,
+    z: i32,
+}
+
+impl TileGrid {
+    fn parse(args: &[&str], settings: &[&str]) -> Result<Self, Error> {
+        if args.len() != 7 {
+            return Err(Error("expected seven tile-grid fields".into()));
+        }
+        let number = |value: &str| -> Result<f32, Error> {
+            let value = value
+                .parse::<f32>()
+                .map_err(|_| Error("invalid tile-grid or build number".into()))?;
+            if !value.is_finite() {
+                return Err(Error("tile-grid and build settings must be finite".into()));
+            }
+            Ok(value)
+        };
+        let origin_x = number(args[0])?;
+        let origin_z = number(args[1])?;
+        let min_y = number(args[2])?;
+        let max_y = number(args[3])?;
+        if min_y > max_y {
+            return Err(Error("tile MIN_Y must not exceed MAX_Y".into()));
+        }
+        let integer = |value: &str| -> Result<i32, Error> {
+            if value.is_empty() || !value.bytes().all(|byte| byte.is_ascii_digit()) {
+                return Err(Error(
+                    "tile cells and indices must be unsigned decimal integers".into(),
+                ));
+            }
+            value
+                .parse()
+                .map_err(|_| Error("tile-grid integer is out of range".into()))
+        };
+        let cells = integer(args[4])?;
+        let x = integer(args[5])?;
+        let z = integer(args[6])?;
+        if !(8..=1024).contains(&cells) || !(0..=4095).contains(&x) || !(0..=4095).contains(&z) {
+            return Err(Error(
+                "tile cells must be 8..1024 and tile indices 0..4095".into(),
+            ));
+        }
+        let values = settings
+            .iter()
+            .map(|value| number(value))
+            .collect::<Result<Vec<_>, _>>()?;
+        let [cell_size, cell_height, height, radius, climb, slope] = values.as_slice() else {
+            return Err(Error("expected six build settings".into()));
+        };
+        if *cell_size <= 0.0
+            || *cell_height <= 0.0
+            || *height <= 0.0
+            || *radius < 0.0
+            || *climb < 0.0
+            || !(0.0..90.0).contains(slope)
+        {
+            return Err(Error("invalid tile voxel or agent dimensions".into()));
+        }
+        // Compute bounds without integer arithmetic overflow, then ensure the
+        // backend's f32 coordinates retain a finite, nonempty tile interval.
+        let width = f64::from(*cell_size) * f64::from(cells);
+        for (origin, index) in [(origin_x, x), (origin_z, z)] {
+            let low = (f64::from(origin) + f64::from(index) * width) as f32;
+            let high = (f64::from(origin) + f64::from(index + 1) * width) as f32;
+            if !low.is_finite() || !high.is_finite() || low >= high {
+                return Err(Error(
+                    "tile bounds overflow or lose precision at this origin/scale".into(),
+                ));
+            }
+        }
+        Ok(Self { x, z })
+    }
+}
+
+fn build_obj(
+    backend: &str,
+    input: &str,
+    output: &str,
+    config: &[&str],
+    grid: Option<&[&str]>,
+) -> Result<i32, Error> {
     if std::path::Path::new(output).exists() {
         return Err(Error("output already exists; choose a new path".into()));
     }
@@ -64,9 +151,21 @@ fn build_obj(backend: &str, input: &str, output: &str, config: &[&str]) -> Resul
             "provide all six build settings, or omit them for defaults".into(),
         ));
     };
-    let mut child = Command::new(backend)
-        .arg("build")
-        .args(settings)
+    let tile_grid = grid
+        .map(|grid| TileGrid::parse(grid, settings))
+        .transpose()?;
+    let mut command = Command::new(backend);
+    command
+        .arg(if tile_grid.is_some() {
+            "build-tile"
+        } else {
+            "build"
+        })
+        .args(settings);
+    if let Some(grid) = grid {
+        command.args(grid);
+    }
+    let mut child = command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -92,6 +191,18 @@ fn build_obj(backend: &str, input: &str, output: &str, config: &[&str]) -> Resul
     let result = child
         .wait_with_output()
         .map_err(|e| Error(format!("backend wait failed: {e}")))?;
+    if result.status.code() == Some(3) && tile_grid.is_some() {
+        send.map_err(|e| Error(format!("geometry transfer failed: {e}")))?;
+        if !result.stdout.is_empty() {
+            return Err(Error(
+                "empty-tile backend result unexpectedly contains output bytes".into(),
+            ));
+        }
+        eprint!("{}", String::from_utf8_lossy(&result.stderr));
+        let grid = tile_grid.expect("checked tiled operation");
+        println!("status=EMPTY scope=tiled-cell tile_x={} tile_z={} output_created=false game_qa=unverified", grid.x, grid.z);
+        return Ok(3);
+    }
     if !result.status.success() {
         return Err(Error(format!(
             "backend failed: {}",
@@ -108,6 +219,13 @@ fn build_obj(backend: &str, input: &str, output: &str, config: &[&str]) -> Resul
         return Err(Error("unsupported backend IPC envelope".into()));
     }
     let tile = inspect_detour(&data[16..], word(8))?;
+    if let Some(grid) = tile_grid {
+        if tile.coordinates != [grid.x, grid.z, 0] {
+            return Err(Error(
+                "backend tile coordinates do not match the requested grid cell".into(),
+            ));
+        }
+    }
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -117,12 +235,17 @@ fn build_obj(backend: &str, input: &str, output: &str, config: &[&str]) -> Resul
         .and_then(|_| file.sync_all())
         .map_err(|e| Error(format!("output write failed: {e}")))?;
     eprint!("{}", String::from_utf8_lossy(&result.stderr));
-    println!("status=OBSERVED scope=single-tile-recast-build format=raw-detour-v7 reference_bits={} bytes={} polygons={} vertices={} coordinates=y-up settings={:?} game_qa=unverified",
-        tile.reference_bits, tile.payload_bytes, tile.polygons, tile.vertices, settings);
-    Ok(())
+    if let Some(grid) = tile_grid {
+        println!("status=OBSERVED scope=tiled-cell-recast-build format=raw-detour-v7 tile_x={} tile_z={} layer=0 reference_bits={} bytes={} polygons={} vertices={} coordinates=y-up settings={:?} game_qa=unverified",
+            grid.x, grid.z, tile.reference_bits, tile.payload_bytes, tile.polygons, tile.vertices, settings);
+    } else {
+        println!("status=OBSERVED scope=single-tile-recast-build format=raw-detour-v7 reference_bits={} bytes={} polygons={} vertices={} coordinates=y-up settings={:?} game_qa=unverified",
+            tile.reference_bits, tile.payload_bytes, tile.polygons, tile.vertices, settings);
+    }
+    Ok(0)
 }
 
-fn run(args: &[String]) -> Result<(), Error> {
+fn run(args: &[String]) -> Result<i32, Error> {
     match args
         .iter()
         .map(String::as_str)
@@ -159,16 +282,28 @@ fn run(args: &[String]) -> Result<(), Error> {
                 mesh.vertices.len(), mesh.triangles.len(), min, max);
         }
         ["build-obj", backend, input, output, config @ ..] => {
-            build_obj(backend, input, output, config)?
+            return build_obj(backend, input, output, config, None)
+        }
+        ["build-tile-obj", backend, input, output, origin_x, origin_z, min_y, max_y, cells, tile_x, tile_z, config @ ..] => {
+            return build_obj(
+                backend,
+                input,
+                output,
+                config,
+                Some(&[origin_x, origin_z, min_y, max_y, cells, tile_x, tile_z]),
+            )
         }
         _ => return Err(Error(format!("unsupported command or arguments\n{HELP}"))),
     }
-    Ok(())
+    Ok(0)
 }
 
 fn main() {
-    if let Err(e) = run(&std::env::args().skip(1).collect::<Vec<_>>()) {
-        eprintln!("bnav-extract: {e}");
-        std::process::exit(2);
+    match run(&std::env::args().skip(1).collect::<Vec<_>>()) {
+        Ok(code) => std::process::exit(code),
+        Err(e) => {
+            eprintln!("bnav-extract: {e}");
+            std::process::exit(2);
+        }
     }
 }

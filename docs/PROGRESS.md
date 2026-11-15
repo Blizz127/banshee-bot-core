@@ -1082,3 +1082,22 @@ Times are America/Chicago (CST).
   build0016 and submit one superseding tool/source intake to the existing
   publisher. C1/P0 acceptance and all holds remain independent. NEVER restart
   FFXI, including at zero players; features remain OFF.
+
+## 2026-11-15 07:25 CST — private build0016: PASS, publication unconfirmed
+
+- VERIFIED: source 0946e62 packages as **0.1.0-build0016**, 1159026 bytes,
+  SHA256 `1c4461e1066760ec9d766a2cd7d09b3f674ce616dc0146b481e82a26d6a8f953`.
+  Readback passes 139 payloads /13 startup invocations, plus one separately
+  recorded packaged bake-help check for the new option. All 120 source files,
+  build log and Rust outputs join to the fresh producer. The current scripts
+  and tools join to both completed collection smokes and six legacy checks.
+- All four executables match build0015 and all 22 core inputs retain their saved
+  identity. No native job, C1 comparison, asset bake or benchmark was replayed.
+  Exact receipts and unrun cases are recorded in `BUILD_0016.md`. This replaces
+  proposed0015 TOOL/SOURCE only; prior rollback artifacts stay intact.
+- Next correction for C1 completion belongs to the native owner: current
+  adapter/P0 and Game QA acceptance, with its existing fixture correction/jobs
+  preserved. The latest delivered/inspected report is still the separate 07:15
+  Pull failure; no shared-core correction is identified. Publication needs the
+  existing publisher's receipt. Neither dependency authorizes a restart or gates
+  source readiness on maps. C2+ stays gated; all features remain OFF.

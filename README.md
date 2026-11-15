@@ -40,6 +40,9 @@ summarizes a server adapter's recorded metrics; see its
 [CSV contract and coverage checks](docs/BOT_SOAK.md). It does not spawn bots.
 An opt-in [tile batch command](docs/NAV_BATCH.md) reuses decoded geometry across
 up to 16 cells with an explicit completion record and retained partial outputs.
+The [collection wrapper](docs/NAV_COLLECTION.md) can opt into bounded batches
+with `--batch-cells N`, binding actual receipts and output hashes while keeping
+its default per-cell behavior.
 
 The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds or verifies and
 reuses the existing pinned reader outside Git, with explicit zone/DAT selection.
@@ -65,7 +68,7 @@ See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [provenance](docs/PROVENANCE.md), [progress](docs/PROGRESS.md) and
 [current handoff](docs/HANDOFF_CURRENT.md).
 Private QA-candidate packaging is documented in [builds](docs/BUILDS.md).
-The current proposed private tool/source candidate is [build0015](docs/BUILD_0015.md);
+The current proposed private tool/source candidate is [build0016](docs/BUILD_0016.md);
 publication and native/Game QA remain separate pending steps.
 Game data, extracted geometry, binaries and evidence stay outside git under
 `~/.local/share/banshee-bot-core/`. No public release or repository remote.

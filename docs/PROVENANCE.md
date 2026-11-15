@@ -65,3 +65,11 @@ use the explicitly enabled 64-bit ABI, while the earlier standalone helper
 compiles a 32-bit ABI. Both remain explicit profiles; no source implementation
 was copied into this repository. Actual map files and bounded raw-payload
 observations remain external and are not bundled with tool candidates.
+
+The [selected WoW import](WOW_NAV_IMPORT.md) preserves those existing binary
+payloads instead of regenerating geometry. Original Rust/Python orchestration
+uses the explicit wrapper/ABI declarations, original map parameters and native
+Detour query interface. Caller-supplied map names and flag masks remain
+declarations; the importer does not authenticate a game producer or establish
+movement policy. Per-file identities, flags/areas and query receipts stay in
+the private evidence directory. No map payload is committed or bundled.

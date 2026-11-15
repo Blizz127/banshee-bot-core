@@ -328,3 +328,19 @@ Times are America/Chicago (CST).
   query filters, consume the corrected FFXI source, then package build0004.
   These are offline common-tool improvements; C2/C5 rollout is not advanced.
   The current no-restart hold remains unchanged.
+
+## 2026-11-15 02:35 AM CST — selected WoW map import: PASS offline
+
+- VERIFIED: six focused integrity tests and nine actual-file outcomes pass.
+  The importer preserves the exact map parameters and wrapped/raw tile bytes;
+  missing, altered, mismatched or incomplete selections are refused.
+- VERIFIED: two explicitly selected owner map509 tiles load and connect under
+  the native64 diagnostic with include flags1/exclude0. Their different vertical
+  bounds are preserved. The returned two-polygon path crosses their shared
+  portal. No full-map inventory or in-game movement is inferred.
+- Receipt: `evidence/wow-import-20261115-0234/result.json`, SHA-256
+  `b3d22812a03467e15e47a7fbed04ade0428887104ef7729817cac136cb4eb7a3`.
+  Source hashes/mtimes remain unchanged. All game data remains external.
+- Next correction: integrate native32/64 backend receipts and corrected FFXI
+  consumption evidence, then package/read back the next private tool candidate.
+  C1 adoption/P0 and actual-client QA remain separate owning-lead requirements.

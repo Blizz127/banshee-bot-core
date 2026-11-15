@@ -32,6 +32,8 @@ reader outside Git; its first bounded zone230 geometry has been
 physical calibration and native/client QA remain unverified.
 Existing owner WoW artifacts have [explicit ABI preflight evidence](docs/WOW_NAV_PREFLIGHT.md);
 `cmangos-v8-ref64` selects the observed retained cMaNGOS map format.
+The [selected-map importer](docs/WOW_NAV_IMPORT.md) retains those raw tiles and
+queries an explicitly bounded selection with a matching native backend.
 
 See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [adapter handoff](docs/C1_ADAPTER_HANDOFF.md),

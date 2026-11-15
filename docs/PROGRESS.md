@@ -218,3 +218,18 @@ Times are America/Chicago (CST).
 - Next correction: integrate the original reproducible export wrapper, validate
   the existing FFXI raw32 consumer against this exact output, package the tool
   increment and route geometry/calibration/QA evidence to the owning lead.
+
+## 2026-11-15 02:16 AM CST — native FFXI geometry compatibility: FAIL/PARTIAL
+
+- VERIFIED: the unchanged owning `a13dabcd` wrapper refuses the actual bounded
+  tile with `detail vertex outside convex polygon`, even after an honest rebake
+  by its accepted retained backend. Old/new backend raw output is byte-identical.
+  Build0002 provenance is separately refused as `unrecognized producer backend`.
+- Receipt: `evidence/ffxi-nav-compat-20261115-owned/result.json`, SHA-256
+  `a563ffdf1278b4caeaad3f0dc1271a45d6e8f75d2265eeabd2698e81473898c1`.
+  Synthetic contract checks pass, but cannot qualify the real tile. Native
+  Detour helper success does not override this source validation disagreement.
+- Next correction: identify the exact detail point/edge and route the source or
+  data correction to the FFXI owner. No check bypass, guard relaxation, native
+  adoption or Game QA claim. Correct the independently observed WoW 64-bit map
+  preflight profile while that real adapter boundary remains unresolved.

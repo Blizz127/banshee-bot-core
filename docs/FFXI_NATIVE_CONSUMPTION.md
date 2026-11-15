@@ -28,6 +28,52 @@ are in its sibling `owned-native-result.json`.
 This is a successful offline library consumption check. Native server P0 and
 Game QA remain **NOT RUN**; no live installation or full-zone claim follows.
 
+## Verified reuse and second owned crop
+
+**VERIFIED PASS, 2026-11-15 CST:** East Ronfaure zone101's bounded static crop
+was consumed with the **same retained wrapper and native executables**, without
+compilation or rerunning the owner tests. Its raw tile SHA256 is
+`cd23a5b744adab700f75c7061dbce4bdcefca4b5fa8a361bba18ba8bcf12541c`;
+the resulting MSET SHA256 is
+`1675836890a5cf4234f667c5ea2c8a319f8de8b1b1b24456fc55da262f9ef676`.
+All 12 compatibility cases passed, including refusal of the newer producer.
+The owning native library loaded 1/1 tile, returned four valid nearest picks,
+and completed the selected adjacent-polygon corridor and straight path with
+exact `DT_SUCCESS`. The native caller still supplies capacity512.
+
+Fresh evidence:
+`/home/blizz/.local/share/banshee-bot-core/evidence/ffxi101-native-reuse-5c73-20261115-attempt1/result.json`,
+SHA256 `49bf15d909c1c44432c2028b26b2994d3c1e2fee6d9ce6f3efff9514082781c7`.
+Its command list contains only `compatibility` and `owned-native`.
+`build_run_this_invocation` and `owner_tests_run_this_invocation` are false;
+historical source/build/test evidence stays under `reused_harness` rather than
+being presented as a new build or test result.
+
+`--reuse-harness` accepts only the original successful receipt pinned to
+`2aa4dcfe…`, not arbitrary later receipts and their self-declared hashes. It
+verifies the selected owner source/profile and packet, both retained binaries,
+the wrapper and native-driver source snapshots, native source manifest, exact
+harness Cargo manifest and retained lock. The current driver must still match
+the compiled snapshot. Every retained artifact stays inside its receipt tree;
+symlink paths are refused. Verified executable bytes are copied to a fresh
+private evidence directory and checked before and after dispatch. No retained
+build tree is modified or reused as a Cargo target.
+
+Every native crop now requires an explicit `--native-tile-sha256`. The selected
+tile must match its bake receipt; the bake must record success and bind the
+same OBJ and accepted `d999…` backend hashes. The FFXI sidecar must declare the
+single owning-exporter transform, Y-up coordinates, owner provenance and
+incomplete coverage. Its concrete provenance artifacts are read and checked
+against their hashes. These checks preserve supplied evidence; they do not
+independently authenticate ownership or prove physical coordinate calibration.
+
+Ten focused, non-executing guard tests cover valid reuse, modified receipt,
+binary/source/lock changes, a changed current driver, symlink/traversal refusal,
+explicit crop identity, unsupported backend, unrelated/failed bake and altered
+provenance/transform. They use synthetic metadata and never execute a fixture
+binary. Receipt:
+`/home/blizz/.local/share/banshee-bot-core/evidence/ffxi-nav-reuse-guards-20261115/result.json`.
+
 ## Pins and historical evidence
 
 `scripts/check_ffxi_nav.py` requires an explicit source profile:
@@ -159,8 +205,20 @@ python3 scripts/check_ffxi_nav.py \
   --owned-case /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-nav-compat-20261115-owned-inputs/build0001.json \
   --owned-case /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-nav-compat-20261115-owned-inputs/build0002.json \
   --native-case owned-ffxi-build0001 \
+  --native-tile-sha256 4ad75760178b7f7c2f518994a466df2f2b95e7e96780134598674ffa02378fb4 \
   --evidence /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-owned-native-FRESH
 ```
+
+For verified reuse, add:
+
+```sh
+--reuse-harness /home/blizz/.local/share/banshee-bot-core/evidence/ffxi-owned-native-5c73-20261115-attempt2/result.json
+```
+
+To reproduce zone101, replace the build0001 owned-case path with
+`/home/blizz/.local/share/banshee-bot-core/evidence/ffxi-east-ronfaure101-native-inputs-20261115/build0001.json`,
+set `--native-case owned-ffxi101-build0001`, and supply the zone101 raw hash above.
+Keep the newer-backend refusal case and choose a fresh evidence directory.
 
 To replay the historical pure wrapper, select `original-a13` and omit the packet
 and native-case options. The old owned-case failure remains expected historical

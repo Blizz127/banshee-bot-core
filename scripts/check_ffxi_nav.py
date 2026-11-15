@@ -3,7 +3,9 @@
 
 Builds only an immutable snapshot of detour_mset.rs in an external Cargo project.
 Optional --native-case consumes one pinned owned tile with the owner's exact
-detour-sys library. No FFXI checkout/build target, asset reader or server is used.
+detour-sys library. --reuse-harness verifies the retained successful receipt and
+executables instead of compiling or rerunning owner tests. No FFXI checkout,
+asset reader or server is used.
 """
 import argparse
 import datetime
@@ -33,7 +35,7 @@ PROFILES = {
     },
 }
 BACKEND_SHA256 = "d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c"
-OWNED_TILE_SHA256 = "4ad75760178b7f7c2f518994a466df2f2b95e7e96780134598674ffa02378fb4"
+RETAINED_HARNESS_RECEIPT_SHA256 = "2aa4dcfe08bc4da907b72c35aa1955488be344a389acecdaf229fe1a88aed367"
 EXCLUDED_NATIVE_TEST = "detour_mset::tests::synthetic_mset_loads_exactly_one_tile_and_queries_original_corridor"
 MAX_BYTES = 64 * 1024 * 1024
 
@@ -169,6 +171,106 @@ def snapshot_native(repo, profile, destination):
     return {"git_tree": tree, "files_sha256": hashes}
 
 
+def cargo_manifest(native):
+    text = '[package]\nname="ffxi-nav-compat"\nversion="0.0.0"\nedition="2021"\npublish=false\n\n[dependencies]\nsha2="=0.10.9"\nserde_json="=1.0.154"\n'
+    if native:
+        text += ('detour-sys={path="native/detour-sys"}\n\n'
+                 '[workspace]\nmembers=["native/detour-sys"]\nresolver="2"\n'
+                 '[workspace.package]\nedition="2021"\npublish=false\n\n'
+                 '[[bin]]\nname="ffxi-native-smoke"\npath="src/native_smoke.rs"\n')
+    return text.encode()
+
+
+def retained_file(root, relative):
+    """Keep all reuse reads inside the explicit receipt tree without symlinks."""
+    relative = Path(relative)
+    if relative.is_absolute() or not relative.parts or any(part in ("..", ".") for part in relative.parts):
+        raise ValueError("invalid retained artifact path")
+    path = root
+    for part in relative.parts:
+        path = path / part
+        if path.is_symlink():
+            raise ValueError(f"retained artifact traverses a symlink: {path}")
+    return path, file_bytes(path)
+
+
+def verify_reuse(receipt_path, profile, driver):
+    """Authenticate a known receipt before trusting any recorded binary hash.
+
+    Verify relevant retained build inputs, not the old geometry cases: each new
+    crop gets its own independent evidence checks below. Return executable bytes
+    for fresh copies so running the check never writes into retained artifacts.
+    """
+    receipt_data = file_bytes(receipt_path)
+    if digest(receipt_data) != RETAINED_HARNESS_RECEIPT_SHA256:
+        raise ValueError("reuse receipt does not match the retained successful receipt pin")
+    receipt_path = receipt_path.resolve(strict=True)
+    receipt = json.loads(receipt_data)
+    expected = {"verdict": "PASS", "reference_profile": "detail-boundary-5c73",
+                "reference_commit": profile["commit"], "reference_source_sha256": profile["source_sha256"],
+                "reference_tests_sha256": profile["tests_sha256"], "owner_packet_sha256": profile.get("packet_sha256"),
+                "harness_source_sha256": digest(HARNESS.encode()), "native_driver_sha256": digest(driver)}
+    if any(receipt.get(key) != value for key, value in expected.items()):
+        raise ValueError("reuse source/profile/driver identity differs from the current explicit selection")
+    native = receipt["native_sources"]
+    if native["git_tree"] != profile["native_tree"]:
+        raise ValueError("reuse native source tree differs from selected owner source")
+    root = receipt_path.parent
+    checks = {
+        "harness/src/detour_mset.rs": profile["source_sha256"],
+        "harness/src/detour_mset/tests.rs": profile["tests_sha256"],
+        "harness/src/main.rs": digest(HARNESS.encode()),
+        "harness/src/native_smoke.rs": digest(driver),
+        "harness/Cargo.toml": digest(cargo_manifest(True)),
+        "harness/Cargo.lock": receipt["cargo_lock_sha256"],
+        "target/debug/ffxi-nav-compat": receipt["harness_binary_sha256"],
+        "target/debug/ffxi-native-smoke": receipt["native_harness_binary_sha256"],
+    }
+    checks.update({"harness/native/detour-sys/" + name: value for name, value in native["files_sha256"].items()})
+    inputs = {str(receipt_path): digest(receipt_data)}
+    binaries = {}
+    for relative, expected_hash in checks.items():
+        path, data = retained_file(root, relative)
+        if digest(data) != expected_hash:
+            raise ValueError(f"retained artifact hash mismatch: {relative}")
+        inputs[str(path)] = expected_hash
+        if relative.startswith("target/debug/"):
+            binaries[path.name] = data
+    info = {"receipt": str(receipt_path), "receipt_sha256": digest(receipt_data),
+            "verified_artifacts_sha256": checks, "retained_native_source_tree": native["git_tree"],
+            "build_run_this_invocation": False, "owner_tests_run_this_invocation": False,
+            "evidence_scope": "Retained executable and relevant source/lock bytes verified; historical build/test outcomes not rerun or relabeled"}
+    return info, binaries, inputs
+
+
+def validate_native_crop(config, raw_receipt, sidecar, raw_sha, obj_path, obj_sha, backend_sha, expected_tile):
+    """Bind this explicitly selected crop to its recorded successful bake."""
+    if raw_sha != expected_tile or backend_sha != BACKEND_SHA256:
+        raise ValueError("native case differs from its explicit tile hash or retained build0001 backend")
+    if raw_receipt.get("exit_code") != 0:
+        raise ValueError("native crop requires a recorded successful bake")
+    inputs = raw_receipt.get("inputs", {})
+    backend_path = str(Path(config["backend"]).resolve(strict=True))
+    if inputs.get(str(obj_path)) != obj_sha or inputs.get(backend_path) != backend_sha:
+        raise ValueError("native bake receipt does not bind the selected OBJ and backend hashes")
+    coordinates = sidecar.get("coordinates", {})
+    if sidecar.get("format") != "bnav-geometry-v1" or sidecar.get("game") != "FFXI" or coordinates.get("up_axis") != "Y":
+        raise ValueError("native crop requires explicit FFXI Y-up export metadata")
+    if coordinates.get("transform") != "(x,-y,-z), applied once by owning exporter; winding aligned to transformed stored normals":
+        raise ValueError("native crop must declare the owning exporter transform applied exactly once")
+    artifacts = sidecar["provenance"].get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise ValueError("native crop needs concrete owner export provenance artifacts")
+    checked = {}
+    for artifact in artifacts:
+        path = Path(artifact["path"]).resolve(strict=True)
+        actual = digest(file_bytes(path))
+        if actual != artifact["sha256"]:
+            raise ValueError(f"owner provenance artifact hash mismatch: {path}")
+        checked[str(path)] = actual
+    return checked
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--reference-profile", choices=PROFILES, required=True,
@@ -176,6 +278,9 @@ def main():
     parser.add_argument("--source-packet", type=Path,
                         help="owner source/test packet; required for detail-boundary-5c73")
     parser.add_argument("--native-case", help="accepted owned case to load/query using exact owning detour-sys")
+    parser.add_argument("--native-tile-sha256", help="explicit expected SHA256 of the selected native crop")
+    parser.add_argument("--reuse-harness", type=Path,
+                        help="original successful corrected-harness result.json; verified against a fixed receipt pin")
     parser.add_argument("--reference-repo", type=Path, default=Path("/home/blizz/dev/ffxi-platform"))
     parser.add_argument("--single-dir", type=Path, required=True)
     parser.add_argument("--tiled-dir", type=Path, required=True)
@@ -190,6 +295,13 @@ def main():
         parser.error("corrected source requires its explicitly supplied pinned owner packet")
     if args.native_case and args.reference_profile != "detail-boundary-5c73":
         parser.error("owned native smoke requires the corrected owner source profile")
+    if args.native_case and (not args.native_tile_sha256 or len(args.native_tile_sha256) != 64
+                            or any(c not in "0123456789abcdef" for c in args.native_tile_sha256)):
+        parser.error("native case requires an explicit lowercase --native-tile-sha256")
+    if args.native_tile_sha256 and not args.native_case:
+        parser.error("native tile hash requires an explicitly selected native case")
+    if args.reuse_harness and (not args.native_case or args.reference_profile != "detail-boundary-5c73"):
+        parser.error("retained reuse requires the corrected profile and an explicit native case")
     if args.source_packet and "packet_sha256" not in profile:
         parser.error("the historical profile has no pinned source/test packet")
     repo = Path(__file__).resolve().parents[1]
@@ -209,6 +321,15 @@ def main():
             packet_sha = check_packet(args.source_packet.resolve(strict=True), profile, original, tests)
         except (OSError, ValueError, tarfile.TarError) as error:
             parser.error(str(error))
+    native_driver = Path(__file__).with_name("ffxi_native_driver.rs").read_bytes() if args.native_case else None
+    reuse_info, reused_binaries, reuse_inputs = None, {}, {}
+    if args.reuse_harness:
+        try:
+            reuse_info, reused_binaries, reuse_inputs = verify_reuse(args.reuse_harness, profile, native_driver)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            parser.error(str(error))
+        if output.is_relative_to(args.reuse_harness.resolve(strict=True).parent):
+            parser.error("fresh evidence must not be inside the retained harness tree")
     build_bytes = file_bytes(args.backend_manifest.resolve(strict=True))
     build_record = json.loads(build_bytes)
     if build_record["backend_sha256"] != BACKEND_SHA256:
@@ -216,6 +337,7 @@ def main():
     single = args.single_dir.resolve(strict=True)
     tiled = args.tiled_dir.resolve(strict=True)
     source_files = {str(args.backend_manifest.resolve()): digest(build_bytes)}
+    source_files.update(reuse_inputs)
     if packet_sha:
         source_files[str(args.source_packet.resolve())] = packet_sha
     raw_inputs = {}
@@ -243,26 +365,28 @@ def main():
     raw_inputs["native64"] = native64[56:]
 
     output.mkdir(parents=True)
-    project = output / "harness"
-    (project / "src").mkdir(parents=True)
     (output / "inputs").mkdir()
     (output / "outputs").mkdir()
-    (project / "src/detour_mset.rs").write_bytes(original)
-    (project / "src/main.rs").write_text(HARNESS)
-    cargo_text = '[package]\nname="ffxi-nav-compat"\nversion="0.0.0"\nedition="2021"\npublish=false\n\n[dependencies]\nsha2="=0.10.9"\nserde_json="=1.0.154"\n'
+    project = output if reuse_info else output / "harness"
+    binary_dir = output / "reused-bin" if reuse_info else output / "target/debug"
     native_sources = None
-    native_driver = None
-    if args.native_case:
-        native_sources = snapshot_native(source_repo, profile, project / "native/detour-sys")
-        native_driver = Path(__file__).with_name("ffxi_native_driver.rs").read_bytes()
-        (project / "src/native_smoke.rs").write_bytes(native_driver)
-        (project / "src/detour_mset").mkdir()
-        (project / "src/detour_mset/tests.rs").write_bytes(tests)
-        cargo_text += ('detour-sys={path="native/detour-sys"}\n\n'
-                       '[workspace]\nmembers=["native/detour-sys"]\nresolver="2"\n'
-                       '[workspace.package]\nedition="2021"\npublish=false\n\n'
-                       '[[bin]]\nname="ffxi-native-smoke"\npath="src/native_smoke.rs"\n')
-    (project / "Cargo.toml").write_text(cargo_text)
+    if reuse_info:
+        binary_dir.mkdir()
+        for name, data in reused_binaries.items():
+            path = binary_dir / name
+            with path.open("xb") as stream:
+                stream.write(data)
+            path.chmod(0o700)
+    else:
+        (project / "src").mkdir(parents=True)
+        (project / "src/detour_mset.rs").write_bytes(original)
+        (project / "src/main.rs").write_text(HARNESS)
+        if args.native_case:
+            native_sources = snapshot_native(source_repo, profile, project / "native/detour-sys")
+            (project / "src/native_smoke.rs").write_bytes(native_driver)
+            (project / "src/detour_mset").mkdir()
+            (project / "src/detour_mset/tests.rs").write_bytes(tests)
+        (project / "Cargo.toml").write_bytes(cargo_manifest(bool(args.native_case)))
     geometry_manifest = {"kind": "synthetic-fixture-source-manifest", "actual_game_geometry": False,
                          "source_files_sha256": source_files, "coordinate_calibration": "UNVERIFIED"}
     geometry_bytes = (json.dumps(geometry_manifest, indent=2) + "\n").encode()
@@ -313,6 +437,12 @@ def main():
         manifest_bytes = record("backend_manifest")
         if json.loads(manifest_bytes)["backend_sha256"] != backend_sha:
             parser.error("owned backend differs from build manifest")
+        if name == args.native_case:
+            try:
+                source_files.update(validate_native_crop(config, raw_receipt, sidecar, digest(raw),
+                                                        obj_path, obj_sha, backend_sha, args.native_tile_sha256))
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                parser.error(str(error))
         input_path = output / "inputs" / f"{name}.navtile"
         input_path.write_bytes(raw)
         cases.append({"name": name, "path": str(input_path), "sha256": digest(raw),
@@ -325,8 +455,6 @@ def main():
         selected = [case for case in cases if case["name"] == args.native_case]
         if len(selected) != 1 or selected[0]["expect"] != "accept" or selected[0]["mode"] != "pinned":
             parser.error("native case must explicitly select one accepted owned case")
-        if selected[0]["sha256"] != OWNED_TILE_SHA256 or selected[0]["producer"]["backend_sha256"] != BACKEND_SHA256:
-            parser.error("native case must use the exact recorded owned tile and retained build0001 backend")
     plan = {"backend_sha256": BACKEND_SHA256, "build_receipt_sha256": digest(build_bytes),
             "geometry_manifest_sha256": digest(geometry_bytes), "cases": cases}
     (output / "plan.json").write_text(json.dumps(plan, indent=2) + "\n")
@@ -337,9 +465,12 @@ def main():
               "harness_source_sha256": digest(HARNESS.encode()), "script_sha256": digest(Path(__file__).read_bytes()),
               "source_files_sha256": source_files, "commands": [], "native_load_or_query_executed": False,
               "native_sources": native_sources, "native_driver_sha256": digest(native_driver) if native_driver else None,
+              "reused_harness": reuse_info, "build_run_this_invocation": not bool(reuse_info),
+              "owner_tests_run_this_invocation": bool(args.native_case and not reuse_info),
+              "native_expected_tile_sha256": args.native_tile_sha256,
               "owned_native_load_or_query_executed": False,
               "excluded_owner_test": {"name": EXCLUDED_NATIVE_TEST,
-                  "reason": "Owner test supplies capacity16 to native path APIs whose shim uses512; source retained unchanged, test not executed"} if args.native_case else None,
+                  "reason": "Owner test supplies capacity16 to native path APIs whose shim uses512; source retained unchanged, test not executed"} if args.native_case and not reuse_info else None,
               "game_qa": "NOT_RUN", "started_cst": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))).isoformat()}
 
     def save_report():
@@ -359,30 +490,39 @@ def main():
             raise RuntimeError(f"{label} failed ({result.returncode}); see {log}")
 
     try:
-        run("lock", ["cargo", "generate-lockfile", "--offline", "--manifest-path", project / "Cargo.toml"])
-        run("build", ["cargo", "build", "--offline", "--locked", "-j2", "--manifest-path", project / "Cargo.toml", "--target-dir", output / "target"])
-        run("compatibility", [output / "target/debug/ffxi-nav-compat", output / "plan.json", output / "outputs"])
-        if args.native_case:
+        if not reuse_info:
+            run("lock", ["cargo", "generate-lockfile", "--offline", "--manifest-path", project / "Cargo.toml"])
+            run("build", ["cargo", "build", "--offline", "--locked", "-j2", "--manifest-path", project / "Cargo.toml", "--target-dir", output / "target"])
+        else:
+            for name, data in reused_binaries.items():
+                if digest(file_bytes(binary_dir / name)) != digest(data):
+                    raise ValueError("fresh executable copy changed before dispatch")
+        run("compatibility", [binary_dir / "ffxi-nav-compat", output / "plan.json", output / "outputs"])
+        if args.native_case and not reuse_info:
             run("wrapper-tests", ["cargo", "test", "--offline", "--locked", "-j2", "--manifest-path", project / "Cargo.toml",
                                   "--target-dir", output / "target", "-p", "ffxi-nav-compat", "--bin", "ffxi-nav-compat",
                                   "detour_mset::tests::", "--", "--test-threads=1", "--skip", EXCLUDED_NATIVE_TEST])
             if f"{profile['wrapper_test_count'] - 1} passed; 0 failed; 0 ignored" not in (output / "wrapper-tests.log").read_text():
                 raise RuntimeError("wrapper test count differs from expected focused owner tests")
             report["native_load_or_query_executed"] = True  # Owner tests use synthetic native meshes.
-            run("owned-native", [output / "target/debug/ffxi-native-smoke", output / "plan.json", args.native_case,
+        if args.native_case:
+            run("owned-native", [binary_dir / "ffxi-native-smoke", output / "plan.json", args.native_case,
                                  output / "outputs", output / "owned-native-result.json"])
         for path, expected in source_files.items():
             if digest(file_bytes(Path(path))) != expected:
                 raise RuntimeError(f"input changed during check: {path}")
+        for name, data in reused_binaries.items():
+            if digest(file_bytes(binary_dir / name)) != digest(data):
+                raise ValueError("fresh executable copy changed during dispatch")
         report["verdict"] = "PASS"
     except (OSError, ValueError, RuntimeError) as error:
         report["verdict"] = "FAIL"
         report["error"] = str(error)
     report["finished_cst"] = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))).isoformat()
     report["cargo_lock_sha256"] = digest((project / "Cargo.lock").read_bytes()) if (project / "Cargo.lock").is_file() else None
-    binary = output / "target/debug/ffxi-nav-compat"
+    binary = binary_dir / "ffxi-nav-compat"
     report["harness_binary_sha256"] = digest(binary.read_bytes()) if binary.is_file() else None
-    native_binary = output / "target/debug/ffxi-native-smoke"
+    native_binary = binary_dir / "ffxi-native-smoke"
     report["native_harness_binary_sha256"] = digest(native_binary.read_bytes()) if native_binary.is_file() else None
     results = output / "outputs/wrapper-results.json"
     if results.is_file():
@@ -393,6 +533,7 @@ def main():
         report["owned_native"] = json.loads(native_result.read_text())
         report["owned_native_result_sha256"] = digest(native_result.read_bytes())
         report["owned_native_load_or_query_executed"] = report["owned_native"]["native_load_or_query_executed"]
+        report["native_load_or_query_executed"] |= report["owned_native_load_or_query_executed"]
     (output / "result.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"verdict": report["verdict"], "receipt": str(output / "result.json"), "error": report.get("error")}))
     return 0 if report["verdict"] == "PASS" else 1

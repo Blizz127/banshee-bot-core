@@ -1,6 +1,8 @@
 //! Native navigation boundary. Coordinates and zones must be mapped explicitly
 //! by each adapter; absence of a path never authorizes straight-line movement.
 
+pub mod metrics;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Point3 {
     pub x: f32,

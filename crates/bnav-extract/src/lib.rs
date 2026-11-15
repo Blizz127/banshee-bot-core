@@ -1,5 +1,6 @@
-//! Offline preflight only. This crate does not yet generate or query navmeshes.
-//! All binary layouts are explicitly selected, little-endian profiles.
+//! Offline geometry and tile preflight used by the CLI's native Recast builder.
+//! All binary layouts are explicitly selected, little-endian profiles. Header
+//! validation alone does not prove polygon connectivity or game walkability.
 
 use std::fmt;
 
@@ -279,7 +280,7 @@ pub fn inspect_detour(data: &[u8], reference_bits: u32) -> Result<DetourInspecti
     })
 }
 
-/// Canonical triangle input for a future Recast backend. Coordinates are passed
+/// Canonical triangle input for the Recast backend. Coordinates are passed
 /// through unchanged: the game extractor owns units, handedness and up-axis.
 #[derive(Debug, PartialEq)]
 pub struct TriangleMesh {

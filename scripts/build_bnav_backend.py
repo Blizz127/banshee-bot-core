@@ -86,7 +86,7 @@ def main():
         'inputs_sha256': source_identity,
         'compiler': subprocess.check_output([args.cxx,'--version'],text=True).splitlines()[0],
         'flags': flags, 'jobs': args.jobs,
-        'scope': 'single-tile geometry-to-Recast/Detour; no game format decoder',
+        'scope': 'single and fixed-grid tiled geometry-to-Recast/Detour; no game format decoder',
     }
     (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps({'backend':str(binary),'sha256':manifest['backend_sha256'],'manifest':str(output/'manifest.json')}))

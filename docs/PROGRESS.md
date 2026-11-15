@@ -157,3 +157,16 @@ Times are America/Chicago (CST).
   pipeline checks; exercise the already-documented FFXI offline collision/export
   source in an external workspace. Unknown-format Ghidra analysis remains blocked
   by its runtime; known-source tooling does not require that analysis.
+
+## 2026-11-15 02:09 AM CST — bounded collection layer: PASS offline / maps PARTIAL
+
+- VERIFIED: six focused collection integrity checks pass. The native synthetic
+  smoke records two built tiles and one explicitly empty cell; a complete route
+  crosses the seam around a wall. An incomplete collection is rejected.
+- Receipt: `~/.local/share/banshee-bot-core/evidence/nav-collection-20261115/validation.json`,
+  SHA-256 `5a2ac612800b02909e4066d9d95a3d89e59dfd6541471355f3158ea5e2b3b636`.
+  Coverage means every requested cell was evaluated, not that every game surface
+  is present. Inputs, settings, tool binaries and tile outputs retain hashes.
+- Next correction: package and read back the candidate; consume the in-progress
+  64-bit and known-source FFXI export evidence. FFXI's current native loader still
+  accepts only a single tile; native adaptation and Game QA remain outstanding.

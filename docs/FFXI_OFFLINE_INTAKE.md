@@ -362,5 +362,29 @@ Evidence: `~/.local/share/banshee-bot-core/evidence/c1-metadata-refresh-20261115
 SHA256 `747b4c9079485a84bb801f330a2dae2e82adb674f7e9976a48d68cd5227f17f1`.
 The next native boundary stays with the owning corrected four-check run.
 
+## H. Reported single Pull diagnostic failure — 07:15 bounded refresh
+
+**OBSERVED, owning-lead summary only:** the 07:15:35 CST platform report names
+abbreviated source `4e`, original job `15099/775f5e` and terminal `f3cccf`.
+Build exit is 0 after 116.592 seconds; outer exit is 1. The single Pull check
+reports **0 passed / 1 failed**, with the native permitted-combat-range notice.
+This is neither a full C1/P0 result nor acceptance. Earlier Follow checks and
+reported evidence-reader closure counts remain separate and unconsumed here.
+
+The lead's source trace attributes the failure to fixture EXP tables resolved
+before Lua boot switches the test thread's era. That attribution is reported
+source analysis, not a production/live cause verified by bot-core. The next
+owning correction re-resolves fixture EXP data after actual boot while retaining
+job/level/progress, the native combat guard and the full scenario. No shared-core
+API defect or repair intake is identified. No weaker guard or duplicate check
+is requested by this observation.
+
+One task-board snapshot and two reports were read; no source packet, native
+job/terminal, old test or publisher runtime was opened. No bot-core publication
+receipt was found. Existing no-restart, access/player/install and other holds
+remain. Evidence:
+`~/.local/share/banshee-bot-core/evidence/c1-metadata-refresh-20261115-071551cst/delta-summary.json`,
+SHA256 `75408fa4d5b18e2e32bae5c51beb7f13a1a1b37d9dbecf20b1d95c5d03932ee7`.
+
 All source snapshots, binaries and game data remain external. Only original
 tooling is committed here. No owning checkout, runtime or player state changed.

@@ -1049,3 +1049,10 @@ Times are America/Chicago (CST).
   build0015 tools. Next correction: run the bounded new smoke for both ABIs,
   record actual results and package/read back build0016. No native FFXI job,
   game asset, producer adoption or live action is requested. NEVER restart FFXI.
+
+- OBSERVED: one 07:15 bounded metadata snapshot reports native build success
+  followed by a single Pull diagnostic at 0 passed /1 failed. Its reported
+  fixture initialization cause is not a shared API failure or production cause;
+  no current C1/P0 acceptance or publisher receipt is supplied. Existing Follow
+  checks and evidence-reader counts remain separate. See `FFXI_OFFLINE_INTAKE.md`
+  section H and its exact observation limits. No job or packet was reopened.

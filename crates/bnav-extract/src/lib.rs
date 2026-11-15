@@ -159,6 +159,14 @@ pub struct TileInspection {
     pub bounds_max: [f32; 3],
 }
 
+/// Borrow the exact raw Detour payload after validating the explicitly selected
+/// wrapper/header layout. No geometry, area, flag or connection is rewritten.
+/// This preflight is not a complete native structural or walkability check.
+pub fn mmtile_payload(bytes: &[u8], profile: Profile) -> Result<&[u8]> {
+    let inspection = inspect_mmtile(bytes, profile)?;
+    Ok(&bytes[bytes.len() - inspection.payload_bytes..])
+}
+
 /// Checks the wrapper, dtMeshHeader and complete section lengths. This is NOT a
 /// complete validator of polygon indices, adjacency, walkability or connectivity.
 pub fn inspect_mmtile(bytes: &[u8], profile: Profile) -> Result<TileInspection> {
@@ -495,6 +503,29 @@ mod tests {
                 .0
                 .contains("section lengths"));
             assert!(inspect_mmtile(&bytes, Profile::AzerothCoreV20).is_err());
+        }
+    }
+
+    #[test]
+    fn payload_extraction_preserves_bytes_and_rejects_wrong_profiles() {
+        for profile in [
+            Profile::CmangosV8,
+            Profile::CmangosV8Ref64,
+            Profile::AzerothCoreV20,
+        ] {
+            let wrapped = tile(profile);
+            let offset = profile.wrapper().0;
+            assert_eq!(
+                mmtile_payload(&wrapped, profile).unwrap(),
+                &wrapped[offset..]
+            );
+            assert!(mmtile_payload(&wrapped[..wrapped.len() - 1], profile).is_err());
+            let wrong = if profile.reference_bits() == 32 {
+                Profile::CmangosV8Ref64
+            } else {
+                Profile::CmangosV8
+            };
+            assert!(mmtile_payload(&wrapped, wrong).is_err());
         }
     }
 

@@ -1,5 +1,6 @@
 use bnav_extract::{
-    inspect_detour, inspect_mmap, inspect_mmap_profile, inspect_mmtile, read_obj, Error, Profile,
+    inspect_detour, inspect_mmap, inspect_mmap_profile, inspect_mmtile, mmtile_payload, read_obj,
+    Error, Profile,
 };
 use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Read, Write};
@@ -11,6 +12,7 @@ Usage:
   bnav-extract inspect-mmap PATH
   bnav-extract inspect-mmap <cmangos-v8|cmangos-v8-ref64|acore-v20> PATH
   bnav-extract inspect-mmtile <cmangos-v8|cmangos-v8-ref64|acore-v20> PATH
+  bnav-extract extract-mmtile <cmangos-v8|cmangos-v8-ref64|acore-v20> INPUT OUTPUT
   bnav-extract inspect-detour <32|64> PATH
   bnav-extract check-obj PATH
   bnav-extract build-obj BACKEND INPUT OUTPUT [CELL_SIZE CELL_HEIGHT HEIGHT RADIUS CLIMB SLOPE]
@@ -20,6 +22,7 @@ Inspection is read-only; little-endian profiles only. Maximum input: 64 MiB.
 Tile inspection checks headers and section lengths, not connectivity or walkability.
 cmangos-v8 keeps its 32-bit ABI; cmangos-v8-ref64 explicitly selects the 64-bit ABI.
 Only profiled cmangos-v8-ref64 map inspection permits the fixed 31-bit capacity field.
+extract-mmtile writes the unchanged raw payload into a new file outside Git; it does not rebuild or certify it.
 check-obj accepts triangulated geometry without transforms; it does not build navmesh.
 build-obj writes a new raw Detour v7 tile via an explicit external Recast backend.
 Input must be Y-up; all agent dimensions use the geometry's world units.
@@ -50,6 +53,43 @@ fn read(path: &str) -> Result<Vec<u8>, Error> {
         return Err(Error("input exceeds 64 MiB preflight limit".into()));
     }
     Ok(bytes)
+}
+
+fn extract_mmtile(profile: Profile, input: &str, output: &str) -> Result<(), Error> {
+    let bytes = read(input)?;
+    let payload = mmtile_payload(&bytes, profile)?;
+    let requested = std::path::Path::new(output);
+    let name = requested
+        .file_name()
+        .ok_or_else(|| Error("output must name a new file".into()))?;
+    let parent = requested
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(std::path::Path::new("."));
+    let parent = parent
+        .canonicalize()
+        .map_err(|e| Error(format!("output parent must exist: {e}")))?;
+    if parent.ancestors().any(|p| p.join(".git").exists()) {
+        return Err(Error(
+            "extracted game data must remain outside Git repositories".into(),
+        ));
+    }
+    let destination = parent.join(name);
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&destination)
+        .map_err(|e| Error(format!("cannot create new raw tile: {e}")))?;
+    file.write_all(payload)
+        .and_then(|_| file.sync_all())
+        .map_err(|e| {
+            Error(format!(
+                "raw tile write failed; partial output retained: {e}"
+            ))
+        })?;
+    println!("status=OBSERVED scope=unchanged-raw-payload profile={} reference_bits={} bytes={} geometry_rewritten=false connectivity=unverified walkability=unverified",
+        profile.name(), profile.reference_bits(), payload.len());
+    Ok(())
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -280,6 +320,9 @@ fn run(args: &[String]) -> Result<i32, Error> {
             let t = inspect_mmtile(&read(path)?, Profile::parse(profile)?)?;
             println!("status=OBSERVED scope=header-and-section-lengths profile={} detour_version=7 reference_bits={} payload_bytes={} coordinates={:?} polygons={} vertices={} uses_liquids={} bounds_min={:?} bounds_max={:?} connectivity=unverified walkability=unverified",
                 t.profile.name(), t.profile.reference_bits(), t.payload_bytes, t.coordinates, t.polygons, t.vertices, t.uses_liquids, t.bounds_min, t.bounds_max);
+        }
+        ["extract-mmtile", profile, input, output] => {
+            extract_mmtile(Profile::parse(profile)?, input, output)?;
         }
         ["inspect-detour", bits, path] => {
             let bits = bits

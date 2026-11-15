@@ -623,3 +623,31 @@ Times are America/Chicago (CST).
   holds remain. Build0008 stays immutable; this later metadata is not inside it.
 - Next correction remains owning collision/placement coverage and class strategy
   evidence under the existing intakes; C1 native adoption/P0 stays independent.
+
+## 2026-11-15 03:23 CST — coherent native C1 source adoption: PARTIAL C1
+
+- VERIFIED identity: the supplied 04b715eb source/test archive matches SHA256
+  `506c6fb3512abf83084378051b9f08d46784b5f26abc24b6a766bec6729f0134`,
+  49798 bytes. All 20 regular UTF-8 members/19 manifest entries and saved
+  log/result associations verify. Nineteen local crate source/test files and
+  their build0008 manifest entries match the saved shared 6ead vendor pins.
+- OBSERVED source adoption: coherent authority, command, control, selection,
+  orders and formation APIs now share exact 6ead identity. Native placement,
+  help and execution remain native per the saved source records. The isolated
+  actual-native-module run at 04b records **46 passed / 0 failed**. Two separate
+  exact overflow runs on its unchanged-shared parent each pass one test, with
+  seven filtered. No aggregation into a full native/P0 acceptance result.
+- Retained failures: the first harness compile failed before any tests, then
+  the isolated parent recorded 44/2. Separately, the current platform relay says
+  original e519 native **9 passed / 3 failed**, fixes pending; its terminal was
+  not in this packet and was not inspected here. The newer isolated result does
+  not resolve those e519 failures by implication.
+- This supersedes only the partial 756 source-adoption stage. Existing C1
+  comparison, closed evidence and all holds remain. No packet/patch application,
+  test/build replay, new worker, native job or server action. C2 remains gated;
+  no map prerequisite, installation, restart, full xi-map/P0 or Game QA claim.
+- Receipt: `evidence/c1-coherent-adoption-04b715eb-intake-20261115/result.json`,
+  SHA256 `c0308c85504fdc2d41d90ec2ef288c083df8ffc0d2c9f56664bf0e71ff9bc231`.
+  Updated existing intake/handoff and README; build0008 remains immutable.
+  Next correction is the owning lane's pending native failures/current P0 and
+  actual-client QA, retaining NEVER restart FFXI including at zero players.

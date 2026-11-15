@@ -103,6 +103,9 @@ remain adapter responsibilities.
 
 ### C. Partial authority source adoption
 
+Historical partial stage: D below supersedes this source-adoption proposal only;
+the packet, closed eight-test result and failure evidence remain retained.
+
 OBSERVED closed source/test evidence from existing platform task `0fcbfa0421bc`:
 source `756eb1659d7a189273fd4d0a16c1bf568558c1d5` directly re-exports authority
 types/functions from exact shared `db74a9f444c41d8415230adbfeb9f5d79dfbdd5c`.
@@ -143,6 +146,56 @@ Bot-core intake receipt:
 SHA-256 `bc92f9472317e142e80e403ade37718c195601678ce09588bea24cbdb49e1947`,
 beneath the private data root. Only metadata/source evidence was consumed.
 
+### D. Coherent source adoption at 04b715eb
+
+OBSERVED source/test evidence from existing platform task `0fcbfa0421bc`:
+`04b715eb914609cefb347157dc65211e09a602a5` adopts coherent authority, command,
+control, selection, orders and formation types from shared
+`6ead1da101233820784563339b9b4d9ba9bc7fdc`. The saved source declarations retain
+native `desired` placement, help and execution. The child corrects inherited
+Pull/HELP test assertions; the saved handoff states production is unchanged
+from its coherent-adoption parent.
+
+The saved native-module log records **46 passed / 0 failed / 0 ignored /
+0 filtered**, outer session `2482`, terminal `ab0c43`, exit 0. This is actual
+native source in an isolated crate, including seven retained dismiss tests;
+it is not a full `xi-map`, native Session/driver P0 or gameplay run.
+Two **separate** exact overflow checks each record 1 passed / 0 failed /
+7 filtered on parent `ddd2384ad8656c91278768e19595fa9d38853c91`, outer session
+`40854`, terminal `c551c1`, exit 0. Shared bytes are unchanged in the child;
+those checks were not rerun there or here. Do not aggregate these domains.
+
+| Record | Identity |
+| --- | --- |
+| Packet | `/home/blizz/scratch-build/ffxi-c1-04b715eb-source-test-20261115.tar.gz`, 49798 bytes; SHA256 `506c6fb3512abf83084378051b9f08d46784b5f26abc24b6a766bec6729f0134` |
+| `ACCEPTANCE.json` | SHA256 `aba6eb82e90b1985aa157aab5cb45ccdf72b57fbddb919c54f005c14c996dc35` |
+| `evidence/native46-result.json` | SHA256 `56a7914bc153910f3f45377f4a3346aea9fb9699ee4f72482b1dde748677a654` |
+| `evidence/shared-overflow-result.json` | SHA256 `59883cd2fbd3d5213a524027726ca4f083c85e3e4eaf8a8ae39a21357bfbdb2f` |
+| `evidence/frozen-binding.json` | SHA256 `80a69a72d6eea539725af429dbfb05f12252ae2472c2e94f24df35b5555f9ce9` |
+
+VERIFIED here: archive identity, all 20 regular UTF-8 members/19 manifest
+entries, and saved log/result associations. The 19 declared shared source/test
+pins match this repository and build0008 manifest entries. This is a local
+identity comparison against saved vendor declarations, not a rehash of native
+or other external inputs. Source/patch and all metadata remain outside Git;
+no patch, test, executable or recipe was applied or run.
+
+Retained failures remain distinct: the first isolated harness omitted dismiss
+and failed compilation with zero tests run; the isolated parent then reported
+44 passed / 2 failed. The owner's latest relay separately reports the original
+**e519 native run at 9 passed / 3 failed**, with fixes pending. Its terminal is
+not in this packet and was not inspected here. The 46/0 isolated child result
+does not resolve those e519 failures by implication.
+
+**Supersedes only partial 756eb165 source adoption.** No current native P0,
+runtime kit, installability, Game QA or C2 acceptance follows. No navigation
+dependency, duplicate test or new worker is created. NEVER restart FFXI,
+including at zero players; all existing holds persist.
+
+Intake receipt under the private bot-core data root:
+`evidence/c1-coherent-adoption-04b715eb-intake-20261115/result.json`, SHA256
+`c0308c85504fdc2d41d90ec2ef288c083df8ffc0d2c9f56664bf0e71ff9bc231`.
+
 ### Consumed review and operational boundaries
 
 Coordinator review components are `query-supplement-review.json` and
@@ -156,8 +209,9 @@ This append reads/hashes metadata only. Its record is
 `42ec96140a92c6e129dc43dabecad2054ac26e1b8efd907116eb28fc181a1a26`,
 beneath the private bot-core data root.
 
-Platform native12 at e519 was **reported RUNNING** at the cited report time;
-no terminal/counts were consumed here. Actual-r2+age Fillhost1 remains reported
+Platform native12 at e519 was **reported RUNNING** at the earlier cited report
+time. D records the newer relay's closed **9 passed / 3 failed** outcome and
+pending fixes; no terminal was polled or consumed here. Actual-r2+age Fillhost1 remains reported
 prepared/unrun; rc183 disabled/unbuilt; rc180 is the latest reported completed
 offline/unsealed kit, **not installable**. These are dated reports, not fresh
 job-status observations. No job was polled, retargeted, restarted or duplicated.
@@ -176,8 +230,9 @@ restart FFXI** instruction remain unchanged. No live action was requested.
    command precedence and formation settings. Receipt SHA-256
    `dcecb524ad08d1c2c43e5ce009b9b3578270a299aad51003939086e76dbc38ea`;
    see [the adapter handoff](C1_ADAPTER_HANDOFF.md). This supersedes the old
-   grammar-only/source36b907 proposal. Native baseline acceptance,
-   coherent type adoption and `/fb` P0 stay with the owning lead. Navigation
+   grammar-only/source36b907 proposal. Coherent source adoption is now observed
+   at 04b715eb as recorded in D; current full native integration, resolution of
+   the separately reported e519 failures and `/fb` P0 stay with the owning lead. Navigation
    work does not gate C1, satisfy P0 or advance C2.
 2. **Review the general native capacity API separately.** Source allocates
    caller-sized Rust buffers but the C++ shim passes 512 to Detour. Our callers

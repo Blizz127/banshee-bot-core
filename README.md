@@ -6,11 +6,13 @@ Governing scope: [spec](docs/BANSHEE_BOT_CORE_SPEC_20261115.md).
 **C1 is partial.** The shared library implements the pinned FFXI cancellation
 clock, roles, `/fb` grammar and pure ownership, selection and order planning
 contracts. Target claims, session facts and gameplay execution remain in the
-FFXI server. FFXI source 756eb165 now directly adopts shared authority, with a
-reported 8/8 isolated native-module result; full adapter/P0 and Game QA remain
-unverified. New feature switches default off.
+FFXI server. FFXI source 04b715eb now adopts the coherent shared 6ead type set,
+with 46/0 isolated native-module results and two separate overflow passes.
+The original e519 native run is separately reported at 9 passed / 3 failed;
+fixes, full adapter/P0 and Game QA remain pending. New feature switches default off.
 The newer observed native source's fallback, commands and formation settings
-now pass an explicit source comparison. Remaining native adoption/P0 is pending.
+now pass an explicit source comparison. Source adoption does not establish
+current native integration/P0 or gameplay acceptance.
 
 ```sh
 nice -n 19 cargo build --locked -j2

@@ -29,6 +29,13 @@ with fixes pending. This relay is not a full-native pass or the isolated parent'
 44/2 result. Current full integration/P0 and Game QA remain pending; C2 stays
 gated. C1 has no map prerequisite. No duplicate test or worker was launched.
 
+The [05:14 closed native update](FFXI_OFFLINE_INTAKE.md#f-closed-native-cover-compile-evidence--0514-bounded-refresh)
+records a failed Cover compile with all three selected checks unrun, and its
+source-only successor. These native diagnostics identify no shared-core API
+defect and do not replace current C1 acceptance. The new
+[pure role-election candidate](ROLE_ELECTION.md) is an additive library seam;
+native mapping, state and atomic role updates remain unchanged and unadopted.
+
 **02:51 CST source reconciliation — VERIFIED offline:** the pinned reference candidate
 is `5c73a8751940ba767c7b86a50bb96b38b5d1e4f6`. It changes command grammar,
 fallback control transitions and geometry-setting orders relative to the

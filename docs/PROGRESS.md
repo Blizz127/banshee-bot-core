@@ -855,3 +855,23 @@ Times are America/Chicago (CST).
   adoption, allowlist change, native worker/job or live action. NEVER restart
   FFXI and every hold persists. Next integration dependency is the owning lane's
   completed current P0/Game QA evidence; C1 has no map gate and C2+ stays closed.
+
+## 2026-11-15 05:14 CST — closed native evidence reconciliation: PARTIAL
+
+- OBSERVED one bounded snapshot and newly referenced closed metadata: native
+  Cover07ba compilation ended101, outer1, with13 native diagnostics and all
+  three selected checks NOT RUN. No shared-core API diagnostic was identified.
+  Successor f7c changes eight visibility declarations and one fixture iterator;
+  diagnostic closure still requires its owning compile. Separate Follow MP
+  recovery4ab is source-only, not current native P0/Game QA acceptance.
+- Receipt `evidence/c1-metadata-refresh-20261115-051404cst/delta-summary.json`,
+  SHA256 `aba8251c74fd98c5269ad5881c22dae58aebd0256c22bac908a594757db1a9ea`.
+  No native preparing job, test, old packet, runtime or private publication was
+  replayed. Relay993339c is the old00:50 task-record ancestor; root resumed from
+  clean b60ed87 without changing ownership or branches.
+- Next unblocked C1 source item: additive pure role-election extraction with
+  adapter-supplied preferences. Native job mapping, authoritative bindings,
+  manual/job retention, atomic group preflight/commit and orders remain native.
+  The existing bot_roles file is identical at04b andf7c, pinned separately in
+  `role-election-source-20261115-01/result.json` (SHA256
+  `37c4d12f23eb71fd2bdfcaee322d2d6c681ee064e154d79c3794dd34fd990a7b`).

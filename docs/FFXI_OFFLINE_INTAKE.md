@@ -259,6 +259,30 @@ The incoming record's separate capacity-follow-up report was not reopened or
 replayed and cannot change producer identity. C1 has no map gate. NEVER restart
 FFXI and all other holds remain binding.
 
+### F. Closed native Cover compile evidence — 05:14 bounded refresh
+
+OBSERVED, separate from the earlier C1 comparison/adoption domains: source
+`07ba7c4f3a638976017eebbc282d05e280f32f8c`'s original job47194/terminal347649
+closed with outer exit1 and native build exit101 after262.218s. All three
+selected checks are **NOT RUN**, with null outcome counts. The 13 diagnostics
+are 11 native Cover visibility errors, one fixture iterator error and one native
+numeric inference error; no shared-core API/file diagnostic was identified.
+
+Source-only successor `f7c9662fc5bcfc3f37ce00db82e1fc2c00ccee74` changes eight
+session-scoped visibility declarations and the fixture iterator. The owning
+handoff infers that restoring generic Cover visibility may resolve numeric
+inference; only a subsequent compile can establish closure. No preparing job
+was inspected, polled or replayed here. Separate Follow-healer MP recovery
+`4ab08e299a8e3be0fc71c3594817a8d53edf6829` is received/uncompiled source, not
+current P0 acceptance or a request to change shared role election.
+
+One coordinator snapshot and newly referenced closed metadata are retained in
+`evidence/c1-metadata-refresh-20261115-051404cst/delta-summary.json`, SHA256
+`aba8251c74fd98c5269ad5881c22dae58aebd0256c22bac908a594757db1a9ea`.
+No new current C1/P0 or bot-core publication receipt was found. rc185 is
+reported OFFLINE/UNSEALED; its packet was not reconsumed. Existing source,
+access/player/install holds and NEVER restart FFXI remain in force.
+
 ### Consumed review and operational boundaries
 
 Coordinator review components are `query-supplement-review.json` and

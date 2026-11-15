@@ -23,7 +23,7 @@ def source_inputs(root, command):
     return result
 
 
-def build_rust_tools(root, destination, commit, tree, command):
+def build_rust_tools(root, destination, commit, tree, command, jobs=2):
     """Return build log, binary bytes and a source/toolchain/output association.
 
     command runs argument lists in root and accepts an optional env mapping.
@@ -31,6 +31,8 @@ def build_rust_tools(root, destination, commit, tree, command):
     target and compiler are explicit; no compiler wrapper is used. Other build
     settings and system/linker libraries are not claimed to be hermetic.
     """
+    if type(jobs) is not int or not 1 <= jobs <= 16:
+        raise ValueError("jobs must be an integer from 1 through 16")
     launcher = shutil.which("rustc")
     if not launcher:
         raise RuntimeError("rustc is unavailable")
@@ -41,7 +43,9 @@ def build_rust_tools(root, destination, commit, tree, command):
             raise RuntimeError(f"active Rust sysroot lacks tool: {tool}")
     compiler = compiler.resolve()
     cargo = cargo.resolve()
-    overrides = {"RUSTC": str(compiler), "RUSTC_WRAPPER": "", "RUSTC_WORKSPACE_WRAPPER": ""}
+    target_dir = destination / "rust-target"
+    overrides = {"RUSTC": str(compiler), "RUSTC_WRAPPER": "", "RUSTC_WORKSPACE_WRAPPER": "",
+                 "CARGO_BUILD_BUILD_DIR": str(target_dir)}
     env = dict(os.environ, **overrides)
 
     def toolchain():
@@ -55,9 +59,8 @@ def build_rust_tools(root, destination, commit, tree, command):
         raise RuntimeError("rustc did not report an explicit host target")
     target = host.group(1)
     before_source = source_inputs(root, command)
-    target_dir = destination / "rust-target"
     target_dir.mkdir(exist_ok=False)
-    argv = ["nice", "-n", "19", str(cargo), "build", "--release", "--locked", "--offline", "-j2",
+    argv = ["nice", "-n", "19", str(cargo), "build", "--release", "--locked", "--offline", f"-j{jobs}",
             "--target", target, "--target-dir", str(target_dir), "--verbose", "--verbose"]
     log = command(argv, env=env)
     after_tools = toolchain()
@@ -82,7 +85,7 @@ def build_rust_tools(root, destination, commit, tree, command):
         "source_inputs_sha256": after_source,
         "source_inputs_stable": True,
         "working_directory": str(root), "argv": argv,
-        "compiler_environment_overrides": overrides,
+        "build_environment_overrides": overrides,
         "ambient_environment_recorded": False,
         "toolchain": after_tools, "toolchain_stable": True,
         "target": target, "profile": "release", "fresh_target_directory": str(target_dir),

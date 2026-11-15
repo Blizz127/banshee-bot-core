@@ -5,14 +5,15 @@ Game QA report their results. Nothing in this repository publishes a website,
 pushes source, replaces a game server or restarts an occupied server.
 
 `scripts/package_build.py` requires clean committed source. It builds the three
-Rust workspace crates in release mode using two low-priority jobs, runs CLI
+Rust workspace crates in release mode using two low-priority jobs by default
+(`--jobs 1` under heavier CPU pressure), runs CLI
 startup checks and confirms the synthetic soak remains incomplete. It archives
 the exact source commit, tools, provenance and supplied verification receipts.
 Every file has a SHA-256/size entry in the manifest. New output directories and
 archives are created without replacing an earlier candidate.
 
 Future builds also include `provenance/rust-build-manifest.json`. Packaging uses
-a new target directory under that candidate, with an explicit host target and
+a new target and intermediate-build directory under that candidate, with an explicit host target and
 the active Rust sysroot's Cargo/compiler executables. Compiler wrappers are
 disabled for this build only. The receipt records exact command arguments,
 tracked input hashes, lockfile, tool executable hashes and verbose versions,

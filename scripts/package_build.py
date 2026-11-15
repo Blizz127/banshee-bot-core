@@ -30,6 +30,8 @@ def main():
     parser.add_argument("--backend64-manifest", type=Path)
     parser.add_argument("--backend64-license", type=Path)
     parser.add_argument("--verification", action="append", type=Path, default=[])
+    parser.add_argument("--jobs", type=int, choices=range(1, 17), default=2,
+                        help="Low-priority compiler jobs; reduce under measured CPU pressure (default: 2)")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     if not re.fullmatch(r"[0-9]{1,8}", args.build):
@@ -56,7 +58,7 @@ def main():
     name = f"banshee-bot-core-{version}-build{args.build}"
     destination = output / name
     destination.mkdir(parents=True, exist_ok=False)
-    build_log, rust_binaries, rust_receipt = build_rust_tools(root, destination, commit, tree, command)
+    build_log, rust_binaries, rust_receipt = build_rust_tools(root, destination, commit, tree, command, args.jobs)
     (destination / "build.log").write_bytes(build_log)
 
     rust_provenance_path = "provenance/rust-build-manifest.json"

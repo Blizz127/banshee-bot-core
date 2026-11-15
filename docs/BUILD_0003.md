@@ -83,3 +83,10 @@ baseline. C2 remains behind that independent C1 gate.
 The candidate is retained locally and ready for the existing private publisher.
 No bot-core feed contract or publication/readback receipt is established here.
 Nothing in this document labels it released or authorizes a live deployment.
+
+**Post-build authority readback, 02:21 CST:** the FFXI lead's current instruction
+is **Never restart FFXI servers**, even at zero players. Its reconciled source
+is `/home/blizz/dev/ffxi/AGENTS.md:3` and
+`handoffs/CURRENT-OPERATION-CONSTRAINTS.json`. The hold was already standing;
+this turn newly surfaced its current reconciliation. It authorizes no install,
+reload or other server action. Source/tool handoff does not lift that hold.

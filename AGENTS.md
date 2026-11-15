@@ -51,7 +51,7 @@ Stay on Codex GPT-6-Astra, ultra effort, service_tier fast, the standing rule fo
 ## Hard rules
 - Rust preferred.
 - No pushes, no force-push, no GitHub remote, no public repo. No deleting data, no spending, no credential/access/firewall changes, no public release.
-- Never restart FFXI while players are online (e.g. CrazyAsian). Deploy only at 0 players, with backup, readback and rollback. No player progress resets.
+- Current owning-lane hold, observed 2026-11-15 02:21 CST: **Never restart FFXI servers**, even at zero players. `/home/blizz/dev/ffxi/AGENTS.md:3` and `handoffs/CURRENT-OPERATION-CONSTRAINTS.json` record the coordinator's reconciliation of existing owner order `8f27bd1d7661`; this is not a new restart exception or install/reload permission. Preserve that hold. Any separately authorized deployment still requires zero players, backup, readback and rollback; those conditions do not restore restart authority. No player progress resets.
 - Do not edit other projects' repos or shared configs. Route changes to owning leads via the coordinator inbox.
 - Build first, light testing, small frequent local commits and releases. Game QA Bot verifies each build in the real client/server. Never claim unverified work as released. Label claims VERIFIED, OBSERVED or INFERRED; say plainly what has not been run.
 - Never press native login, trust or approval prompts (e.g. "Trust this folder?"); report them to the coordinator. Only Blizz may answer those.

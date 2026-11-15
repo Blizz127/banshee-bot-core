@@ -284,3 +284,19 @@ Times are America/Chicago (CST).
   Ghidra runtime unavailable for unknown formats, FF14 client data absent, and
   a real headless soak requires the native adapter. No other project edited,
   live process changed, data deleted, remote added or public push performed.
+
+## 2026-11-15 02:21 AM CST — authority readback: restart-dependent work HELD
+
+- OBSERVED: one final handoff snapshot surfaced the FFXI lead's reconciled
+  existing owner order: **Never restart FFXI servers**. This is not a newly
+  issued order inferred from timestamps. Coordinator handover `8f27bd1d7661`
+  and owning `/home/blizz/dev/ffxi/AGENTS.md:3–17` establish the restriction.
+- Current constraint receipt:
+  `/home/blizz/dev/ffxi/handoffs/CURRENT-OPERATION-CONSTRAINTS.json`, SHA-256
+  `506e5b447510761be446fd3c7208120b12b65cccdc0af1680f94d4478a9ed134`.
+  Zero players does not restore restart authority; the correction authorizes
+  no install, reload or other action. Own project instructions now retain it.
+- No server action occurred in this lane. The verified tool candidate remains
+  ready for the existing private publisher. Native C1 adoption/P0 and real
+  geometry correction/QA remain owning-lead work; restart-dependent installs
+  are held, and no generic approval request or implied exception is introduced.

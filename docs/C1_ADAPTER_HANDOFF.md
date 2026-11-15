@@ -63,7 +63,12 @@ does not expose deserialization, reset or token injection APIs.
   the build identity. C1 must pass before C2 persona adoption.
 
 Any live installation remains owned by the FFXI lead, with zero players,
-backup/readback/rollback and all existing holds. This repo has made no live
+backup/readback/rollback and all existing holds. The current owning instruction
+is **Never restart FFXI servers**; zero players does not restore that authority.
+See `/home/blizz/dev/ffxi/AGENTS.md:3` and its
+`handoffs/CURRENT-OPERATION-CONSTRAINTS.json`. This is an existing owner hold
+newly reconciled in current reports, not a new authorization to install/reload.
+Source and offline P0 preparation may continue independently. This repo has made no live
 changes and cannot certify that those deployment conditions are satisfied.
 
 ## Initial comparison result

@@ -74,10 +74,10 @@ already dispatched. C2+ stays gated behind current C1/P0 and Game QA acceptance;
 none of these tool increments removes that gate or creates a map prerequisite.
 
 Private publication stays with `claude-banshee-realm-client`, task `3f9392ca5d00`.
-One build0018 TOOL/SOURCE intake supersedes proposed0017 only, with old artifacts
-retained for rollback. Its coordinator response belongs at
-`evidence/build0018-readback/coordinator-response.json`; do not resend once
-queued or wait for acknowledgement. No current bot-core feed/publication receipt
+The one build0018 TOOL/SOURCE intake is queued, superseding proposed0017 only,
+with old artifacts retained for rollback. Its coordinator response is retained at
+`evidence/build0018-readback/coordinator-response.json`; do not resend
+or wait for acknowledgement. No current bot-core feed/publication receipt
 is available from that owning publisher. This repo does not own its feed/config.
 A queued status is not a publisher receipt. No native queue status-only messages.
 

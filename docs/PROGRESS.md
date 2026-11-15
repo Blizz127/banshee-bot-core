@@ -1196,3 +1196,8 @@ Times are America/Chicago (CST).
   defect to repair here. No duplicate native check/job or second status snapshot
   was launched. C2+ stays gated, maps are no prerequisite for C1, and private
   publication still requires the existing publisher's receipt. All holds remain.
+- Build0018's single superseding publisher intake is queued through the existing
+  coordinator task. `evidence/build0018-readback/coordinator-response.json` records
+  the working-task response, not publication. Final document/identity/source
+  closeout passes in `evidence/build0018-readback/closeout.json`. No further lane
+  poll, native queue message or acceptance claim followed the report.

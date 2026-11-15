@@ -780,3 +780,24 @@ Times are America/Chicago (CST).
 - Next correction: build0011, archive readback and source/log/output joins. This
   will establish only that future build's observed producer association. The
   historical f64 gap, FFXI producer allowlist, native C1/P0 and holds persist.
+
+## 2026-11-15 04:02 CST — private build0011 and producer join: PASS offline
+
+- VERIFIED: source 512960fc packages as **0.1.0-build0011**, 1042414 bytes,
+  SHA256 `12766e77afc1e76013e01c6a2d4de711d9bd573fc4770d946f6d3a382c4ed8ed`.
+  A fresh one-job build completed from 04:01:14 to 04:01:39 CST. All 116 payloads
+  and 13 startup calls pass. Exact receipts are in `BUILD_0011.md`.
+- VERIFIED: 102 tracked source files, log and two Rust outputs match the new
+  pinned producer record. Five saved compiler invocations use its compiler path.
+  All four executables match build0010 bytes; current 20 core inputs and saved
+  test-source identities remain unchanged. No earlier test/domain was replayed.
+- This is an observed fresh release-build association, not historical f64
+  reconstruction, general producer equivalence or hermetic reproducibility.
+  Existing FFXI 04b/shared6ead intake and producer allowlist remain unchanged.
+- Supersedes proposed0010 for the existing private publisher only; retain all
+  rollback artifacts. Publication and native P0/Game QA have no new receipt.
+  No live/native job changes, installs, reloads or restarts; all holds persist.
+- Next integration dependency: consume the owning lane's completed current P0
+  and Game QA evidence once available, without duplicating its work or adding
+  a map prerequisite. Shared architecture and future-build provenance are
+  independently packaged; neither opens C2+ or authorizes live actions.

@@ -464,3 +464,8 @@ Times are America/Chicago (CST).
   focused `/fb` P0, then Game QA. New features remain OFF. The explicit standing
   no-restart hold remains; zero players does not lift it. Publication still
   lacks an owning-channel receipt. No C2 or live deployment is claimed.
+- Coordinator accepted the concrete source/publisher intake with status working;
+  notification is queued, not acknowledged publication or native adoption.
+  Exact message/response: `evidence/build0006-readback/coordinator-intake.txt`
+  and `coordinator-response.json`. Final archive SHA readback still matches;
+  no remote exists and the source worktree was clean at handoff.

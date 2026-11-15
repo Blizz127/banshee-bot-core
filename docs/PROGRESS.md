@@ -1298,3 +1298,9 @@ Times are America/Chicago (CST).
 - Next correction: route one superseding TOOL/SOURCE intake to the existing
   publisher. Current full C1/P0 and Game QA remain owning-lane results; the new
   scoped Pull pass is not full acceptance. All holds persist; NEVER restart FFXI.
+
+- 2026-11-15 08:48 CST: build0020's single superseding TOOL/SOURCE intake is queued through
+  the existing coordinator task. Response retained at
+  `evidence/build0020-readback/coordinator-response.json`; publication remains
+  unconfirmed. Current handoff records the scoped native Pull pass and separate
+  unrun native7 checks without merging outcomes or reopening their jobs.

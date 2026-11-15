@@ -675,3 +675,27 @@ Times are America/Chicago (CST).
 - Next correction, only if future producer adoption is proposed: supply a
   complete immutable association for that exact producer pair to the existing
   owner. The current provenance gap does not gate shared-core/C1 work.
+
+## 2026-11-15 03:46 CST — shared decision policy groundwork: PASS offline
+
+- Added original pure `brain::decision`: a bounded adapter-supplied legal set,
+  evaluated strategy proposals and deterministic safety > owner order > role >
+  goal ordering. Optional advice may permute only equally weighted ordinary ties
+  at the winning role/goal priority. Stale/malformed/ineligible advice retains
+  the fallback; privileged actions are refused and economy ties disable advice.
+- VERIFIED: 11 focused new Rust integration tests pass. No runtime, network,
+  native platform or C1 comparison was run. Receipt
+  `evidence/decision-policy-20261115-01/result.json`, SHA256
+  `a49f7f8b3ff8a22bb2a4fd44ee981cc7bdae2991129c66889508abb7d6ec2fa1`.
+- VERIFIED identity: 17 of 18 earlier comparison inputs are unchanged. The
+  sole existing source change is `pub mod decision;` in `brain/mod.rs`; the
+  new decision module and test are separate. Existing C1 primitive files,
+  feature flags, Cargo manifests and lock retain their bytes. The old full
+  comparison is not relabelled as proof of the current expanded crate.
+- This is architecture groundwork with no native call site. Frame/action IDs
+  remain declarations, not authority; native fresh execution checks remain
+  mandatory. C2+ rollout is not opened. The owning 04b/shared6ead candidate,
+  its pending native failures/P0, the producer allowlist and all holds remain.
+- Next correction: package/read back build0009 with the scoped new-policy
+  receipt and provide one superseding private tool/source candidate intake;
+  do not duplicate the existing FFXI native adoption request.

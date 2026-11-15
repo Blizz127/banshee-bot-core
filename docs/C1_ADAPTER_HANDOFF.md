@@ -15,9 +15,12 @@ combined into a full `xi-map`, Session/driver P0 or Game QA acceptance claim.
 
 The [existing intake's coherent adoption addendum](FFXI_OFFLINE_INTAKE.md#d-coherent-source-adoption-at-04b715eb)
 records the exact packet and saved logs. It supersedes only the partial 756eb165
-source adoption, retaining that earlier evidence. All 19 local shared crate
-source/test files and their build0008 manifest entries match the saved vendor
-pins; no native input or running job was rechecked. No patch was applied.
+source adoption, retaining that earlier evidence. At the 03:23 intake, all 19
+local shared crate source/test files and their build0008 manifest entries matched
+the saved vendor pins; no native input or running job was rechecked. No patch
+was applied. The later [decision-policy API](DECISION_POLICY.md) adds a separate
+module/export without changing C1 primitive files. It is not an update to the
+owning native 6ead adoption candidate or a new C1 acceptance claim.
 
 The original e519 native run is separately **reported 9 passed / 3 failed**,
 with fixes pending. This relay is not a full-native pass or the isolated parent's

@@ -175,10 +175,15 @@ those checks were not rerun there or here. Do not aggregate these domains.
 
 VERIFIED here: archive identity, all 20 regular UTF-8 members/19 manifest
 entries, and saved log/result associations. The 19 declared shared source/test
-pins match this repository and build0008 manifest entries. This is a local
+pins matched this repository at the 03:23 intake and match build0008 manifest entries. This is a local
 identity comparison against saved vendor declarations, not a rehash of native
 or other external inputs. Source/patch and all metadata remain outside Git;
 no patch, test, executable or recipe was applied or run.
+
+Later shared decision-policy groundwork adds a new module/export to this repo;
+it changes no C1 primitive implementation and does not replace the owning 6ead
+candidate. The exact whole-crate identity above remains scoped to the original
+intake/build0008, not later source additions. No new native intake is requested.
 
 Retained failures remain distinct: the first isolated harness omitted dismiss
 and failed compilation with zero tests run; the isolated parent then reported

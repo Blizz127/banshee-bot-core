@@ -23,6 +23,9 @@ The crate uses only Rust's standard library and never opens a network connection
 `brain/`, `roles/` and `sched/` contain the first compatibility slice; `nav/`
 defines the native query boundary. `goals/`, `economy/`, `chat/` and `persona/`
 reserve the specified architecture without claiming later-phase behavior.
+The pure [decision policy](docs/DECISION_POLICY.md) adds bounded strategy
+proposal ordering and restricted optional advice for future adapters. Native
+FFXI integration and its existing C1 source candidate remain separate.
 
 `bnav-extract` builds single or fixed-grid Recast/Detour tiles from extracted
 triangle geometry and provides explicit WoW tile preflight; see

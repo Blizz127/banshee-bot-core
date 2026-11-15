@@ -104,6 +104,12 @@ budget yet; those metrics are reported for the owning lead to assess.
 
 ## Adapter integration still required
 
+The additive [`recording` writer](BOT_SOAK_RECORDING.md) supplies typed streaming
+CSV export for adapter observations. It shares the replay row validator and
+never generates clocks, tick indices or process measurements. Invalid samples
+and output failures permanently close that writer. This is source groundwork;
+no native adapter has adopted it and no live capture follows from its presence.
+
 The server lead must supply the headless runner, constant N-bot cohort in one
 zone, tick/counter instrumentation, a monotonic recording clock, process metric
 collection, and private provenance (server build, feature flags, map identity,

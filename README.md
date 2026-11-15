@@ -38,6 +38,8 @@ triangle geometry and provides explicit WoW tile preflight; see
 [geometry intake contract](docs/GEOMETRY_CONTRACT.md). `bot-soak` validates and
 summarizes a server adapter's recorded metrics; see its
 [CSV contract and coverage checks](docs/BOT_SOAK.md). It does not spawn bots.
+Its [typed recording writer](docs/BOT_SOAK_RECORDING.md) exports supplied adapter
+observations with explicit sequence checks and permanent failure handling.
 An opt-in [tile batch command](docs/NAV_BATCH.md) reuses decoded geometry across
 up to 16 cells with an explicit completion record and retained partial outputs.
 The [collection wrapper](docs/NAV_COLLECTION.md) can opt into bounded batches

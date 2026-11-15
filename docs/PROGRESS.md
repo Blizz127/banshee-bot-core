@@ -1201,3 +1201,17 @@ Times are America/Chicago (CST).
   the working-task response, not publication. Final document/identity/source
   closeout passes in `evidence/build0018-readback/closeout.json`. No further lane
   poll, native queue message or acceptance claim followed the report.
+
+## 2026-11-15 08:15 CST — native metadata boundary: PARTIAL
+
+- OBSERVED one 08:12:51 CST owning-summary snapshot: 08ed26b2 compile exit 0;
+  current Pull behavior counts unknown/running. Retained parent 0bc reports
+  0 passed / 1 failed separately. No new C1/P0 acceptance or shared-core repair
+  request. No job, terminal, source/test body, dispatch receipt or packet opened.
+- Evidence: `evidence/c1-metadata-refresh-20261115-081251cst/delta-summary.json`,
+  SHA256 `3e62a0e313d1e358afaa33cdd4e32966858923fc3a94fb2c06d50694bc6e59a2`.
+  Publisher unchanged; existing build0018 intake is not resent.
+- Next unheld tool boundary: typed `bot-soak` CSV export for adapter observations,
+  using the existing row schema with permanent failure handling. This supplies
+  source groundwork only, without a live runner or reordered rollout. C1/P0
+  and C2+ gates remain unchanged; NEVER restart FFXI and all holds persist.

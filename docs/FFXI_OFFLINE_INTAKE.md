@@ -418,3 +418,26 @@ C1/P0 and Game QA remain unaccepted and independent of maps. The current claim
 implementation, native baseline and runtime effects stay with the owning lane.
 All player/progress/access/install holds persist. **NEVER restart FFXI**,
 including at zero players. No live action or new worker is requested.
+
+## J. Reported compile success, behavior result pending — 08:12 bounded refresh
+
+**OBSERVED owning-summary only:** one 08:12:51 CST metadata snapshot compares
+with the saved 07:42 report. The platform's 08:11:10 summary reports source
+`08ed26b24c6e20d7eb6f701592e10963c87871be` compiled with exit 0 in 103.073 seconds.
+Its existing single full Pull test remains running in that summary, with unknown
+counts. The newly referenced retained parent `0bc` result is separately reported
+as 0 passed / 1 failed. Compile success does not transfer to behavior acceptance;
+neither result is current C1/P0 or Game QA acceptance.
+
+No shared-core defect or concrete repair request is identified. The existing
+native job remains with its owner. Only one saved task-board snapshot and two
+summaries were read; no job/terminal, source/test body, dispatch receipt or packet
+was opened. Publisher metadata remains unchanged and supplies no bot-core
+publication receipt. No replay, worker, retarget or live action followed.
+
+Evidence under the private data root:
+`evidence/c1-metadata-refresh-20261115-081251cst/delta-summary.json`, SHA256
+`3e62a0e313d1e358afaa33cdd4e32966858923fc3a94fb2c06d50694bc6e59a2`.
+C1 remains independent of maps. All holds persist, including **NEVER restart
+FFXI**, at any player count. The local telemetry-writer groundwork changes no
+native adoption source, acceptance condition or runtime authority.

@@ -6,6 +6,8 @@
 use std::fmt;
 use std::io::{BufRead, Read};
 
+pub mod recording;
+
 pub const CSV_HEADER: &str = "source,tick,elapsed_ms,zone_id,bots,tick_ms,cpu_percent,rss_bytes,stuck_bots,deaths_total,bot_currency_units,human_target_conflicts_total";
 pub const ONE_HOUR_MS: u64 = 3_600_000;
 const MAX_LINE_BYTES: u64 = 4096;

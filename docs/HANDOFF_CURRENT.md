@@ -1,87 +1,74 @@
-# Current handoff — 2026-11-15 07:58 CST
+# Current handoff — 2026-11-15 08:19 CST
 
-Task `dcc9a63a40ab` remains **working**. The sole root integrator owns this
-repository; helper changes are integrated. Current candidate source is
-`8153d3be6f1d986a173601bb758fa9361ad3cae1`. Historical source/test receipts retain
-their original scope; this continuation does not reopen them.
+Task `dcc9a63a40ab` remains **working**. The root is sole integrator. This
+continuation completed the next unheld adapter tool boundary: typed telemetry
+export. Current private candidate source is
+`43b214567c1a7a8ddf19b33fa2f1a0ae91cf36cc`.
 
 ## Completed boundary
 
-[Build0018](BUILD_0018.md) is the current proposed private tool/source candidate:
-archive SHA256 `508ca3863fae576558ed719797d9a887146c323c4c1b31e690c7a4013ef03fc2`,
-1197956 bytes. Named route probes and opt-in typed refusal diagnostics are now
-complete as offline tool groundwork. Existing commands keep their default
-behavior; new report modes distinguish missing nearby polygons, an incomplete
-corridor and exhausted query resources. Probe v2 can expect spatial diagnostics;
-budget failures remain ERROR and stop later probes. No global unreachability
-or native-game acceptance is inferred.
+[Build0019](BUILD_0019.md) adds the original
+[`bot_soak::recording` writer](BOT_SOAK_RECORDING.md) and a synthetic example.
+It preserves supplied samples, uses the replay row schema and permanently closes
+on invalid input or output failure. It collects no metrics and starts no bots.
 
-Each ABI passes21 checks /33 native commands with scoped legacy byte equivalence.
-Seventeen pure tests and18 outer wrapper/probe commands pass, including a real
-path-buffer exhaustion case that is not misclassified as disconnected. Readback
-passes149 payloads /14 startup calls; all128 source files join the fresh producer.
-Both native hashes change, with dependency/compiler inputs unchanged. The Rust
-executables and all22 shared-core input pins remain unchanged. Exact receipts
-and unrun limits are in the build note; old proofs keep their original scope.
+Archive SHA256:
+`aa9768571bbd9b595e54489394a59b8500f648ce1fd3e984d6fe259e2e357271`,
+1192411 bytes. VERIFIED: 11 writer tests and six existing replay tests pass;
+the actual example/CLI round trip gives synthetic INCOMPLETE / exit 3. The
+packaged release CLI consumes that output unchanged. Archive readback passes
+148 payloads /14 startup calls, with 133 tracked source files joined to the
+fresh producer. Full scope, warning correction and unrun limits are in the note.
 
-This turn produced build0017 (named probes) and then build0018 (typed refusals).
-Old artifacts stay available for rollback. Collection batching and its cost
-experiment remain closed; no C1 job, game asset or old benchmark was replayed.
-The new synthetic island and300-quad fixtures remain external to Git.
+Bot-soak binary identity changes; all three navigation tools and 22 shared-core
+input pins are unchanged. Existing native checks and C1 comparisons were not
+replayed. Named route probes, typed refusals, collection batching and the prior
+cost experiment remain closed in their historical scopes. All earlier private
+artifacts are retained for rollback.
 
-## Boundaries that remain with their owners
+## Remaining owning boundaries
 
 | Item | Current state | Next owning result |
 | --- | --- | --- |
-| Native C1 | PARTIAL; coherent 04b/shared6ead source adoption and isolated module results | Current adapter/P0 and Game QA acceptance, independent of maps |
-| Role-election helper | Pure comparison passed; additive and unadopted | Native mapping/state/setter/atomic-clock review and P0 if adopted |
-| Native runtime work | 07:42 summary: native claim-passing gap; observer source 81a7 compiler/tests UNRUN | Owning map claim-passing correction and existing checks; no duplicate worker or retarget |
-| Private publication | No receipt in the one inspected publisher report | Existing publisher feed identity and launch/update/rollback readback |
-| Game navigation | Synthetic and bounded owned evidence only; calibration, collision completeness and runtime coverage unproved | Owning geometry/adapter and Game QA acceptance; no producer allowlist expansion |
+| Native C1 | PARTIAL; coherent 04b/shared6ead source adoption and isolated module evidence | Current adapter/P0 and Game QA acceptance, independent of maps |
+| Latest native work | 08:12 summary: 08ed26b2 compile pass; current Pull behavior counts unknown/running | Existing owning check's closed result; no duplicate job or retarget |
+| Role election | Pure comparison passed, additive and unadopted | Native mapping/state/setter/atomic-clock review and P0 if adopted |
+| Telemetry writer | Local source/example checks pass, unadopted | Owning instrumentation, actual headless runner and capture provenance under existing rollout gates |
+| Game navigation | Synthetic and bounded owned evidence only | Owning calibration/collision/coverage and runtime/Game QA evidence; no allowlist expansion |
+| Private publication | Build0019 TOOL/SOURCE intake queued, no publisher receipt | Existing publisher feed identity and launch/update/rollback readback |
 
-The last bounded observation is
-`evidence/c1-metadata-refresh-20261115-074250cst/delta-summary.json`, SHA256
-`3dd82a85d1c4640a4ea63f42a50e25e404fc6b57370dcd05df7ea3c9db683f0c`.
-It is a saved owning-lead summary, not independently inspected native source or
-behavior. No job, terminal, packet or test body was reopened. The reported
-claim-passing gap identifies no shared-core API defect. See
-[native intake](FFXI_OFFLINE_INTAKE.md) section I; earlier failures retain their
-original scopes. No new C1/P0 or publication acceptance was supplied.
+One new bounded observation was consumed at **08:12:51 CST**:
+`evidence/c1-metadata-refresh-20261115-081251cst/delta-summary.json`, SHA256
+`3e62a0e313d1e358afaa33cdd4e32966858923fc3a94fb2c06d50694bc6e59a2`.
+It is a saved owning summary, not independently inspected native source/behavior.
+The reported 08ed compile success and retained parent 0bc 0/1 failure remain
+separate. No shared-core defect or concrete repair request is identified. No job,
+terminal, dispatch receipt, packet or source/test body was opened. See
+[native intake](FFXI_OFFLINE_INTAKE.md) section J. No second snapshot was taken.
 
-## Next correction and continuation
+## Continuation
 
-C1 cannot be declared complete from the local proofs: it needs the owning lane's
-current native adapter/P0 and Game QA result. There is currently no identified
-shared-core defect to repair from the supplied native failure. Keep the existing
-native jobs and candidate intact. Consume a new closed evidence record once when
-provided; compare changed shared inputs only if its source pins actually differ.
-Do not duplicate checks merely because an older handoff names them as future work.
-The source/extraction proposal remains ready independently of navigation.
+Consume a new closed owning record once when provided. A concrete shared-library
+failure is the next priority if one is identified; compare changed inputs only
+when their pins differ. Current native adapter/P0 and Game QA acceptance cannot
+be supplied by more local tooling or replay of historical proofs. C2+ remains
+gated behind C1, and C1 has no map or telemetry prerequisite. C0 missing-piece
+requests are already dispatched; do not rebroadcast them.
 
-The hold-free named-probe and typed-refusal increments are closed. Their
-negative observations deliberately stop short of world-level reachability or
-calibrated movement. Further map coverage/calibration needs owned geometry and
-owning-game evidence; unknown formats require REA under existing permission
-boundaries. There is no measured need for another spatial-index optimization,
-benchmark replay or routine full suite. Preserve the supplied failure evidence
-and do not generate more checks simply to replace pending native acceptance.
+The new writer has no native adoption request or live capture attached. An
+adapter must supply authentic observations, an empty private sink and a separate
+capture completion/failure receipt; successful output is not a soak verdict.
+Do not start a C3 population run from this source increment. Any further shared
+tool work should address a concrete missing function, not replace pending native
+acceptance with repeated checks.
 
-For continued work, prioritize a concrete shared-library correction if a new
-closed owning result identifies one; otherwise consume such evidence once and
-retain the native ownership boundary. No shared-core defect is presently
-identified by the supplied native summaries. C0 missing-piece requests are
-already dispatched. C2+ stays gated behind current C1/P0 and Game QA acceptance;
-none of these tool increments removes that gate or creates a map prerequisite.
-
-Private publication stays with `claude-banshee-realm-client`, task `3f9392ca5d00`.
-The one build0018 TOOL/SOURCE intake is queued, superseding proposed0017 only,
-with old artifacts retained for rollback. Its coordinator response is retained at
-`evidence/build0018-readback/coordinator-response.json`; do not resend
-or wait for acknowledgement. No current bot-core feed/publication receipt
-is available from that owning publisher. This repo does not own its feed/config.
-A queued status is not a publisher receipt. No native queue status-only messages.
+Private publication belongs to `claude-banshee-realm-client`, task `3f9392ca5d00`.
+The single queued build0019 intake supersedes proposed build0018 TOOL/SOURCE
+only. Its response is `evidence/build0019-readback/coordinator-response.json`.
+No publication/feed receipt is available; this repo does not own its feed or
+configuration. Do not resend the intake or wait for acknowledgement. No native
+queue status-only message was sent.
 
 **NEVER restart FFXI**, including at zero players. No package grants install,
 reload, access, player/progress or device authority. No other repository or
-shared configuration changes, pushes or public release. All existing holds
-persist; continuation notices do not revoke them.
+shared configuration changes, pushes or public release. All holds persist.

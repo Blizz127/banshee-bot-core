@@ -1248,3 +1248,9 @@ Times are America/Chicago (CST).
 - Next correction: one superseding private TOOL/SOURCE intake to the existing
   publisher. Native adoption/instrumentation, C1/P0/Game QA and publication need
   owning-lane results. All holds persist; NEVER restart FFXI.
+
+- 2026-11-15 08:19 CST: build0019's single superseding publisher intake is queued through
+  the existing task; response retained at
+  `evidence/build0019-readback/coordinator-response.json`. This is not publication
+  or acceptance. The prior report's 08:19 prose label was corrected to its actual
+  08:17:03 CST coordinator receipt time. No tests or native jobs were rerun.

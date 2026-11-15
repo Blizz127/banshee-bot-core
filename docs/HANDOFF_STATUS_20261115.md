@@ -1,5 +1,35 @@
 # Handoff evidence refresh — 2026-11-15 02:00 CST
 
+## Later bounded refresh — 02:20:40 CST
+
+One new 300-task snapshot and targeted owning notes found unchanged lead
+scores, no C1 adoption/P0 receipt and no earlier bot-core publication receipt.
+The later build0003 publisher intake is independently recorded in
+`BUILD_0003.md`; local staging/readback is not publication.
+
+E&B task `d30281403634` at 02:18:59 CST reports Client-314 source `d8edf48`,
+3,446 bounded placements across 77 sectors and 339 unresolved placements.
+The nine-class catalog `56d010a` is preparation without a bot strategy/combat
+scenario. Scores stay `1/1/1/0`; generated pathing stays `0/85`; the 3D model
+decision remains open. Earlier observations below are retained historically.
+
+The current FFXI instruction is **Never restart FFXI servers**. Handover task
+`8f27bd1d7661` already contained it; the 02:17 reconciliation surfaced that
+standing restriction in current reports. `/home/blizz/dev/ffxi/AGENTS.md:3–17`
+and `handoffs/CURRENT-OPERATION-CONSTRAINTS.json` state that zero players does
+not restore authority and no install/reload/action is authorized by the notice.
+Current constraint receipt SHA-256:
+`506e5b447510761be446fd3c7208120b12b65cccdc0af1680f94d4478a9ed134`.
+
+External evidence directory: `evidence/handoff-refresh-20261115-022040cst/`
+under the private data root. Board SHA-256:
+`3e8d2d50810f7d3b8f23dc1656261733fae8c6a6c65adbd5b63f7bb649d28dc9`.
+`delta-summary.json` SHA-256:
+`a99735e3c6f947cea337edef99d51756de46c2c1e45b870ef00068df7daf3ee4`.
+No native inbox, live endpoint, acknowledgement loop or server was polled.
+
+## Original 02:00 observation
+
 **Verdict: PARTIAL.** One coordinator task-board snapshot was read at
 02:00:19 CST. It returned 300 task rows; ten relevant rows were retained in a
 selected-report file. This is a bounded task-board check, not an inspection of

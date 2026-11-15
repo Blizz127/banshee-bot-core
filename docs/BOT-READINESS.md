@@ -1,4 +1,12 @@
-# C0 bot readiness — refreshed 2026-11-15 02:00 CST
+# C0 bot readiness — refreshed 2026-11-15 02:20 CST
+
+The bounded 02:20:40 CST refresh found no new attributed scores. E&B's lead
+now reports 3,446 bounded placements across 77 sectors, 339 unresolved, and a
+nine-class catalog; pathing remains 0/85 and behavior remains no (0). These
+are preparation artifacts, not a readiness or QA upgrade. The FFXI lead's
+reconciled standing **Never restart FFXI servers** hold also remains binding;
+zero players does not restore authority. Details and immutable snapshot hashes
+are appended to [the handoff record](HANDOFF_STATUS_20261115.md).
 
 **Verdict: PARTIAL.** Six corrected lead scorecards have arrived. Their reports
 are recorded below; this consolidation did not run a server, client, navmesh bake

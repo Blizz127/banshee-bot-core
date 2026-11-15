@@ -344,3 +344,24 @@ Times are America/Chicago (CST).
 - Next correction: integrate native32/64 backend receipts and corrected FFXI
   consumption evidence, then package/read back the next private tool candidate.
   C1 adoption/P0 and actual-client QA remain separate owning-lead requirements.
+
+## 2026-11-15 02:38 AM CST — corrected FFXI native-library consumption: PASS
+
+- VERIFIED: selected owner source5c73 accepts all12 retained compatibility
+  cases and six focused owner tests; its newer-producer refusal remains intact.
+  The exact owning native library loads1/1 real tile, returns valid refs for46
+  mesh-derived nearest queries, and completes a corridor and straight path.
+- Receipt: `evidence/ffxi-owned-native-5c73-20261115-attempt2/result.json`,
+  SHA-256 `2aa4dcfe08bc4da907b72c35aa1955488be344a389acecdaf229fe1a88aed367`.
+  MSET SHA-256 `8902b2221eee618849511def6f9c1cc11a4d0ed86ee70fb3947a95e7c0db7cb1`.
+  The original failed source and stopped compilation attempt remain retained.
+- OBSERVED: the binding assumes512 entries; our caller and all four production
+  call sites use512. One capacity16 owner test is explicitly filtered here;
+  its short fixture does not establish an actual overwrite. General capacity
+  API follow-up is recorded in `FFXI_NATIVE_CONSUMPTION.md` with exact evidence.
+- VERIFIED: the current new32 helper rebakes the same OBJ to byte-identical raw
+  output (`evidence/ffxi-current-helper-0237/result.json`). That does not waive
+  its still-unrecognized producer hash. No guard or owning source was changed.
+- Next correction: private build0004 and publisher/owning-lead evidence intake;
+  continue explicit zone selection and verified driver reuse offline. Native
+  server P0, installation, full-zone calibration and Game QA remain unrun.

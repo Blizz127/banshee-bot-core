@@ -1,5 +1,11 @@
 # FFXI navigation wrapper compatibility
 
+**Successor update:** the original-a13 failure documented below is retained
+historically. The owner's `5c73a875` correction now passes our exact owned-tile
+compatibility and offline native-library checks; see
+[corrected consumption](FFXI_NATIVE_CONSUMPTION.md). The accepted producer pin
+is unchanged and no server/P0/Game QA result follows.
+
 2026-11-15 CST. This checks the existing FFXI source wrapper against shared
 backend outputs. It does not install navigation files, invoke the FFXI native
 loader, run `/fb` P0, or establish Game QA. C1 behavior adoption remains a
@@ -180,6 +186,9 @@ zlib licence are retained under the same external evidence directory's
 ## Reproduce and provenance
 
 Run `python3 scripts/check_ffxi_nav.py --help` for the explicit input paths.
+Select `--reference-profile original-a13` to replay this historical boundary,
+or the explicitly pinned corrected profile and packet documented in the
+successor check. Source revisions are never selected implicitly.
 The tool creates a new evidence directory, snapshots only the exact pinned
 module, resolves cached `sha2=0.10.9` and `serde_json=1.0.154` offline, and builds
 with `nice -n 19 cargo build --offline --locked -j2` using an external target.

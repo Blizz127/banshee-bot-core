@@ -120,6 +120,15 @@ write beyond the Rust allocation. No undersized call, exploit or crash probe
 was executed. The owning lead should reconcile the API capacity contract and
 existing tests separately; this task changes no native source.
 
+Follow-up source audit confirms all four direct production calls at
+`xi-map/src/navmesh.rs:280,284,340,342` pass `MAX_NAV_POLYS=512` (constant at
+line42), matching this contract. The only identified smaller direct calls are
+the test calls below, whose fixture has only 1–3 polygons. No actual historical
+overwrite is established. This is an API-contract follow-up, not evidence that
+the current production call sites use undersized buffers. External call-site
+receipt: `evidence/ffxi-detour-capacity-callsites-5c73-20261115/result.json`,
+SHA256 `b90ed2665b0656a88840ad370860dbd35ef17d60eed82dfd4a998b642dc8290a`.
+
 The owner's test
 `synthetic_mset_loads_exactly_one_tile_and_queries_original_corridor` supplies
 capacity16 at `forever-audit/src/detour_mset/tests.rs:141` and line144. It is

@@ -1,5 +1,10 @@
 # Southern San d'Oria bounded offline navigation candidate
 
+The later [corrected owning wrapper/native-library check](FFXI_NATIVE_CONSUMPTION.md)
+now accepts and queries this same tile under the retained build0001 producer.
+The original refusal diagnosis below remains historical evidence. Producer
+updates, source/agent calibration and real server/client QA remain outstanding.
+
 **VERIFIED offline, 2026-11-15 02:13 CST; Game QA NOT_RUN.** This is a small
 static collision experiment around the existing source homepoint fixture. It
 does not establish a complete walking map or authorize movement/deployment.

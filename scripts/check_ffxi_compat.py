@@ -103,14 +103,17 @@ def main():
     )
     harness = Path(__file__).with_name("ffxi_compat.rs").read_bytes()
     (evidence / "ffxi_compat.rs").write_bytes(harness)
+    orders_harness = Path(__file__).with_name("ffxi_orders_compat.rs").read_bytes()
+    (evidence / "ffxi_orders_compat.rs").write_bytes(orders_harness)
     report = {
         "status": "RUNNING",
         "started_cst": datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-6))).isoformat(),
-        "scope": "Offline pure grammar and cancellation contracts only; no native adapter/P0 or Game QA claim.",
+        "scope": "Offline pure grammar, cancellation, authority, selection and order planning contracts; no native adapter/P0 or Game QA claim.",
         "source": str(source), "source_git": source_git,
         "reference_candidate": PINNED_CANDIDATE, "reference_sha256": PINS,
         "core": str(core), "core_git": git_info(core), "core_files_before": core_before,
         "harness_sha256": sha(harness), "script_sha256": sha(Path(__file__).read_bytes()),
+        "orders_harness_sha256": sha(orders_harness),
         "commands": [],
         "limitations": ["Finite deterministic corpus is not exhaustive proof.",
                         "Reference runtime deployment identity is not verified.",
@@ -155,6 +158,12 @@ def main():
                                      "-o", evidence / "ffxi-compat"])
         differential_log = run("differential", [evidence / "ffxi-compat"])
         report["differential"] = json.loads(differential_log.read_text())
+        run("compile-orders-differential", ["rustc", "--edition=2021", evidence / "ffxi_orders_compat.rs",
+                                            "--extern", f"banshee_bot_core={rlib}",
+                                            "-L", f"dependency={target / 'debug/deps'}",
+                                            "-o", evidence / "ffxi-orders-compat"])
+        orders_log = run("orders-differential", [evidence / "ffxi-orders-compat"])
+        report["orders_differential"] = json.loads(orders_log.read_text())
         for module in ("control", "command"):
             binary = evidence / f"reference-{module}-tests"
             run(f"compile-reference-{module}", ["rustc", "--edition=2021", "--test",
@@ -182,7 +191,8 @@ def main():
                                      for p in sorted(evidence.iterdir()) if p.is_file() and p.name != "result.json"}
         save()
     print(json.dumps({"status": report["status"], "evidence": str(evidence / "result.json"),
-                      "differential": report.get("differential"), "error": report.get("error")}))
+                      "differential": report.get("differential"),
+                      "orders_differential": report.get("orders_differential"), "error": report.get("error")}))
     return 0 if report["status"] == "PASS" else 1
 
 

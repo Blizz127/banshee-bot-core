@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import re
 import shutil
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 def digest(data):
@@ -62,7 +64,9 @@ def build_rust_tools(root, destination, commit, tree, command, jobs=2):
     target_dir.mkdir(exist_ok=False)
     argv = ["nice", "-n", "19", str(cargo), "build", "--release", "--locked", "--offline", f"-j{jobs}",
             "--target", target, "--target-dir", str(target_dir), "--verbose", "--verbose"]
+    started = datetime.now(ZoneInfo("America/Chicago")).isoformat()
     log = command(argv, env=env)
+    finished = datetime.now(ZoneInfo("America/Chicago")).isoformat()
     after_tools = toolchain()
     after_source = source_inputs(root, command)
     if before_tools != after_tools:
@@ -85,6 +89,7 @@ def build_rust_tools(root, destination, commit, tree, command, jobs=2):
         "source_inputs_sha256": after_source,
         "source_inputs_stable": True,
         "working_directory": str(root), "argv": argv,
+        "started_cst": started, "finished_cst": finished,
         "build_environment_overrides": overrides,
         "ambient_environment_recorded": False,
         "toolchain": after_tools, "toolchain_stable": True,

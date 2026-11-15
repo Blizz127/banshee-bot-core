@@ -67,3 +67,18 @@ Times are America/Chicago (CST).
 - Next correction: build real common-geometry Recast backend, finish C1
   differential evidence, package the private candidate, and route one concrete
   intake each to the FFXI lead and existing private publisher through Devbox.
+
+## 2026-11-15 01:12 AM CST — C1 offline compatibility: PASS (C1 remains PARTIAL)
+
+- VERIFIED: 79,724 parser comparisons and 76,800 result/snapshot comparisons
+  over 38,400 control steps match the pinned native source. Eleven native pure
+  tests plus the shared overflow test pass; all twelve clock methods exercised.
+- Receipt: `~/.local/share/banshee-bot-core/evidence/c1-compat-build-0001-attempt-2/result.json`,
+  SHA-256 `1b5fd72b1a8bef3ac958b49f53e824de83d024260ad8782714815a0eeb11143a`.
+  This finite check validates local contracts, not the full runtime or P0 gate.
+- OBSERVED: actionable FFXI intake routed through the coordinator report with
+  `C1_ADAPTER_HANDOFF.md`, source pins and receipt. Native notification unavailable;
+  task-board record saved, owner-lane receipt unconfirmed.
+- Next correction: owning lead reconciles its current baseline, integrates the
+  narrow re-export seam, then runs native P0 and Game QA. C2–C6 remain unstarted;
+  common tool work proceeds without crossing that dependency.

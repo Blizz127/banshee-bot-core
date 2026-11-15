@@ -61,3 +61,28 @@ Any live installation remains owned by the FFXI lead, with zero players,
 backup/readback/rollback and all existing holds. This repo has made no live
 changes and cannot certify that those deployment conditions are satisfied.
 
+## Initial comparison result
+
+**VERIFIED locally, 2026-11-15 01:11 CST:** 39,862 input cases produced 79,724
+matching parser results. 128 control traces exercised 38,400 steps and compared
+76,800 results/snapshots across all twelve public transition/admission methods.
+Eleven original pure tests (six clock, five command) and the shared overflow
+test passed. This finite deterministic corpus is not exhaustive equivalence.
+
+Receipt:
+`~/.local/share/banshee-bot-core/evidence/c1-compat-build-0001-attempt-2/result.json`,
+SHA-256 `1b5fd72b1a8bef3ac958b49f53e824de83d024260ad8782714815a0eeb11143a`.
+Source hashes were stable before/after the check. An earlier harness compilation
+error was fixed and its failed receipt retained separately; no production code
+change was needed. Repeat against a reconciled source only when its pins or the
+shared primitives change:
+
+```sh
+python3 scripts/check_ffxi_compat.py \
+  --source /absolute/path/to/xi-map/src/fb \
+  --evidence /absolute/private/path/to/new-receipt-directory
+```
+
+The script refuses unrecognized source hashes and existing evidence directories.
+Snapshots, compiler output and original test binaries remain outside both repos.
+

@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 import tarfile
+import tomllib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -47,7 +48,7 @@ def main():
         parser.error("commit the reviewed source first; refusing to label a dirty build")
     commit = command(["git", "rev-parse", "HEAD"]).decode().strip()
     tree = command(["git", "rev-parse", "HEAD^{tree}"]).decode().strip()
-    version = "0.1.0"
+    version = tomllib.loads((root / "crates/banshee-bot-core/Cargo.toml").read_text())["package"]["version"]
     name = f"banshee-bot-core-{version}-build{args.build}"
     destination = output / name
     destination.mkdir(parents=True, exist_ok=False)
@@ -71,7 +72,13 @@ def main():
         payload["provenance/Recast-LICENSE.txt"] = (args.backend_license.read_bytes(), 0o644)
         checks["bnav_recast_help"] = command([str(args.backend.resolve()), "--help"]).decode()
     for i, path in enumerate(args.verification):
-        payload[f"verification/{i + 1}-{path.name}"] = (path.read_bytes(), 0o644)
+        data = path.read_bytes()
+        if path.suffix == ".json":
+            receipt = json.loads(data)
+            for relative, expected in receipt.get("core_files_after", {}).items():
+                if digest((root / relative).read_bytes()) != expected:
+                    raise RuntimeError(f"compatibility evidence no longer matches {relative}")
+        payload[f"verification/{i + 1}-{path.name}"] = (data, 0o644)
 
     # Archive the exact clean commit, without game assets, ignored outputs or .git.
     source = command(["git", "archive", "--format=tar", "--prefix=source/", commit])

@@ -765,3 +765,18 @@ Times are America/Chicago (CST).
 - Not yet validated or packaged at this checkpoint. Next correction: focused
   receipt/refusal checks followed by one fresh candidate build/readback. This
   is not a hermetic-build, producer-equivalence or native adoption claim.
+
+## 2026-11-15 04:00 CST — producer receipt checks: PASS synthetic
+
+- VERIFIED: six focused synthetic tests pass, covering source/lock/tool/output
+  association, explicit target/compiler/intermediate-directory overrides,
+  environment privacy, changed-source/tool refusal, existing-target refusal
+  without replacement and job limits. No real compiler/native/game process ran
+  in these tests. Receipt `evidence/rust-producer-integrated-20261115-01/result.json`,
+  SHA256 `14692643b11c5bef313bc4662a73254b4408844d7f3cd9d9693e5955e9586ee9`.
+- OBSERVED CPU pressure: load208 on 48 CPUs, CPU PSI some~65%; memory PSI low.
+  Next actual build uses `nice -n 19`, `--jobs 1`, and a fresh target/intermediate
+  directory. Compiler/Cargo executable hashes and versions must stay stable.
+- Next correction: build0011, archive readback and source/log/output joins. This
+  will establish only that future build's observed producer association. The
+  historical f64 gap, FFXI producer allowlist, native C1/P0 and holds persist.

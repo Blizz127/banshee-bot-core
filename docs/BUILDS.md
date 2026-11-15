@@ -28,6 +28,15 @@ not reconstruct the historical `f64f0648` extractor's missing association,
 establish equivalence with an older producer, change the native allowlist or
 propose adoption. Existing artifacts and their claims remain immutable.
 
+Focused synthetic checks cover source/lock/tool/output associations, compiler
+and target overrides, absence of an environment dump, changed-input refusal,
+target-directory reuse refusal and job limits. Six tests passed on 2026-11-15;
+receipt `~/.local/share/banshee-bot-core/evidence/rust-producer-integrated-20261115-01/result.json`,
+SHA256 `14692643b11c5bef313bc4662a73254b4408844d7f3cd9d9693e5955e9586ee9`.
+These tests use fake commands and retained synthetic files; they do not compile
+tools or establish a real build association. Each actual candidate carries its
+own producer receipt and archive/readback evidence.
+
 After packaging, run the [archive readback](BUILD_READBACK.md) against its exact
 reported byte size. This verifies the archive and embedded files before running
 the packaged CLI startup checks in a fresh external evidence directory.

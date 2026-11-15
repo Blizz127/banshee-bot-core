@@ -1,6 +1,6 @@
 # Banshee Bot Core — project instructions
 
-Task: Devbox will record the coordinator task id at launch (project key `claude-banshee-bot-core`, live session `codex-banshee-bot-core`). Path: `~/dev/banshee-bot-core` (git init'd locally, no remote). Created 2026-11-15 by Devbox on the owner's order in the Devbox Command room (12:39–12:45 AM CST). Blizz at 12:45 AM CST: "yes do it."
+Task: Devbox task dcc9a63a40ab (project key `claude-banshee-bot-core`, session `codex-banshee-bot-core`). Path: `~/dev/banshee-bot-core` (git init'd locally, no remote). Created 2026-11-15 by Devbox on the owner's order in the Devbox Command room (12:39–12:45 AM CST). Blizz at 12:45 AM CST: "yes do it."
 
 Governing spec (adopt immediately): `docs/BANSHEE_BOT_CORE_SPEC_20261115.md` (Forever Bot, 12:46 AM CST Nov 15 2026; extends `FOREVER_BOTS_SHARED_SPEC_20261114.md` §3). sha256 `fe8138bb5bec23f55f26060626f28c76aff9d64b54b24ec0b8cd9cb2b0a43bc3`. Standing brief: `~/scratch/model-swap-20261110/instr-banshee-bot-core-20261115.txt`. Same copy also lives at `~/scratch/model-swap-20261110/BANSHEE_BOT_CORE_SPEC_20261115.md`.
 

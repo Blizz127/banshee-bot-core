@@ -101,6 +101,48 @@ C1 remains independently ready as source input with **no nav prerequisite**.
 First-invite custody, native role/manual-order execution and canned replies
 remain adapter responsibilities.
 
+### C. Partial authority source adoption
+
+OBSERVED closed source/test evidence from existing platform task `0fcbfa0421bc`:
+source `756eb1659d7a189273fd4d0a16c1bf568558c1d5` directly re-exports authority
+types/functions from exact shared `db74a9f444c41d8415230adbfeb9f5d79dfbdd5c`.
+It preserves shared opaque ticket type identity. Native command, selection,
+control and orders remain unchanged per the saved source review. No blanket
+replacement with the older vendored command/control/order implementations is
+implied. Current bot-core source-gap/differential work remains separate.
+
+The original terminal `22684/3dd618/4bfed5` records exit 0 and **8 passed,
+0 failed, 0 ignored, 0 skipped** for the actual native authority source module
+compiled against the exact vendor in an isolated crate. This is not a full
+`xi-map` build, current Session/driver P0 or Game QA. No executable, test runner
+or dispatched job was started or replayed while consuming this packet.
+
+| Record | Identity |
+| --- | --- |
+| Packet | `/home/blizz/scratch-build/ffxi-c1-authority-756eb165-source-test-20261115.tar.gz`, 69643 bytes; SHA-256 `b24fc121a629e729081c4ed131cd9946a67f140bbbb2a2bfc2f01c104df9a94d` |
+| Root | `/home/blizz/scratch-build/ffxi-shared-companion-native-r2-20261114/ROOT-C1-756EB165-SOURCE-TEST-PACKET.json`; SHA-256 `ca6b93cce6ec5bb260bc1d28732142fd21e2766b48f27514130a422fe4ab2731` |
+| Packet receipt | `RECEIPT.json`; SHA-256 `b1f1ead213d6f65d9fab33843c87ea004a91d6b3a3237c0ac7472a73d98a6e42` |
+| Closed terminal | `root-terminal.json`; SHA-256 `e64ba65c573c9f3618cf4e7143e7e9191f724369080003d2643610998adbd747` |
+| Isolated module result | `evidence/RESULT.json`; SHA-256 `893a1ba5b13f5e112d319e269b1c90ca7c895f247a19c8158d98d16f428349e0` |
+
+VERIFIED packet identity: 50 unique regular members and all 49 manifest entries
+match, including receipt/terminal/result and saved test-log associations.
+The direct re-export is visible in supplied native source. Its vendored
+authority bytes also match current bot-core authority exactly; this narrow
+identity check does not transfer any other module's results or alter the
+existing comparison profile. The saved source review reports 17 unchanged
+vendored core files within the existing `server/crates` identity guard.
+
+**Supersedes only af2 root-vendor layout.** It does not supersede e519/rc183,
+the runtime kit, previous evidence or other running/prepared work. This is
+partial C1 source adoption: `runtime_kit=false`, `installable=false`, no map
+gate and no install/restart authority. All existing holds remain binding.
+
+Bot-core intake receipt:
+`evidence/c1-authority-adoption-756eb165-intake-20261115-0259/result.json`,
+SHA-256 `bc92f9472317e142e80e403ade37718c195601678ce09588bea24cbdb49e1947`,
+beneath the private data root. Only metadata/source evidence was consumed.
+
 ### Consumed review and operational boundaries
 
 Coordinator review components are `query-supplement-review.json` and

@@ -510,3 +510,22 @@ Times are America/Chicago (CST).
   SHA-256 `42ec96140a92c6e129dc43dabecad2054ac26e1b8efd907116eb28fc181a1a26`.
   Next boundary remains actual native adoption/P0 and Game QA; no new suite or
   duplicate core intake is requested. Build0006 remains the existing candidate.
+
+## 2026-11-15 CST — authority-only native source adoption: PARTIAL C1
+
+- VERIFIED identity: packet/root hashes match; 50 regular members and 49 manifest
+  entries verify. Source 756eb165 directly re-exports exact shared db74 authority
+  types/functions. Vendored authority bytes match current bot-core authority.
+- OBSERVED original closed terminal: 8/8 actual native-authority module tests
+  pass in an isolated offline crate, with no failed/ignored/skipped cases.
+  No test/build was repeated here. Full xi-map, current P0 and Game QA are not
+  established; command/selection/control/orders remain native and unchanged
+  per the saved source review. Existing broader differential work is preserved.
+- The packet supersedes only af2 root-vendor layout, not e519/rc183 or a runtime
+  kit. No new worker, map gate, installation, restart or live action. All holds
+  remain in force; no source file or job in another lane was changed.
+- Evidence: `evidence/c1-authority-adoption-756eb165-intake-20261115-0259/result.json`,
+  SHA-256 `bc92f9472317e142e80e403ade37718c195601678ce09588bea24cbdb49e1947`.
+  README and existing C1 intake now distinguish observed partial authority
+  adoption from still-unverified remaining adapter/P0/Game QA work. Build0006
+  and its separate source comparison remain unchanged.

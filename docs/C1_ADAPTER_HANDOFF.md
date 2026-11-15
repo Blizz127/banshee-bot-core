@@ -4,14 +4,31 @@ Status: **PARTIAL, not deployed or Game QA verified**. This is an actionable
 source integration proposal for the existing FFXI lead, routed through Devbox
 task `dcc9a63a40ab`. It does not authorize a restart or alter any live gate.
 
-**02:51 CST source reconciliation — VERIFIED offline:** the latest observed owning source candidate
+**Additive authority-only adoption — OBSERVED source and closed test evidence:**
+FFXI source `756eb1659d7a189273fd4d0a16c1bf568558c1d5` directly re-exports exact
+shared db74 authority types/functions. The actual native authority module's
+eight unchanged tests pass in an isolated offline crate. This establishes a
+partial source adoption, not a full `xi-map` build, native Session/driver P0,
+runtime-kit acceptance or Game QA. Command, selection, control and orders stay
+native and unchanged per the saved source review. The shared authority file is
+byte-identical to the current bot-core copy, SHA-256
+`7b49a28fb5ecc294073634c9f729a58e845c3c9c19633eee391633f0549c10ae`.
+
+The [existing intake's authority addendum](FFXI_OFFLINE_INTAKE.md#c-partial-authority-source-adoption)
+records the exact packet, root and closed terminal. It supersedes only the af2
+root-vendor layout. Existing e519/rc183 work, source-gap findings and the broader
+comparison below are preserved. C1 remains independent of maps; no other shared
+module is adopted by implication and no test was replayed for this intake.
+
+**02:51 CST source reconciliation — VERIFIED offline:** the pinned reference candidate
 is `5c73a8751940ba767c7b86a50bb96b38b5d1e4f6`. It changes command grammar,
 fallback control transitions and geometry-setting orders relative to the
 original pin below. Authority and selection remain byte-identical. The shared
 extraction now covers those additions and passes the expanded comparison against
 that exact candidate. Earlier equivalence receipts still apply only to
 `36b90715`. This candidate is not a confirmed live baseline or native C1
-acceptance receipt.
+acceptance receipt. The later authority-only adoption above does not change
+this comparison's source pin or promote it to whole-adapter acceptance.
 Evidence: `evidence/c1-source-drift-20261115-0247/result.json`, SHA-256
 `85b39bb843aeb0e5cf7aeb36a75513df7aa3442c2abd65e2d1d04f6be1fee80b`,
 beneath the private data root. Use the current source and receipt below when

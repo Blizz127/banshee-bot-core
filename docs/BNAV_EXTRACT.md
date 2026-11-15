@@ -52,8 +52,11 @@ enables `DT_POLYREF64` through CMake. Their map parameters also use the fixed
 31-bit polygon-capacity encoding accepted only by the explicit new profile.
 See [the WoW artifact preflight](WOW_NAV_PREFLIGHT.md) for the original packaged
 failures, source pins and focused correction checks. The standalone Banshee
-cMaNGOS helper remains 32-bit; its direct compile does not inherit those CMake
-flags.
+cMaNGOS helper initially remained 32-bit; its direct compile does not inherit
+those CMake flags. The builder now accepts explicit `--reference-bits 32|64`,
+and build0004 packages separately verified helpers for both ABIs. See
+[selected native map queries](WOW_NATIVE_QUERY.md) and
+[preserving imported tiles](WOW_NAV_IMPORT.md).
 
 ## Build and query extracted geometry
 

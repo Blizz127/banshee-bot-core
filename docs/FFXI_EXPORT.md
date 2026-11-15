@@ -278,3 +278,10 @@ The successful output's `focused-validation.json` records sidecar/OBJ validation
 both expected refusal logs and their hashes, and absence of source/compiler
 snapshots on reuse. No new mesh bake, native query, runtime test or Game QA was
 performed by this exporter increment.
+
+Root integration subsequently reran the original zone230 crop through the
+generalized selector and verified reuse mode. It returned the exact same1821
+triangles and byte-identical OBJ, without source staging or compiler output.
+Receipt: `evidence/ffxi-sandoria230-reuse-20261115-01/root-integration-result.json`
+beneath the private data root. This checks preservation of the earlier export;
+it is not a new compilation or game-runtime result.

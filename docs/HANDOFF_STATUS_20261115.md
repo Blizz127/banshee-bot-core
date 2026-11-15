@@ -1,5 +1,10 @@
 # Handoff evidence refresh — 2026-11-15 02:00 CST
 
+This is historical evidence. [The 02:30 refresh](HANDOFF_0230.md) supersedes
+its open E&B output-model choice and original FFXI wrapper status. The current
+offline native result is in [FFXI consumption](FFXI_NATIVE_CONSUMPTION.md), and
+[progress](PROGRESS.md) records later builds. Standing owner holds persist.
+
 ## Later bounded refresh — 02:20:40 CST
 
 One new 300-task snapshot and targeted owning notes found unchanged lead

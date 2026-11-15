@@ -54,9 +54,9 @@ also explain why single and tiled results are not asserted byte-equivalent.
 Every exact command, exit code and tool response is retained in the receipt.
 Use fresh output paths when reproducing; existing artifacts are never replaced.
 
-## Existing FFXI consumer boundary
+## Historical FFXI consumer boundary and corrected result
 
-The current owning wrapper at `a13dabcd` requires the retained build0001 backend
+The original owning wrapper at `a13dabcd` requires the retained build0001 backend
 hash `d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c`.
 It cannot honestly accept build0002 producer provenance, whose backend hash is
 `e2d9f815d5354fc3612f4498ae424c76ef4ff461af3ad8fe293eb9ffb5c85818`.
@@ -70,21 +70,42 @@ commit recorded in each build manifest. The owning lead controls any producer
 metadata/allowlist update. Tiled portals and nonzero coordinates require a
 separate native integration change.
 
-**Native wrapper compatibility is currently FAIL/PARTIAL.** The unchanged
+**Historical native wrapper compatibility was FAIL/PARTIAL.** The unchanged
 `a13dabcd` wrapper also rejects the honestly retained build0001 producer's real
 tile with `detail vertex outside convex polygon`. Build0002 is rejected earlier
 as `unrecognized producer backend`. The matching raw bytes load/query in the
-native Detour helper, but that does not establish which geometric constraint
-needs correction. No guard was relaxed and no MSET acceptance is claimed.
+native Detour helper, but that initial check did not establish which geometric
+constraint needed correction. No guard was relaxed or MSET accepted in that run.
 Receipt: `ffxi-nav-compat-20261115-owned/result.json`, SHA-256
 `a563ffdf1278b4caeaad3f0dc1271a45d6e8f75d2265eeabd2698e81473898c1`.
-The owning lead must resolve this point/edge validation disagreement before
-native map adoption. The [source diagnosis](FFXI_NAV_COMPATIBILITY.md) localizes
+The [source diagnosis](FFXI_NAV_COMPATIBILITY.md) localizes
 one extra boundary vertex about `1.16e-6` source units outside an edge. A
-floating-point boundary mismatch is INFERRED, not a confirmed safe correction.
+floating-point boundary mismatch was INFERRED. The owning successor `5c73a875`
+corrected its marked-boundary rounding check. Our later
+[exact-source native consumption](FFXI_NATIVE_CONSUMPTION.md) accepts and loads
+the unchanged tile and completes bounded queries under the retained producer.
+This resolves the observed offline refusal, not calibration or runtime QA.
 
 Next acceptance remains with the FFXI lead: reconcile the loader/source baseline,
 retain incomplete/calibration flags, verify character dimensions and real
 collision behavior, then Game QA checks representative routes and failures.
 Preserve all deployment holds, zero-player/backup/readback/rollback conditions
 and the independent C1 `/fb` P0 gate. No server process has been touched here.
+
+## East Ronfaure bounded follow-up
+
+**VERIFIED offline, 2026-11-15 02:42 CST:** explicit zone101 export and verified
+decoder reuse produce a 72-triangle static crop. See [export evidence](FFXI_EXPORT.md)
+for exact DAT, source, region and limitations. The same experimental agent
+settings and accepted build0001 producer bake/reload it as four polygons and
+nine vertices. The raw tile is1448 bytes, SHA-256
+`cd23a5b744adab700f75c7061dbce4bdcefca4b5fa8a361bba18ba8bcf12541c`.
+Its external directory is `ffxi-east-ronfaure101-nav-20261115-01/` beneath the
+evidence root; `result.json` retains the exact command and inputs.
+
+The retained helper also completes a projected path from the historical
+source-audit fixture to an explicitly chosen one-unit X offset. The start
+projects approximately0.39 source units vertically onto the mesh. Receipt:
+`fixture-query.json` in that directory. Neither arrival at the requested height
+nor character/ground calibration is established. Whole-triangle crop boundaries,
+omitted dynamic collision and incomplete zone coverage remain material limits.

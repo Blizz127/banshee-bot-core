@@ -182,3 +182,18 @@ Times are America/Chicago (CST).
   native WoW integration, real-game coverage or Game QA.
 - Next correction: read back build0002 (bundled helper remains 32-bit), then
   retain the first known-source FFXI export and query evidence. No server changes.
+
+## 2026-11-15 02:13 AM CST — build0002: PASS locally / publication PARTIAL
+
+- VERIFIED: clean release build and startup, archive readback of all 64 payloads,
+  and packaged tiled routing/refusal smoke pass. Candidate source:
+  `b3b8ffd88eec4199aeca9e54204da96d9a6df918`. Archive size: 736760 bytes; SHA-256:
+  `903efc88d4d5dc71a0cb73082e37577be39b340b45a3007f8d09247f1180c9c8`.
+- Evidence: `~/.local/share/banshee-bot-core/evidence/build0002-readback/`.
+  The [publisher intake](BUILD_0002.md) supersedes build0001's tool proposal and
+  retains that candidate for rollback. Actual publication/readback remains with
+  Banshee Client Bot; no launcher receipt or Game QA is claimed here.
+- C1 remains PARTIAL pending owning-lead integration, native P0 and Game QA.
+  Next correction: finish the known-source FFXI geometry export and bounded bake,
+  then test the existing single-tile consumer contract against actual output.
+  No feature enabled, server changed or game data put in Git.

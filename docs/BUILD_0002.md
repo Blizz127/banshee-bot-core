@@ -33,7 +33,13 @@ to implement collection support before using tiled output.
 - VERIFIED: source-development tiled and collection checks pass, including
   seam routing, wall avoidance, explicit empty cells and rejected corruption.
   Existing single-tile raw outputs remain byte-identical to build0001.
-- Archive readback and packaged tiled smoke: pending at this document revision.
+- VERIFIED: archive readback checks all 64 listed payloads, size and SHA-256,
+  embedded manifest equality, six startup commands and synthetic soak refusal.
+  Receipt: `~/.local/share/banshee-bot-core/evidence/build0002-readback/result.json`,
+  SHA-256 `52640da4160e1f6dbd3d87ce067fbd5c1ff988df45d077720c66cb4d68baff28`.
+- VERIFIED: the extracted binaries pass the tiled floor/wall/disconnected
+  route smoke and rejection checks. Receipt: the same evidence directory's
+  `tiled-smoke/result.json`; detailed commands are retained alongside it.
 
 No native FFXI integration, server P0, hour-long bot soak, actual-client QA or
 private launcher publication is claimed. C2 and later rollout phases remain

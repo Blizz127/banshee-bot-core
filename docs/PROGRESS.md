@@ -264,3 +264,23 @@ Times are America/Chicago (CST).
   locations; no native WoW load/query, walking coverage or Game QA is inferred.
   Next correction: package build0003, then repeat the changed profile check
   using the extracted release executable and route the superseding tool intake.
+
+## 2026-11-15 02:20 AM CST — build0003: PASS locally / native adoption PARTIAL
+
+- VERIFIED: release/startup, all 78 archive payloads, and ten actual WoW sample
+  checks using the extracted release binary pass. Source:
+  `c74312dee1701291263acafe54a8588abd998da1`. Archive: 785550 bytes; SHA-256
+  `a6331546f621a66ccda3246a70b388876ae3cba06f96043e53e2bf7f40b639c1`.
+  Evidence: `~/.local/share/banshee-bot-core/evidence/build0003-readback/`.
+- The [private publisher intake](BUILD_0003.md) supersedes build0002 while
+  retaining both earlier candidates for rollback. Publication and Game QA are
+  unconfirmed; local checks do not mark this released.
+- Required next C1 action belongs to the FFXI lead: adopt the reconciled pure
+  contracts and run native P0, then Game QA. C2 is not started ahead of that gate.
+  Separately, actual map adoption requires the owning detail-boundary/producer
+  correction and physical/collision QA. Both are concrete routed intakes, not
+  requests for routine coordinator approval.
+- Other limits: no actual AzerothCore artifact sample in documented locations,
+  Ghidra runtime unavailable for unknown formats, FF14 client data absent, and
+  a real headless soak requires the native adapter. No other project edited,
+  live process changed, data deleted, remote added or public push performed.

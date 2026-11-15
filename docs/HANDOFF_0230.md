@@ -1,5 +1,9 @@
 # Handoff refresh — 2026-11-15 02:29 CST
 
+Historical snapshot. Use [the current handoff](HANDOFF_CURRENT.md) for next work;
+the proposed packet consumption below has already been completed and must not
+be replayed merely because this retained note describes it as pending.
+
 **PARTIAL.** One read-only coordinator snapshot at 02:29:15 CST was compared
 with the retained 02:20:40 snapshot. A concrete FFXI wrapper correction has
 arrived. C1 native adoption/P0, owned FFXI native navigation and private bot-core

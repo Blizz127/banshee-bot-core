@@ -60,7 +60,8 @@ The Rust navigation boundary also provides optional
 See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [adapter handoff](docs/C1_ADAPTER_HANDOFF.md),
 [readiness table](docs/BOT-READINESS.md),
-[provenance](docs/PROVENANCE.md) and [progress](docs/PROGRESS.md).
+[provenance](docs/PROVENANCE.md), [progress](docs/PROGRESS.md) and
+[current handoff](docs/HANDOFF_CURRENT.md).
 Private QA-candidate packaging is documented in [builds](docs/BUILDS.md).
 The current proposed private tool/source candidate is [build0014](docs/BUILD_0014.md);
 publication and native/Game QA remain separate pending steps.

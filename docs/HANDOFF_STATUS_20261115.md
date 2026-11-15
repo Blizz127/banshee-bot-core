@@ -4,6 +4,8 @@ This is historical evidence. [The 02:30 refresh](HANDOFF_0230.md) supersedes
 its open E&B output-model choice and original FFXI wrapper status. The current
 offline native result is in [FFXI consumption](FFXI_NATIVE_CONSUMPTION.md), and
 [progress](PROGRESS.md) records later builds. Standing owner holds persist.
+Use [the current handoff](HANDOFF_CURRENT.md) for continuation; do not replay
+closed checks or resend intakes from these historical pending-work descriptions.
 
 ## Later bounded refresh — 02:20:40 CST
 

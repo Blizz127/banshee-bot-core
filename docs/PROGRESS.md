@@ -1013,13 +1013,13 @@ Times are America/Chicago (CST).
 
 ## 2026-11-15 06:26 CST — private build0015: PASS, publication unconfirmed
 
-- VERIFIED: source73cd8da packages as **0.1.0-build0015**, 1136790 bytes,
+- VERIFIED: source 73cd8da packages as **0.1.0-build0015**, 1136790 bytes,
   SHA256 `7c8b21b540123f23462b62c7c60901bdb78833d262f0f81a540c6ed55ad93029`.
-  Readback verifies138 payloads and13 startup invocations. All118 tracked source
+  Readback verifies 138 payloads and 13 startup invocations. All 118 tracked source
   inputs/log/Rust outputs join to the fresh producer; the new extractor, both
   backends and smoke script match completed proof. The cost observation pins
   the same extractor/reference32 helper. See `BUILD_0015.md` for exact receipts.
-- All22 shared-core inputs and bot-soak retain their prior identities. No native
+- All 22 shared-core inputs and bot-soak retain their prior identities. No native
   C1 suite, old cost baseline, game asset or live action was replayed. This
   supersedes proposed0014 TOOL/SOURCE only, with earlier rollback artifacts kept.
   Private publication and native P0/Game QA remain unconfirmed; features stay OFF.
@@ -1028,3 +1028,7 @@ Times are America/Chicago (CST).
   default single-cell path. Owning native four-check correction and publisher
   readback stay with their lanes. No new worker/restart/adoption authority is
   inferred; C1 has no map gate and NEVER restart FFXI remains.
+- The concrete publisher intake is queued through the existing coordinator
+  task; receipt `evidence/build0015-readback/coordinator-response.json` records
+  delivery status, not publication. `HANDOFF_CURRENT.md` now directs continuation
+  to collection integration and marks the new cost/smoke work closed.

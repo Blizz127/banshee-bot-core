@@ -67,8 +67,17 @@ def main():
         str(root / "crates/bot-soak/examples/synthetic-short.csv"), "--zone", "100"
     ], expected=3).decode()
     if args.backend:
-        payload["bin/bnav-recast"] = (args.backend.read_bytes(), 0o755)
-        payload["provenance/backend-manifest.json"] = (args.backend_manifest.read_bytes(), 0o644)
+        backend_bytes = args.backend.read_bytes()
+        backend_manifest = args.backend_manifest.read_bytes()
+        backend_record = json.loads(backend_manifest)
+        if digest(backend_bytes) != backend_record["backend_sha256"]:
+            raise RuntimeError("backend binary does not match its source manifest")
+        bridge_hashes = [value for key, value in backend_record["inputs_sha256"].items()
+                         if key.endswith("/crates/bnav-extract/native/bnav_recast.cpp")]
+        if bridge_hashes != [digest((root / "crates/bnav-extract/native/bnav_recast.cpp").read_bytes())]:
+            raise RuntimeError("backend was not built from this bridge source")
+        payload["bin/bnav-recast"] = (backend_bytes, 0o755)
+        payload["provenance/backend-manifest.json"] = (backend_manifest, 0o644)
         payload["provenance/Recast-LICENSE.txt"] = (args.backend_license.read_bytes(), 0o644)
         checks["bnav_recast_help"] = command([str(args.backend.resolve()), "--help"]).decode()
     for i, path in enumerate(args.verification):

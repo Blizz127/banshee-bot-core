@@ -4,9 +4,9 @@ Private shared Rust bot primitives and offline navigation/load-test tools.
 Governing scope: [spec](docs/BANSHEE_BOT_CORE_SPEC_20261115.md).
 
 **C1 is partial.** The shared library implements the existing FFXI cancellation
-clock, roles and `/fb` command/order grammar. Native authorization, selection,
-planning, target claims, session handling and gameplay execution remain in the
-FFXI server. No server has adopted this crate yet; no live P0 or Game QA pass is
+clock, roles, `/fb` grammar and pure ownership, selection and order planning
+contracts. Target claims, session facts and gameplay execution remain in the
+FFXI server. No server adoption is evidenced yet; no live P0 or Game QA pass is
 claimed. New feature switches default off.
 
 ```sh
@@ -19,8 +19,9 @@ The crate uses only Rust's standard library and never opens a network connection
 defines the native query boundary. `goals/`, `economy/`, `chat/` and `persona/`
 reserve the specified architecture without claiming later-phase behavior.
 
-`bnav-extract` builds a real single Recast/Detour tile from extracted triangle
-geometry and provides explicit WoW tile preflight; see [nav tool status](docs/BNAV_EXTRACT.md) and the
+`bnav-extract` builds single or fixed-grid Recast/Detour tiles from extracted
+triangle geometry and provides explicit WoW tile preflight; see
+[tiled navigation](docs/TILED_NAV.md), [nav tool status](docs/BNAV_EXTRACT.md) and the
 [geometry intake contract](docs/GEOMETRY_CONTRACT.md). `bot-soak` validates and
 summarizes a server adapter's recorded metrics; see its
 [CSV contract and coverage checks](docs/BOT_SOAK.md). It does not spawn bots.

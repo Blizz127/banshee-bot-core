@@ -1,7 +1,8 @@
 # Geometry intake v1
 
-This is the common input contract for the shared builder. Per-game extraction
-lives with the owning server lead; no game geometry is included here. A source
+This is the common input contract for the shared builder. Reusable per-game
+extraction tooling belongs here; native adapter changes and deployment belong
+to each server lead. No game geometry is included here. A source
 inventory or successfully parsed OBJ is not a walkable map or a QA pass.
 
 ## Export
@@ -35,13 +36,14 @@ root. At minimum the sidecar records:
 
 Unknown DAT/sqpack/archive/collision structures require the REA workflow, with
 evidence retained outside git. Existing documented source readers should be
-reused by their owning lead rather than guessed from file extensions. Proprietary
+reused with pinned provenance rather than guessed from file extensions. Proprietary
 inputs remain private; this contract does not authorize a new asset download.
 
 ## Bake and acceptance
 
-The first backend targets bounded ground geometry and a single Detour tile.
-It does not establish seamless multi-tile world coverage, doors/lifts, dynamic
+The backend targets bounded ground geometry, with single-tile and explicit
+fixed-grid tiled modes. Synthetic cross-tile routes pass, but this does not
+establish complete game-world coverage, doors/lifts, dynamic
 obstacles, liquid traversal, off-mesh links or free-space flight. Preserve
 Earth & Beyond's pending free-flight pathing decision; ground polygons cannot
 stand in for that choice.

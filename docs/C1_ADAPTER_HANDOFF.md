@@ -10,7 +10,9 @@ task `dcc9a63a40ab`. It does not authorize a restart or alter any live gate.
 | --- | --- | --- |
 | `control::{Clock,Token,Operation,Phase,Refusal,Snapshot}` | `banshee_bot_core::sched::control` | Retain one clock for the whole registered bot/map lifetime; supply verified binding revisions, cancel queues, verify actual operation completion. |
 | `command::{parse,Command,Target,ParseError,MAX_COMMAND_BYTES,MAX_NAME_BYTES}` | `banshee_bot_core::brain::command` | Re-export types to preserve callers; consume errors as private system feedback. |
-| `orders::{parse,Order,ParseError,Role}` | `banshee_bot_core::brain::orders` (`Role` also in `roles`) | Re-export only these pure grammar types/functions; retain native help text, planning, preparation/revalidation and directives. |
+| `authority` pure contracts | `banshee_bot_core::brain::authority` | Supply authoritative owner binding, actor/session and party facts. Tickets remain opaque and cannot grant authority without fresh native facts. |
+| `selection` pure contracts | `banshee_bot_core::brain::selection` | Supply the current owned candidate set; preserve unavailable-member feedback and private name resolution. |
+| `orders` pure contracts, including `prepare` and `revalidate` | `banshee_bot_core::brain::orders` (`Role` also in `roles`) | Re-export the coherent authority/selection/planner type set together; retain native `ORDER_HELP`, scene collection, ability mapping, queues and execution. |
 
 The first source candidate is commit
 `36b90715b29728ecbccd2fee95493bbc7c14db29` from
@@ -24,8 +26,9 @@ baseline before accepting the seam; changed files require a fresh comparison.
 
 1. Preserve existing `/fb` feature flags and exact off path. Shared
    `FeatureFlags::default()` enables nothing and does not override server policy.
-2. Keep native authority, owner binding, PartyBook, session generation and target
-   selection checks. A parsed name or cancellation token is not permission.
+2. Keep native owner binding, PartyBook, session generation and target facts.
+   Pure authority/selection functions can use the shared implementations after
+   baseline reconciliation. A parsed name or cancellation token is not permission.
 3. Preserve two checks of controlled work (admission and execution), and retain
    login generation separately from cancellation epochs. Never reconstruct the
    clock on logout, toggle or rebind. Disable/adoption must preserve or invalidate
@@ -33,9 +36,11 @@ baseline before accepting the seam; changed files require a fresh comparison.
 4. Role changes preflight the entire group before advancing any clock, retain
    explicit owner orders and keep native election semantics. `Puller` and
    `Dps` remain accepted; the broader `PolicyRole::Support` is not an FFXI verb.
-5. Leave native prepare/revalidate, ability mapping, claims, pull continuation,
-   queues, packets and all gameplay mutation unchanged. `Assist` remains native
-   target resolution; role metadata must not overwrite an owner order.
+5. Preserve preparation/revalidation call sites and their fresh native facts.
+   The pure planner can be re-exported; ability mapping, claim observation,
+   pull continuation, queues, packets and all gameplay mutation stay native.
+   `Assist` uses the supplied elected tank and target; it invents neither.
+   Role metadata must not overwrite an owner order.
 6. Keep summon/gear/dismiss fences closed on unknown outcomes. A queued transfer
    is not arrival; a queued leave is not completed dismissal. Reconciliation
    requires the current token and actual native state.
@@ -85,4 +90,29 @@ python3 scripts/check_ffxi_compat.py \
 
 The script refuses unrecognized source hashes and existing evidence directories.
 Snapshots, compiler output and original test binaries remain outside both repos.
+
+## Expanded comparison and superseding intake
+
+**VERIFIED locally, 2026-11-15 02:05 CST:** the expanded harness adds 47,524
+authority, selection, order preparation and fresh-state revalidation comparisons.
+It includes 3,643 prepared outcomes, 859 per-bot refusals, successful operations,
+and stale binding/session/claim/target mutations. The original parser, clock,
+eleven reference pure tests and shared overflow checks also pass. Nine focused
+shared authority/planner tests passed separately. This is finite local evidence,
+not native P0 or whole-program equivalence.
+
+Receipt:
+`~/.local/share/banshee-bot-core/evidence/c1-planner-compat-build0002-attempt1/result.json`,
+SHA-256 `2b15ac4441095abf928b25a37e09e39b65eb6958767d3051a2d8407e2c3c7d07`.
+The before/after core source hashes match. The five pinned native files remain
+the same candidate baseline; this does not establish compatibility with later
+FFXI edits.
+
+This expanded source intake supersedes the build0001 grammar-only proposal.
+Integrate all interacting types together rather than mixing private native and
+shared `MutationTicket`, `Candidate`, `Order` or `Role` definitions. The owning
+lead may keep the earlier narrow extraction if its composed baseline has moved,
+but must record which boundary it adopted and run its focused P0 checks. The
+shared core performs no server action and does not replace the native single
+writer or a current authority check at execution.
 

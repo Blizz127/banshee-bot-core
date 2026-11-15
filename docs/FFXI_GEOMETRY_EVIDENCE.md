@@ -6,6 +6,17 @@ No new asset decode, OBJ extraction, navmesh bake, native runtime or game QA was
 run in this audit. Existing `.nav` files are navigation outputs, not input
 collision geometry and not proof of a new bake.
 
+**Current-session addendum, 02:08 CST:** root REA metadata now responds, with no
+active target. Ghidra specifically reports `runtime_unavailable` and a full JDK
+21+ requirement; configuration was not changed. Target-free `inspect_byte_entropy`
+succeeded for `ROM/1/31.DAT`, retaining file identity as
+`ev_c7170dcd8779c2dca79420f4553dd40d08163c4824357bf5299e7897933fa2d6`.
+The external receipt is `evidence/rea-owned-dat-20261115/final-bundle.json` under
+the project private data root. This is an identity/entropy observation only;
+it does not validate the decoder, collision surfaces or encryption properties.
+The historical failure below does not establish a current MCP-wide block.
+The documented existing decoder can be exercised without new format research.
+
 Evidence is retained outside git at
 `/home/blizz/.local/share/banshee-bot-core/evidence/ffxi-geometry-source-audit-20261115/`.
 `AUDIT.json` records source pins, byte counts, SHA256 identities and preserved

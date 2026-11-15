@@ -133,3 +133,27 @@ Times are America/Chicago (CST).
 - Next correction: expanded differential check, tiled bake/query and immutable
   collection receipts. Actual FFXI DAT extraction retains the prior REA startup
   failure boundary until the precise recovery requirement is resolved.
+
+## 2026-11-15 02:08 AM CST — C1 expanded comparison and tiled tools: PASS locally
+
+- VERIFIED: 47,524 ownership/selection/planner comparisons match the pinned
+  FFXI contracts, including successful prepared orders and stale-plan mutations.
+  Existing 79,724 parser and 76,800 clock comparisons also pass. Receipt:
+  `~/.local/share/banshee-bot-core/evidence/c1-planner-compat-build0002-attempt1/result.json`,
+  SHA-256 `2b15ac4441095abf928b25a37e09e39b65eb6958767d3051a2d8407e2c3c7d07`.
+- VERIFIED: fixed-grid 32-bit tile baking/query passes seam, obstacle, empty,
+  disconnected and invalid-input checks. Three original single-tile outputs
+  remain byte-identical. Evidence: `evidence/tiled-nav-20261115/` under the private
+  data root. Integrated source now includes both changes.
+- OBSERVED: current REA metadata succeeds; Ghidra reports `runtime_unavailable`
+  (full JDK 21+ requirement). No shared configuration changed. Target-free
+  inspection succeeds for the owned zone230 DAT, with evidence ID
+  `ev_c7170dcd8779c2dca79420f4553dd40d08163c4824357bf5299e7897933fa2d6`.
+  `evidence/rea-owned-dat-20261115/final-bundle.json` retains the record. It verifies
+  file identity only, not collision semantics. Earlier other-lane startup failure
+  is historical, not a current blanket asset-access or permission gate.
+- PARTIAL: native FFXI adapter/P0 and Game QA remain unrun; no publication receipt.
+  Next correction: package build0002, finish collection receipts and 64-bit
+  pipeline checks; exercise the already-documented FFXI offline collision/export
+  source in an external workspace. Unknown-format Ghidra analysis remains blocked
+  by its runtime; known-source tooling does not require that analysis.

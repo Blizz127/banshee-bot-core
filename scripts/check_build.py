@@ -128,6 +128,21 @@ def validate_manifest(data, artifact):
     need({"bin/bnav-extract", "bin/bot-soak", FIXTURE} <= files.keys(),
          "required tools or synthetic fixture missing from manifest")
     need(files[FIXTURE]["bytes"] <= MIB, "synthetic fixture exceeds 1 MiB")
+    native = manifest.get("native_backends", {})
+    need(isinstance(native, dict), "native backend identities must be an object")
+    for path, identity in native.items():
+        need(path in ("bin/bnav-recast", "bin/bnav-recast64") and path in files,
+             "native identity names an absent or unsupported executable")
+        need(isinstance(identity, dict) and type(identity.get("reference_bits")) is int
+             and identity["reference_bits"] in (32, 64), "invalid native reference ABI")
+        need(path != "bin/bnav-recast64" or identity["reference_bits"] == 64,
+             "explicit 64-bit helper identity has a different ABI")
+        need(identity.get("sha256") == files[path]["sha256"], "native executable digest mismatch")
+        source_manifest = identity.get("source_manifest")
+        need(isinstance(source_manifest, str) and source_manifest.startswith("provenance/")
+             and source_manifest in files, "native source manifest is absent")
+    need("bin/bnav-recast64" not in files or "bin/bnav-recast64" in native,
+         "explicit 64-bit helper requires a native identity")
     return manifest
 
 

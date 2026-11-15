@@ -1130,3 +1130,18 @@ Times are America/Chicago (CST).
   C1/P0 acceptance or shared-core API defect is supplied. Native fixes stay in
   the existing owning lanes; no jobs/packets were opened. Details and exact
   evidence are retained in `FFXI_OFFLINE_INTAKE.md` section I. NEVER restart FFXI.
+
+## 2026-11-15 07:46 CST — private build0017: PASS, publication unconfirmed
+
+- VERIFIED: source 5576d1e packages as **0.1.0-build0017**, 1168931 bytes,
+  SHA256 `1436afa61ec5b7c2feaf91aea60cb2424792c19c339332d221bc082296085d3c`.
+  Readback passes 143 payloads and 14 startup invocations. All 124 source files,
+  build log and Rust outputs join the fresh producer; new runner/checker proof
+  matches the archive. All four executables and 22 shared-core input pins remain
+  unchanged. Exact evidence and unrun cases are in `BUILD_0017.md`.
+- Next independent correction: add opt-in structured native query refusal
+  diagnostics, preserving existing commands, so missing polygons/disconnected
+  loaded regions are distinguishable from resource/tool failures. The current
+  probe runner intentionally does not infer unreachable states from stderr.
+  Native FFXI claim work and C1/P0 acceptance stay with their existing owners.
+  No C1 gate, producer allowlist or restart authority changes.

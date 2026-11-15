@@ -1,0 +1,10 @@
+/target
+**/*.log
+.env
+*.pcap
+/client-data/
+/captures/
+/evidence/
+/data/raw/
+/data/navmesh/*.bin
+/data/navmesh/*.obj

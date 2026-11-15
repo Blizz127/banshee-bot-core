@@ -35,10 +35,12 @@ outer loop and Z as the inner loop. Inverted ranges and more than 16 cells fail
 before dispatching the backend.
 
 The existing single-cell command and collection orchestrator remain available.
-This batch manifest has a separate format from `bnav-collection-v1` and is
-not accepted by `bake_nav_collection.py check/query`. Keep using the collection
-tool for its source hashes, receipt validation and complete-collection checks.
-Batch integration into that stronger collection contract is separate work.
+This standalone batch manifest remains separate from collection manifests and
+is not directly accepted by `bake_nav_collection.py check/query`. The
+[collection tool](NAV_COLLECTION.md#optional-bounded-batches) can now opt into
+`bake --batch-cells N`, retaining actual batch records and adding source/output
+hashes, receipt validation and complete-collection checks. Its resulting format
+is `bnav-collection-batch-v1`; the default individual-cell format is unchanged.
 
 ## Outputs and completion
 

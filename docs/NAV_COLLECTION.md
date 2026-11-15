@@ -13,6 +13,13 @@ surface, that a route is safe in the game, or that a game adapter can load it.
 Collections remain `game_qa: NOT_RUN` and
 `native_adapter_compatibility: NOT_VERIFIED`.
 
+The default path retains `bnav-collection-v1` and one invocation per cell.
+Adding **`--batch-cells N`**, with N from 1 through 16, opts into
+`bnav-collection-batch-v1`. The batch format binds the existing source/tool
+identities to actual bounded batch invocations, native request/result records
+and every output tile. The same `check` and `query` commands accept either
+format; older validators fail closed on the new format.
+
 ## Geometry sidecar
 
 Supply an external JSON sidecar alongside the external OBJ. No game geometry,
@@ -96,6 +103,76 @@ input Y padding runs from that lower value through
 also extends its upper Y bound by `ceil(agent_height / cell_height) * cell_height`;
 the collection checks the resulting serialized header with float32 tolerance.
 This upper padding does not imply extra collision geometry.
+
+## Optional bounded batches
+
+Add `--batch-cells 4` to a `bake` command and choose a fresh output directory to
+reuse decoded geometry within groups of at most four cells. The explicitly
+selected extractor/backend must support [the standalone batch protocol](NAV_BATCH.md).
+Omitting the option keeps individual-cell commands and their existing layout.
+Even `--batch-cells 1` explicitly selects the batch format.
+
+The planner uses rectangular blocks: width is the lesser of the requested grid
+width and N; height is the lesser of the requested grid height and integer N
+divided by that block width. It visits Z blocks, then X blocks, clipping final
+blocks to the requested rectangle. This deterministic plan covers each cell
+once, with no overlaps and at most N cells per invocation. Ragged blocks may
+use fewer cells. A native batch lists its cells with X as the outer loop; the
+collection's generated inventory retains the usual Z-outer order.
+
+Batch outputs use this separate layout:
+
+```text
+source.json
+requested.json
+manifest.json
+receipts/batch-0000.json
+batches/0000/requested.json
+batches/0000/manifest.json
+batches/0000/X_Z.navtile
+```
+
+There is exactly one actual command receipt per batch, with exit status and
+captured stdout/stderr. Empty cells in a successful batch share its exit 0;
+the tool does not fabricate individual exit-3 invocations. Native raw tile files
+remain in their batch directory, avoiding a duplicate copy of each payload.
+
+The collection manifest adds `batch_cells` and a `batches` array. Each record
+has an integer `id`, `bounds` in `[x_min,x_max,z_min,z_max]` order, and relative
+`receipt`, `request` and `result` paths with their SHA-256 fields. Every collection
+tile names its `batch`; built tiles retain their path, size and SHA-256. These
+hashes are added by the collection layer, not asserted by the standalone batch
+manifest. Source and tool identity checks still run before and after the bake.
+
+Validation requires the deterministic batch plan, complete native inventory,
+matching command tools/source/output/grid/settings, exit 0 and untruncated
+stdout that parses to the retained native result. Native request/result schemas,
+ABI, counts, cell order and grid/settings must agree. Numeric settings are
+compared after finite float32 conversion, matching the native interface's
+rounding. Requested geometry counts must be positive, bounded and unchanged;
+they are not a substitute for the source hash.
+
+The historical native request must remain INCOMPLETE with every cell missing;
+the native final result must be COMPLETE. The collection compares each accepted
+built/empty result with its own inventory, checks actual tile hashes and existing
+Detour header/ABI/bounds rules, and rejects unexpected files, empty-cell payloads
+or symlinks in retained batch paths. A resealed hash does not bypass those
+semantic checks. Receipt hashes are consistency evidence, not cryptographic
+authentication of an external producer.
+
+A failed batch retains its actual receipt and partial files but contributes no
+accepted cells. Earlier successful batches remain recorded; unprocessed or
+failed groups stay missing, and the overall collection is INCOMPLETE. A native
+COMPLETE file alone cannot override a failed invocation or missing receipt.
+Query refuses such a collection. Per-batch payloads remain bounded at 128 MiB,
+and complete collections retain the 256 MiB native load budget. These are payload
+validation limits, not total memory or disk quotas.
+
+Collections can still be relocated as a unit: checks open retained relative
+paths and bind the saved absolute command's output suffix. The saved source/tool
+paths and hashes remain declarations from the original bake; they are not
+rewritten to imply another invocation. Queries still require the exact recorded
+backend identity.
 
 ## Retained records and failure behavior
 

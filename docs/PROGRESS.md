@@ -1032,3 +1032,20 @@ Times are America/Chicago (CST).
   task; receipt `evidence/build0015-readback/coordinator-response.json` records
   delivery status, not publication. `HANDOFF_CURRENT.md` now directs continuation
   to collection integration and marks the new cost/smoke work closed.
+
+## 2026-11-15 07:18 CST — opt-in collection batches: PARTIAL, legacy checks PASS
+
+- Added `bake --batch-cells N` for 1..16-cell rectangles. The explicit new
+  `bnav-collection-batch-v1` format records one actual invocation per batch,
+  native request/result hashes and per-tile ownership/hash/ABI. The default
+  individual-cell format and receipt path are preserved. Failed groups retain
+  partial files and contribute no accepted coverage; prior groups stay recorded.
+- VERIFIED: all six existing legacy integrity tests pass against source
+  ccc7a18. These are synthetic structural checks, not native queries. Receipt
+  `evidence/collection-batch-20261115/legacy-v1/result.json`, SHA256
+  `5a8017a933099c7148bc592a266c1da86d9f1d70829e7ce8a620100dfa7353a1`.
+  Focused native batch collection/tamper validation is still pending integration.
+- Native binaries and shared core are unchanged; this increment uses retained
+  build0015 tools. Next correction: run the bounded new smoke for both ABIs,
+  record actual results and package/read back build0016. No native FFXI job,
+  game asset, producer adoption or live action is requested. NEVER restart FFXI.

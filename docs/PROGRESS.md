@@ -1056,3 +1056,29 @@ Times are America/Chicago (CST).
   no current C1/P0 acceptance or publisher receipt is supplied. Existing Follow
   checks and evidence-reader counts remain separate. See `FFXI_OFFLINE_INTAKE.md`
   section H and its exact observation limits. No job or packet was reopened.
+
+## 2026-11-15 07:23 CST — collection batch integration: PASS, synthetic scope
+
+- VERIFIED: reference32 and reference64 each pass **32 checks /38 commands**
+  against the current wrapper. Default and opt-in modes produce byte-identical
+  tiles and the same projected two-tile wall detour. Ragged all-empty coverage,
+  relocation, invalid batch limits, 23 tamper refusals and a failed batch that
+  retains one partial tile without accepting coverage pass. Resealed semantic
+  cases reach their intended guard, including a missing historical null ABI.
+- Six legacy integrity tests pass again after the required-field correction.
+  Receipts under `evidence/collection-batch-20261115/`:
+  `smoke32-v1/result.json` SHA256
+  `5255ebbcd2bfa52d934b2ddc1c37ed3d13f12b5e578950ad7fc76f753cb1b65b`;
+  `smoke64-v1/result.json` SHA256
+  `ac9507ffe6b9bf213d669a0561214a75a284e198f4d458eb82dde475ff5520ff`;
+  `legacy-v2/result.json` SHA256
+  `05e55dd1abb534ac696fd23502036f2b5d2e5188222bd685748b176b40c377f5`.
+  Original inputs/tool/script hashes are unchanged during each run. No full
+  suite, old benchmark, native FFXI job, game asset or Game QA was run.
+- Failure after an earlier successful batch, resource exhaustion and process
+  crashes remain unexercised; the receipt explicitly scopes that limitation.
+  No general performance claim follows from these functional checks. Native
+  binaries and shared core are unchanged. Next correction: package/read back
+  build0016 and submit one superseding tool/source intake to the existing
+  publisher. C1/P0 acceptance and all holds remain independent. NEVER restart
+  FFXI, including at zero players; features remain OFF.

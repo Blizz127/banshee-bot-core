@@ -23,12 +23,12 @@ from zoneinfo import ZoneInfo
 
 FORMAT = "bnav-collection-batch-v1"
 SETTINGS = [0.5, 0.2, 2, 0.6, 0.9, 45]
-EXPECTED_COMMANDS = 37
-EXPECTED_CHECKS = 31
+EXPECTED_COMMANDS = 38
+EXPECTED_CHECKS = 32
 TAMPERS = [
     "receipt-hash", "receipt-command", "receipt-failed", "receipt-truncated", "receipt-stdout",
     "missing-result", "result-hash", "missing-request", "request-hash", "request-schema",
-    "request-settings", "result-settings", "result-counts", "result-order", "result-coverage",
+    "request-settings", "request-abi-missing", "result-settings", "result-counts", "result-order", "result-coverage",
     "result-abi", "batch-bounds", "batch-membership", "raw-hash", "raw-layer", "empty-file", "raw-symlink",
 ]
 TAMPER_ERRORS = {
@@ -43,6 +43,7 @@ TAMPER_ERRORS = {
     "request-hash": "batch request hash mismatch",
     "request-schema": "invalid native batch format/status",
     "request-settings": "native batch settings differ",
+    "request-abi-missing": "historical batch request must declare null abi",
     "result-settings": "native batch settings differ",
     "result-counts": "native batch count summary differs",
     "result-order": "native batch cell order/coverage differs",
@@ -186,10 +187,12 @@ def mutate(source, target, name, bits):
         field = name.split("-")[0]
         with (target / batch[field]).open("ab") as stream:
             stream.write(b" ")
-    elif name in ("request-schema", "request-settings"):
+    elif name in ("request-schema", "request-settings", "request-abi-missing"):
         request = load(target / batch["request"])
         if name == "request-schema":
             request["status"] = "COMPLETE"
+        elif name == "request-abi-missing":
+            del request["reference_bits"]
         else:
             request["settings"][0] = 0.75
         seal_request(target, batch, request)
@@ -237,7 +240,7 @@ def mutate(source, target, name, bits):
     save(target / "manifest.json", manifest, replace=True)
     # Prove resealed fixtures reach semantic checks rather than a stale digest.
     if name in {"receipt-command", "receipt-failed", "receipt-truncated", "receipt-stdout",
-                "request-schema", "request-settings", "result-settings", "result-counts",
+                "request-schema", "request-settings", "request-abi-missing", "result-settings", "result-counts",
                 "result-order", "result-coverage", "result-abi"}:
         for field in ("receipt", "request", "result"):
             need(digest((target / batch[field]).read_bytes()) == batch[field + "_sha256"],
@@ -456,7 +459,7 @@ def main():
             need(refusal["stderr"] and not refusal["stdout"], "tamper refusal must not emit a success result")
             need(TAMPER_ERRORS[name] in refusal["stderr"].lower(), f"{name}: failed at an unrelated guard")
             if name in {"receipt-command", "receipt-failed", "receipt-truncated", "receipt-stdout", "request-schema",
-                        "request-settings", "result-settings", "result-counts", "result-order", "result-coverage", "result-abi"}:
+                        "request-settings", "request-abi-missing", "result-settings", "result-counts", "result-order", "result-coverage", "result-abi"}:
                 need("hash mismatch" not in refusal["stderr"].lower(), "resealed semantic case only hit a stale hash")
             passed("tamper-" + name, refusal=refusal["stderr"].strip())
 

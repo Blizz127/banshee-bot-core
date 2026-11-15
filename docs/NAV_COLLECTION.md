@@ -174,7 +174,7 @@ paths and hashes remain declarations from the original bake; they are not
 rewritten to imply another invocation. Queries still require the exact recorded
 backend identity.
 
-## Retained records and failure behavior
+## Default per-cell records and failure behavior
 
 - `source.json` is the byte-exact input sidecar.
 - `requested.json` records the original incomplete grid before processing.
@@ -183,6 +183,9 @@ backend identity.
   stdout/stderr for each completed invocation.
 - `manifest.json` is the final receipt: `COMPLETE` or `INCOMPLETE`, explicit
   `built`/`empty`/`missing` cells, hashes, settings, declarations and errors.
+
+The opt-in batch layout and its shared exit-0 empty-cell evidence are described
+above; the records in this section describe the default individual-cell path.
 
 An empty result requires native exit code 3 and no tile file. It remains an
 explicit cell, including its command receipt. Any other failed invocation stops

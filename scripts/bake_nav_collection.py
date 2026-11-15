@@ -336,7 +336,8 @@ def validate_batch_output(root, manifest, batch):
             need(integer(record.get("reference_bits"), "batch ABI", 32, 64) == bits,
                  "native batch ABI differs from collection")
         else:
-            need(record.get("reference_bits") is None, "historical batch request has an ABI result")
+            need("reference_bits" in record and record["reference_bits"] is None,
+                 "historical batch request must declare null ABI")
         need(record.get("game_qa") == "NOT_RUN", "native batch cannot claim Game QA")
         need(integer(record.get("requested_cells"), "requested batch cells", 1, 16) == len(cells),
              "native batch requested coverage differs")

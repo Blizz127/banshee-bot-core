@@ -82,3 +82,19 @@ Times are America/Chicago (CST).
 - Next correction: owning lead reconciles its current baseline, integrates the
   narrow re-export seam, then runs native P0 and Game QA. C2–C6 remain unstarted;
   common tool work proceeds without crossing that dependency.
+
+## 2026-11-15 01:14 AM CST — common geometry backend: PASS (game maps PARTIAL)
+
+- VERIFIED: original bridge plus external zlib-licensed Recast/Detour builds a
+  real raw Detour tile, reloads it and queries complete routes. Synthetic floor
+  succeeds; wall route detours around the obstacle; disconnected route fails.
+  Invalid settings, oversized grid, wrong ABI and output overwrite are refused.
+- Evidence: `~/.local/share/banshee-bot-core/evidence/nav-backend-20261115/smoke-final/result.json`
+  and `commands.json`. Helper SHA-256:
+  `d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c`.
+- Scope: single Y-up ground tile, calibrated by caller; tested native ABI is
+  32-bit references. No proprietary format guessed, real game geometry extracted,
+  multi-tile coverage established or Game QA run. REA remains required when
+  unknown per-game formats are investigated.
+- Next correction: private candidate package and publisher intake, then owning
+  leads supply geometry per `GEOMETRY_CONTRACT.md` and native FFXI QA evidence.

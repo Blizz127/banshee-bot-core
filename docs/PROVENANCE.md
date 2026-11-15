@@ -18,3 +18,13 @@ The governing spec itself is owner-supplied, with SHA-256
 `fe8138bb5bec23f55f26060626f28c76aff9d64b54b24ec0b8cd9cb2b0a43bc3`.
 This initial Rust core has no third-party Cargo dependencies. No public licence
 or publication decision is made by these notes.
+
+The native `bnav-recast` helper statically links the owner's existing cMaNGOS
+Recast/Detour dependency (32-bit polygon references). Its complete input hash
+manifest and licence are retained at
+`~/.local/share/banshee-bot-core/evidence/nav-backend-20261115/build-cmangos-final/`.
+The private candidate includes `manifest.json` and `RECAST-LICENSE.txt` from that
+build alongside the original bridge source. The helper SHA-256 is
+`d9996beda74bb7168198392040341e4823ff20b34c64da38bcca3dfca8f36e5c`.
+The optional 64-bit pipeline has not been built/queried end to end; its wrapper
+inspection was checked separately against a native synthetic fixture.

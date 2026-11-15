@@ -98,3 +98,22 @@ Times are America/Chicago (CST).
   unknown per-game formats are investigated.
 - Next correction: private candidate package and publisher intake, then owning
   leads supply geometry per `GEOMETRY_CONTRACT.md` and native FFXI QA evidence.
+
+## 2026-11-15 01:16 AM CST — build 0001: PASS locally / publication PARTIAL
+
+- VERIFIED: private QA candidate `0.1.0-build0001`, source
+  `5e4ba6d6bd961a6915154e6d3f0ad3f6c3b60281`; release build/startup passes.
+  Archive size 679264 bytes; SHA-256
+  `bfe62b4fa37fe807d28009c8906f7f5a71404af8ef9097cae4a5d52d421f525e`.
+- VERIFIED: archive readback validates all 51 listed files and embedded manifest;
+  packaged binaries pass the geometry smoke. See `BUILD_0001.md` for artifact,
+  receipts, exact publisher intake, command entry points and limitations.
+- PARTIAL: no bot-core private feed/launcher entry contract exists here; existing
+  Banshee Client Bot owns publication. Concrete intake is ready for its standing
+  task `3f9392ca5d00` via coordinator. No publication/readback receipt yet.
+- C1 overall remains PARTIAL: FFXI adapter/native P0/Game QA pending. C2–C6
+  remain unstarted. Real geometry extraction and a genuine server soak remain
+  pending. All new features OFF; no live changes, pushes or remote created.
+- Next correction: consume native integration/QA and geometry artifacts when
+  they arrive, then advance in the specified order. Do not wait in a polling
+  turn for publisher/lead acknowledgement.

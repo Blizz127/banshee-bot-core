@@ -104,8 +104,11 @@ std::vector<int> select_tile_triangles(const Geometry& geometry, const rcConfig&
     return selected;
 }
 
-void build(int argc, char** argv, bool tiled = false) {
-    need(argc == (tiled ? 15 : 8), "build requires six settings; build-tile also requires origin-x origin-z min-y max-y tile-cells tile-x tile-z");
+struct BuildSettings {
+    float cs, ch, height, radius, climb, slope;
+};
+
+BuildSettings read_build_settings(char** argv) {
     const float cs = number(argv[2]), ch = number(argv[3]);
     const float height = number(argv[4]), radius = number(argv[5]);
     const float climb = number(argv[6]), slope = number(argv[7]);
@@ -113,7 +116,21 @@ void build(int argc, char** argv, bool tiled = false) {
          "invalid agent or voxel configuration");
     need(height / ch >= 3 && height / ch <= 8191 && radius / cs <= 1024 && climb / ch <= 8191,
          "agent dimensions exceed supported voxel limits (height must span at least three cells)");
-    const auto g = read_geometry();
+    return {cs, ch, height, radius, climb, slope};
+}
+
+void build(int argc, char** argv, bool tiled = false, const Geometry* shared_geometry = nullptr,
+           std::vector<unsigned char>* raw_result = nullptr) {
+    need(argc == (tiled ? 15 : 8), "build requires six settings; build-tile also requires origin-x origin-z min-y max-y tile-cells tile-x tile-z");
+    const auto settings = read_build_settings(argv);
+    const float cs = settings.cs, ch = settings.ch;
+    const float height = settings.height, radius = settings.radius;
+    const float climb = settings.climb, slope = settings.slope;
+    // Legacy calls still decode at the same point after settings validation.
+    // Batch calls borrow one immutable decode, keeping per-cell validation and
+    // every Recast/Detour operation below in the original order.
+    const auto decoded = shared_geometry ? Geometry{} : read_geometry();
+    const Geometry& g = shared_geometry ? *shared_geometry : decoded;
     const int nv = static_cast<int>(g.vertices.size() / 3);
     const int nt = static_cast<int>(g.triangles.size() / 3);
     Context context;
@@ -250,13 +267,87 @@ void build(int argc, char** argv, bool tiled = false) {
                               static_cast<uint32_t>(sizeof(dtPolyRef) * 8), static_cast<uint32_t>(size)};
     const uint16_t endian = 1;
     need(*reinterpret_cast<const unsigned char*>(&endian) == 1, "only little-endian hosts are supported");
-    std::cout.write(reinterpret_cast<const char*>(header), sizeof(header));
-    std::cout.write(reinterpret_cast<const char*>(data), size);
-    need(bool(std::cout), "output write failed");
+    if (raw_result) {
+        raw_result->assign(data, data + size);
+    } else {
+        std::cout.write(reinterpret_cast<const char*>(header), sizeof(header));
+        std::cout.write(reinterpret_cast<const char*>(data), size);
+        need(bool(std::cout), "output write failed");
+    }
     std::cerr << "recast_build=PASS detour_reload=PASS reference_bits=" << sizeof(dtPolyRef) * 8
               << " polygons=" << polygons->npolys << " vertices=" << polygons->nverts
               << " grid=" << config.width << 'x' << config.height << " bytes=" << size
               << " tile=" << tile_x << ',' << tile_z << " border_cells=" << config.borderSize << '\n';
+}
+
+// Bounded streaming IPC only. The raw tile bytes have no legacy BNAV envelope;
+// the caller must require the final BEND record before accepting the batch.
+void emit_batch_record(const std::array<std::uint32_t, 4>& words,
+                       const std::vector<unsigned char>* payload = nullptr) {
+    std::cout.write(reinterpret_cast<const char*>(words.data()), sizeof(std::uint32_t) * words.size());
+    if (payload && !payload->empty())
+        std::cout.write(reinterpret_cast<const char*>(payload->data()),
+                        static_cast<std::streamsize>(payload->size()));
+    std::cout.flush();
+    need(bool(std::cout), "batch output write failed");
+}
+
+void build_tiles(int argc, char** argv) {
+    need(argc >= 15 && argc <= 45 && (argc - 13) % 2 == 0,
+         "build-tiles requires six settings, origin-x origin-z min-y max-y tile-cells and 1..16 coordinate pairs");
+    const auto count = static_cast<std::uint32_t>((argc - 13) / 2);
+    std::vector<std::pair<int, int>> cells;
+    cells.reserve(count);
+    std::set<std::pair<int, int>> unique;
+    for (int arg = 13; arg < argc; arg += 2) {
+        const int x = integer(argv[arg], 0, 4095), z = integer(argv[arg + 1], 0, 4095);
+        need(unique.emplace(x, z).second, "duplicate batch tile coordinates");
+        cells.emplace_back(x, z);
+    }
+    // Reject malformed common numeric fields before reading geometry or
+    // emitting the protocol header. Global geometry/Y checks still run for
+    // every cell in the same tile engine as an individual build-tile call.
+    read_build_settings(argv);
+    for (int arg = 8; arg <= 11; ++arg) number(argv[arg]);
+    integer(argv[12], 8, 1024);
+    const std::uint16_t endian = 1;
+    need(*reinterpret_cast<const unsigned char*>(&endian) == 1, "only little-endian hosts are supported");
+    const auto geometry = read_geometry();
+    std::cerr << "geometry_decode_count=1 batch_cells=" << count << '\n';
+    emit_batch_record({0x54424e42u, 1u, static_cast<std::uint32_t>(sizeof(dtPolyRef) * 8), count});
+
+    std::array<char*, 15> cell_args{};
+    std::copy_n(argv, 13, cell_args.begin());
+    std::uint64_t total_payload = 0;
+    constexpr std::uint64_t max_payload = 128u * 1024u * 1024u;
+    std::uint32_t built = 0, empty = 0;
+    for (std::uint32_t index = 0; index < count; ++index) {
+        cell_args[13] = argv[13 + index * 2];
+        cell_args[14] = argv[14 + index * 2];
+        const auto& cell = cells[index];
+        std::cerr << "batch_cell_x=" << cell.first << " batch_cell_z=" << cell.second << '\n';
+        std::vector<unsigned char> payload;
+        std::uint32_t status = 0;
+        try {
+            build(static_cast<int>(cell_args.size()), cell_args.data(), true, &geometry, &payload);
+        } catch (const EmptyTile& error) {
+            status = 3;
+            std::cerr << "bnav-recast: empty_tile=" << error.what() << '\n';
+        }
+        need(payload.size() <= 64u * 1024u * 1024u &&
+             ((status == 0 && payload.size() > 100) || (status == 3 && payload.empty())),
+             "invalid batch tile payload");
+        // Check before any bytes of this cell's record are emitted. Previous
+        // records may already be consumed, but an error never adds BEND.
+        need(payload.size() <= max_payload - total_payload,
+             "batch total payload exceeds 128 MiB limit");
+        emit_batch_record({static_cast<std::uint32_t>(cell.first), static_cast<std::uint32_t>(cell.second),
+                           status, static_cast<std::uint32_t>(payload.size())}, &payload);
+        total_payload += payload.size();
+        if (status == 3) ++empty;
+        else ++built;
+    }
+    emit_batch_record({0x444e4542u, count, built, empty});
 }
 
 // Shared envelope checks. Imported tiles receive additional structural checks
@@ -594,6 +685,8 @@ int main(int argc,char** argv) {
         if (argc == 1 || (argc == 2 && std::string(argv[1]) == "--help")) {
             std::cout << "bnav-recast 0.1.0 - offline Recast/Detour backend\n"
                       << "Use through bnav-extract build-obj, or:\n"
+                      << "  bnav-recast build-tiles CS CH HEIGHT RADIUS CLIMB SLOPE OX OZ MINY MAXY CELLS X0 Z0 [X1 Z1 ...]\n"
+                      << "    Batch IPC via bnav-extract: BNBT v1 records, 1..16 cells; require final BEND footer.\n"
                       << "  bnav-recast query TILE sx sy sz ex ey ez\n"
                       << "  bnav-recast query-tiles ox oy oz tile-world sx sy sz ex ey ez TILE...\n"
                       << "  bnav-recast query-map PROFILE MAP_PARAMS INCLUDE_FLAGS EXCLUDE_FLAGS sx sy sz ex ey ez RAW_TILE...\n"
@@ -610,6 +703,7 @@ int main(int argc,char** argv) {
         need(argc>=2,"use build or query; see docs/BNAV_EXTRACT.md");
         if (std::string(argv[1])=="build") build(argc,argv);
         else if (std::string(argv[1])=="build-tile") build(argc,argv,true);
+        else if (std::string(argv[1])=="build-tiles") build_tiles(argc,argv);
         else if (std::string(argv[1])=="query") query(argc,argv);
         else if (std::string(argv[1])=="query-tiles") query_tiles(argc,argv);
         else if (std::string(argv[1])=="query-map") query_map(argc,argv);

@@ -16,6 +16,8 @@ Contains original source, release Rust CLI tools, the native Recast helper,
 third-party dependency licence/manifest and selected verification receipts.
 The core library is supplied as source for in-process server integration; this
 is a developer-tool package, not a playable client or running game service.
+The three executables are Linux x86-64 ELF binaries with dynamic system runtime
+dependencies; this candidate is not a Windows client package.
 No proprietary game geometry, accounts or captures are included.
 
 ## Verified scope

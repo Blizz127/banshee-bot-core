@@ -651,3 +651,27 @@ Times are America/Chicago (CST).
   Updated existing intake/handoff and README; build0008 remains immutable.
   Next correction is the owning lane's pending native failures/current P0 and
   actual-client QA, retaining NEVER restart FFXI including at zero players.
+
+## 2026-11-15 03:25 CST — nav producer identity: PARTIAL, no adoption
+
+- VERIFIED incoming FINDINGS.json SHA256
+  `1fa6e648b98288233b601d58377be55385fbf1ec7d6b3900d8676a6ebaed81b6`.
+  Its owning review distinguishes ae73 contract, build0001 source5e4/retained
+  d999 backend and the separately built 5e985 backend. Shared dependency input
+  hashes do not make the different bridge/executable the same producer.
+- A bounded retained-metadata search found 11 exact f64 extractor references,
+  but no immutable source/lock/build/toolchain association. Nearby Cargo build
+  logs and current mutable paths cannot supply it. Build0008 release extractor
+  e34ee982 is distinct and is not substituted for the historical f64 executable.
+- No f64/5e985 adoption proposal. Added an ordinary little-endian raw Detour7,
+  32-bit single-tile draft profile to the existing intake, preserving zero tile
+  coordinates/border, no portals/off-mesh links, unchanged bytes and all owning
+  guards. One matching crop remains crop-specific evidence only.
+- Receipt `evidence/ffxi-producer-identity-intake-20261115/result.json`, SHA256
+  `911309555e83620127a17c588db800fecade99c20c42cdde55ce483ecd2a2949`.
+  No binaries/assets/payloads opened, build/test/query replayed, worker created,
+  allowlist edited or live action. C1 remains independent; NEVER restart FFXI
+  and every hold persists. Existing build0008 stays immutable.
+- Next correction, only if future producer adoption is proposed: supply a
+  complete immutable association for that exact producer pair to the existing
+  owner. The current provenance gap does not gate shared-core/C1 work.

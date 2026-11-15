@@ -196,6 +196,64 @@ Intake receipt under the private bot-core data root:
 `evidence/c1-coherent-adoption-04b715eb-intake-20261115/result.json`, SHA256
 `c0308c85504fdc2d41d90ec2ef288c083df8ffc0d2c9f56664bf0e71ff9bc231`.
 
+### E. Producer identity reconciliation — no adoption proposed
+
+VERIFIED incoming metadata identity:
+`/home/blizz/scratch-build/ffxi-nav-producer-identity-reconciliation-20261115/FINDINGS.json`,
+SHA256 `1fa6e648b98288233b601d58377be55385fbf1ec7d6b3900d8676a6ebaed81b6`.
+This is an additive source/metadata review by existing platform task
+`0fcbfa0421bc`, not a new native execution or producer acceptance.
+
+The identity domains remain distinct:
+
+| Identity | Meaning and current limit |
+| --- | --- |
+| `ae73d7f0d0a883e5336acf3ef8dc7696f219058e` | Historical wrapper contract label; not the package build source. |
+| Build0001 source `5e4ba6d6bd961a6915154e6d3f0ad3f6c3b60281` | Package manifest associates extractor `0886e934…` and retained backend `d9996bed…`. Relevant contract blobs match ae73 per the owning review. |
+| Backend `5e985f81e4f1656cca47c072671e6148a134af0d8c750db82c9d6da091805815` | Separate saved 32-bit compile/link/source chain. It has a different bridge/executable and remains outside the FFXI producer guard. |
+| Extractor `f64f0648cc468f0cb56c56958f0b9e9ec9837c27c7f01e7b782f793d25f4cd68` | Historical debug executable used by the comparison crop; immutable source/lock/build/toolchain association remains unavailable in the inspected records. |
+
+The owning review finds all 31 declared dependency/header/licence inputs equal
+between old and new backend builds despite different dependency-parent commits.
+The bridge changes from `eeb02bb5…` to `82a3313a…`; a current matching git-blob
+sighting does not establish the historical build checkout. Saved ordinary-mode
+source and the matching zone230 crop support only their bounded observations.
+They do not prove general producer equivalence, other geometry/settings, tiled
+output, imported maps or 64-bit support. The newer backend's actual provenance
+must never be replaced by the retained d999 label.
+
+A bounded bot-core metadata search found **11** records containing the exact
+f64 digest. They record invocations, executable size/hash and geometry/import
+inputs, not the missing immutable build association. A nearby saved Cargo build
+record also lacks the exact f64 output digest and source/lock/toolchain binding.
+Current mutable source/path/mtime cannot supply that historical association.
+Build0008 records release extractor
+`e34ee982ed73636bc6cc3fb8db20152088629d1d8bb1d5f8a8f2363a903d077f`,
+which is a different executable and cannot fill the f64 provenance gap.
+
+**No adoption is proposed for the f64/5e985 pair.** Any future owning review must
+first receive a complete immutable association for the exact proposed pair.
+The scoped ordinary profile is recorded as a draft only: `build-obj` invokes
+native ordinary `build` with `tiled=false`, raw little-endian Detour 7, 32-bit
+references, zero tile x/y/layer/userId and border, ordinary ground flags 1/area 0,
+and no external portals or off-mesh links. Preserve unchanged raw bytes,
+coordinates and all existing section/topology/detail/BV/query/provenance guards.
+No tiled, imported-map or 64-bit mode is included; source-unit calibration and
+whole-zone coverage remain unverified. The allowlist remains unchanged.
+
+Retained bot-core metadata beneath the private data root:
+
+| Record | SHA256 |
+| --- | --- |
+| `evidence/ffxi-producer-identity-intake-20261115/result.json` | `911309555e83620127a17c588db800fecade99c20c42cdde55ce483ecd2a2949` |
+| `evidence/ffxi-producer-identity-intake-20261115/ordinary-raw32-profile-draft.json` | `d0b7531b4b7b67f7db8cc449f9f6b081e1e10799bc142fdb830e42330a455be7` |
+
+No binary, asset, OBJ, raw tile or MSET was opened or executed for this intake;
+no compile, test, query, worker, allowlist change or live action occurred.
+The incoming record's separate capacity-follow-up report was not reopened or
+replayed and cannot change producer identity. C1 has no map gate. NEVER restart
+FFXI and all other holds remain binding.
+
 ### Consumed review and operational boundaries
 
 Coordinator review components are `query-supplement-review.json` and
@@ -240,11 +298,14 @@ restart FFXI** instruction remain unchanged. No live action was requested.
    calls are tests with short fixtures; no actual overwrite was observed.
    [The source audit](FFXI_NATIVE_CONSUMPTION.md) records exact locations and
    the filtered test, without changing the owning binding.
-3. **Review newer producer metadata if needed.** New 32-bit backend
+3. **Newer producer adoption is not proposed while provenance is incomplete.** New 32-bit backend
    `5e985f81e4f1656cca47c072671e6148a134af0d8c750db82c9d6da091805815`
    rebakes the same zone230 OBJ/settings to identical raw bytes, recorded at
    `ffxi-current-helper-0237/result.json`. This is supporting evidence only;
-   the current producer allowlist remains authoritative. No guard was bypassed.
+   the current producer allowlist remains authoritative. E records the missing
+   immutable association for the exact f64 extractor and the limited ordinary
+   32-bit single-tile draft profile. A matching crop is not producer equivalence;
+   no guard was bypassed, no hash relabelled and no rerun requested.
 4. **Retain geometry limitations during later calibration/QA.** Source units,
    agent dimensions, doors, water and moving collision need owning-game
    treatment. A fixture projected about 0.39 source units vertically in the

@@ -6,6 +6,14 @@ compatibility and offline native-library checks; see
 [corrected consumption](FFXI_NATIVE_CONSUMPTION.md). The accepted producer pin
 is unchanged and no server/P0/Game QA result follows.
 
+**Producer identity update, 03:25 CST:** the newer backend's saved build chain
+is separate from the retained d999 producer. The exact `f64f0648…` debug
+extractor used in the newer comparison crop lacks an immutable
+source/lock/build/toolchain association in the inspected records. No adoption
+is proposed for that pair. [The existing intake's reconciliation](FFXI_OFFLINE_INTAKE.md#e-producer-identity-reconciliation--no-adoption-proposed)
+records the evidence and an ordinary 32-bit single-tile draft profile. One equal
+crop does not establish general equivalence; the allowlist remains unchanged.
+
 2026-11-15 CST. This checks the existing FFXI source wrapper against shared
 backend outputs. It does not install navigation files, invoke the FFXI native
 loader, run `/fb` P0, or establish Game QA. C1 behavior adoption remains a

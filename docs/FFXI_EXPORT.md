@@ -280,7 +280,7 @@ snapshots on reuse. No new mesh bake, native query, runtime test or Game QA was
 performed by this exporter increment.
 
 Root integration subsequently reran the original zone230 crop through the
-generalized selector and verified reuse mode. It returned the exact same1821
+generalized selector and verified reuse mode. It returned the exact same 1,821
 triangles and byte-identical OBJ, without source staging or compiler output.
 Receipt: `evidence/ffxi-sandoria230-reuse-20261115-01/root-integration-result.json`
 beneath the private data root. This checks preservation of the earlier export;

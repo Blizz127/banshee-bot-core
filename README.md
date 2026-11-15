@@ -3,11 +3,13 @@
 Private shared Rust bot primitives and offline navigation/load-test tools.
 Governing scope: [spec](docs/BANSHEE_BOT_CORE_SPEC_20261115.md).
 
-**C1 is partial.** The shared library implements the existing FFXI cancellation
+**C1 is partial.** The shared library implements the original pinned FFXI cancellation
 clock, roles, `/fb` grammar and pure ownership, selection and order planning
 contracts. Target claims, session facts and gameplay execution remain in the
 FFXI server. No server adoption is evidenced yet; no live P0 or Game QA pass is
 claimed. New feature switches default off.
+The newer observed native source adds fallback, commands and formation orders;
+alignment and comparison against that explicit candidate are in progress.
 
 ```sh
 nice -n 19 cargo build --locked -j2

@@ -4,6 +4,19 @@ Status: **PARTIAL, not deployed or Game QA verified**. This is an actionable
 source integration proposal for the existing FFXI lead, routed through Devbox
 task `dcc9a63a40ab`. It does not authorize a restart or alter any live gate.
 
+**02:46 CST source reconciliation:** the latest observed owning source candidate
+is `5c73a8751940ba767c7b86a50bb96b38b5d1e4f6`. It changes command grammar,
+fallback control transitions and geometry-setting orders relative to the
+original pin below. Authority and selection remain byte-identical. The existing
+shared extraction does not yet cover those additions; its earlier equivalence
+receipts apply only to `36b90715`. An original implementation and expanded
+comparison against the explicit newer candidate are in progress. This candidate
+is not a confirmed live baseline or native C1 acceptance receipt.
+Evidence: `evidence/c1-source-drift-20261115-0247/result.json`, SHA-256
+`85b39bb843aeb0e5cf7aeb36a75513df7aa3442c2abd65e2d1d04f6be1fee80b`,
+beneath the private data root. Do not adopt the older seam as if it already
+matched the observed newer source. Native geometry placement remains native.
+
 ## Exact extraction boundary
 
 | Existing `xi-map/src/fb` surface | Shared surface | Adapter responsibility |

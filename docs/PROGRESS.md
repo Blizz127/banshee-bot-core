@@ -370,13 +370,13 @@ Times are America/Chicago (CST).
 
 - VERIFIED: source `fe57f224` packages as **0.1.0-build0004**, 975402 bytes,
   SHA-256 `ec77350799557ccc7f2ad083a3c2651dbbbab2c3e1f642dc29443a9e5f12bf21`.
-  Readback validates90 payloads and nine startup checks. Twenty packaged
+  Readback validates 90 payloads and nine startup checks. Twenty packaged
   navigation checks and three real-tile import/readback/query commands pass.
   Exact receipts and limits are in `BUILD_0004.md`.
 - VERIFIED offline: corrected FFXI wrapper/native-library consumption succeeds
   under the retained producer pin. No C1 native P0, Game QA or private
   publication receipt exists. Features stay OFF and the no-restart hold is
-  embedded. Candidate supersedes0003 for publisher intake, retaining rollback.
+  embedded. Candidate supersedes 0003 for publisher intake, retaining rollback.
 - Next correction: finish explicit-zone export and verified decoder/harness
   reuse, then consume the bounded zone101 crop. These common-tool checks are
   independent of owning-lead native C1 adoption and publisher work.
@@ -384,11 +384,11 @@ Times are America/Chicago (CST).
 ## 2026-11-15 02:42 AM CST — explicit FFXI region export: PASS offline
 
 - VERIFIED: ten focused export/reuse integrity tests pass. Actual zone101
-  export selects72 triangles from the explicit owner DAT using a verified
+  export selects 72 triangles from the explicit owner DAT using a verified
   retained decoder, without compilation or dependency download. Actual zone/DAT
   mismatch and selected-water cases refuse output. Source identities and exact
   evidence are recorded in `FFXI_EXPORT.md`.
-- VERIFIED: the retained accepted32-bit backend bakes/reloads that crop as a
+- VERIFIED: the retained accepted 32-bit backend bakes/reloads that crop as a
   four-polygon, nine-vertex tile,1448 bytes, SHA-256
   `cd23a5b744adab700f75c7061dbce4bdcefca4b5fa8a361bba18ba8bcf12541c`.
   Receipt: `evidence/ffxi-east-ronfaure101-nav-20261115-01/result.json`.
@@ -396,3 +396,24 @@ Times are America/Chicago (CST).
 - Next correction: verify reuse of the corrected owning wrapper/native harness
   on this new crop without recompiling, then package the increment. Native C1
   adoption/P0, private publication and Game QA remain separate pending work.
+
+## 2026-11-15 02:46 AM CST — retained native harness reuse: PASS offline
+
+- VERIFIED: the fixed authenticated successful harness receipt authorizes only
+  its recorded source/lock/executable bytes. Ten focused integrity checks pass;
+  newer arbitrary receipts cannot authorize execution. Zone101 runs only the
+  compatibility and owning-native stages, with no compilation or owner-suite
+  replay. Twelve compatibility cases, one declared/added tile, four nearest
+  queries and complete native corridor/straight path all pass.
+- Receipt: `evidence/ffxi101-native-reuse-5c73-20261115-attempt1/result.json`,
+  SHA-256 `49bf15d909c1c44432c2028b26b2994d3c1e2fee6d9ce6f3efff9514082781c7`.
+  Exact scope and pins are in `FFXI_NATIVE_CONSUMPTION.md`.
+- OBSERVED independent C1 source audit: latest reported owner candidate5c73
+  differs from the old comparison in control, grammar and orders; authority
+  and selection match. The old core receipt does not cover those additions.
+  Evidence: `evidence/c1-source-drift-20261115-0247/result.json`, SHA-256
+  `85b39bb843aeb0e5cf7aeb36a75513df7aa3442c2abd65e2d1d04f6be1fee80b`.
+- Next correction: package the completed offline-tool increment as build0005;
+  continue original C1 extraction and differential verification for explicit
+  observed source5c73. No live-baseline or adoption/P0 claim is made. Native
+  geometry placement/movement stays in the adapter and no later phase opens.

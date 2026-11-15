@@ -98,14 +98,14 @@ and the independent C1 `/fb` P0 gate. No server process has been touched here.
 decoder reuse produce a 72-triangle static crop. See [export evidence](FFXI_EXPORT.md)
 for exact DAT, source, region and limitations. The same experimental agent
 settings and accepted build0001 producer bake/reload it as four polygons and
-nine vertices. The raw tile is1448 bytes, SHA-256
+nine vertices. The raw tile is 1448 bytes, SHA-256
 `cd23a5b744adab700f75c7061dbce4bdcefca4b5fa8a361bba18ba8bcf12541c`.
 Its external directory is `ffxi-east-ronfaure101-nav-20261115-01/` beneath the
 evidence root; `result.json` retains the exact command and inputs.
 
 The retained helper also completes a projected path from the historical
 source-audit fixture to an explicitly chosen one-unit X offset. The start
-projects approximately0.39 source units vertically onto the mesh. Receipt:
+projects approximately 0.39 source units vertically onto the mesh. Receipt:
 `fixture-query.json` in that directory. Neither arrival at the requested height
 nor character/ground calibration is established. Whole-triangle crop boundaries,
 omitted dynamic collision and incomplete zone coverage remain material limits.

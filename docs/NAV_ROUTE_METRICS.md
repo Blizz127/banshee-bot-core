@@ -60,3 +60,9 @@ Receipt: `~/.local/share/banshee-bot-core/evidence/nav-projection-wrappers-20261
 `synthetic-smoke-b_ytdxo8/run-dov1bihp/result.json`, SHA256
 `75388d164cf6e8c79b496f77b1ae45ff028fba95ffcc83270f48479917ec2012`.
 The fixture contains no game data. No FFXI job or game runtime was invoked.
+
+VERIFIED separately: 19 focused pure-Python checks pass, including 3D distances,
+bent paths, both endpoints, zero/exact-boundary policy, omitted policy, numeric
+overflow, incomplete results and size limits. Receipt:
+`~/.local/share/banshee-bot-core/evidence/nav-route-metrics-tests/run-uounrt9s/result.json`,
+SHA256 `4e15bf54926eeadf19a1f04e7f2bca5c997f89ac266a51d49dcad9c902a98ac7`.

@@ -550,3 +550,6 @@ Times are America/Chicago (CST).
   then give the existing private publisher one superseding candidate intake.
   C1 native adoption/P0, physical navigation calibration and Game QA remain
   separate pending work with the owning lanes; all operational holds remain.
+- VERIFIED separately: 19 focused metrics checks pass against the integrated
+  module; test SHA `0703aa5a3e6aeeab8dd93c01645365e922342b8f8a41833f3d29b10980a92e09`,
+  receipt SHA `4e15bf54926eeadf19a1f04e7f2bca5c997f89ac266a51d49dcad9c902a98ac7`.

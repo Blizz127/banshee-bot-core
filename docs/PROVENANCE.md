@@ -99,4 +99,4 @@ The later C1 comparison explicitly pins owning FFXI source
 original; native world placement is excluded. Reference sources and binaries
 remain external under `evidence/c1-current-compat-5c73a875-attempt1/`. The same
 private-source licence limitation applies; no external implementation is vendored
-or included in the source archive. Historical36b907 receipts are not relabelled.
+or included in the source archive. Historical 36b907 receipts are not relabelled.

@@ -20,8 +20,8 @@ integrating; do not substitute the older seam. Native geometry placement remains
 The current comparison receipt is
 `evidence/c1-current-compat-5c73a875-attempt1/result.json`, SHA-256
 `dcecb524ad08d1c2c43e5ce009b9b3578270a299aad51003939086e76dbc38ea`.
-It verifies97,032 parser and70 directed precedence comparisons,87,040 clock
-result/state comparisons,112,802 authority/selection/order comparisons, and
+It verifies 97,032 parser and 70 directed precedence comparisons, 87,040 clock
+result/state comparisons, 112,802 authority/selection/order comparisons, and
 1,136,900 formation-setting comparisons. Eleven original pure reference tests
 and the shared overflow check pass. All six native files and shared-core inputs
 remain byte-identical before/after. Nineteen integrated changed-core checks

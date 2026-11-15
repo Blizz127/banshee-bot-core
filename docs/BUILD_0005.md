@@ -30,13 +30,13 @@ archive bytes. Receipts beneath the private data root:
 
 VERIFIED before packaging: ten exporter integrity checks and ten native-harness
 integrity checks pass. The original zone230 OBJ reproduces byte for byte using
-the generalized selector. The explicit zone101 crop exports72 triangles,
-bakes/reloads to four polygons, and passes12 corrected wrapper cases plus exact
+the generalized selector. The explicit zone101 crop exports 72 triangles,
+bakes/reloads to four polygons, and passes 12 corrected wrapper cases plus exact
 owning native load/nearest/corridor/straight-path checks without recompilation.
 See [export evidence](FFXI_EXPORT.md), [native consumption](FFXI_NATIVE_CONSUMPTION.md)
 and the [consolidated FFXI intake](FFXI_OFFLINE_INTAKE.md). These actual-geometry
 checks retain their pre-package execution identities; they were not relabelled
-as new packaged-tool runs. The native32/64 binary bytes are unchanged from0004.
+as new packaged-tool runs. The native32/64 binary bytes are unchanged from 0004.
 
 The core itself remains the earlier `36b90715` extraction. A new bounded source
 audit observed later `5c73a875` control, grammar and formation-order changes;
@@ -45,7 +45,7 @@ comparison does not establish equivalence with that newer source.** This
 candidate is useful offline tooling, not a current native C1 acceptance result.
 
 Platform, entrypoints and private publisher ownership remain as in
-[build0004](BUILD_0004.md): Linux x86-64 tools, Python3.11 for the complete
+[build0004](BUILD_0004.md): Linux x86-64 tools, Python 3.11 for the complete
 script set, separate native32/64 helpers, no daemon/client/server restart.
 Preserve all earlier candidates for rollback. A subsequent publisher intake
 must name the exact selected candidate and what it supersedes; a task-board

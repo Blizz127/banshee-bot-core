@@ -50,7 +50,7 @@ See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [readiness table](docs/BOT-READINESS.md),
 [provenance](docs/PROVENANCE.md) and [progress](docs/PROGRESS.md).
 Private QA-candidate packaging is documented in [builds](docs/BUILDS.md).
-The current proposed private tool candidate is [build0006](docs/BUILD_0006.md);
+The current proposed private tool candidate is [build0007](docs/BUILD_0007.md);
 publication and native/Game QA remain separate pending steps.
 Game data, extracted geometry, binaries and evidence stay outside git under
 `~/.local/share/banshee-bot-core/`. No public release or repository remote.

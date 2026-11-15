@@ -553,3 +553,18 @@ Times are America/Chicago (CST).
 - VERIFIED separately: 19 focused metrics checks pass against the integrated
   module; test SHA `0703aa5a3e6aeeab8dd93c01645365e922342b8f8a41833f3d29b10980a92e09`,
   receipt SHA `4e15bf54926eeadf19a1f04e7f2bca5c997f89ac266a51d49dcad9c902a98ac7`.
+
+## 2026-11-15 03:16 AM CST — private build0007: PASS, publication/QA pending
+
+- VERIFIED: source 2e396109 packages as **0.1.0-build0007**, 1004821 bytes,
+  SHA256 `cc2e1ebba007aa2ffe8e252ecca302ffab4cd4ed63cf636ce32782f2d7101193`.
+  Archive readback verifies all 100 payloads/nine binary invocations; four
+  packaged Python startups verify the shared metrics dependency and new flag.
+- VERIFIED: packaged 18 core/workspace files match the completed current-source
+  C1 proof; four projection source/test files match their focused receipts.
+  No native comparison or closed platform check was repeated. Identities and
+  evidence are in `BUILD_0007.md`.
+- One candidate intake supersedes build0006 for the existing private publisher
+  only, retaining rollback. The existing FFXI source/adoption intake is unchanged.
+  Publication lacks a channel receipt; native C1/P0 and Game QA remain pending.
+  No worker/job, game state, producer pin or operational hold changed.

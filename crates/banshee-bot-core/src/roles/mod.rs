@@ -1,5 +1,7 @@
 //! Roles preserve the current FFXI order vocabulary. Game job IDs stay in adapters.
 
+pub mod election;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Role {
     Tank,

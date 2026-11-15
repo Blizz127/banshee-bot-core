@@ -17,11 +17,13 @@ from nav_route_metrics import RouteError, measure_route, validate_projection_lim
 
 
 FORMAT = "bnav-collection-v1"
+BATCH_FORMAT = "bnav-collection-batch-v1"
 SOURCE_FORMAT = "bnav-geometry-v1"
 MAX_TILES = 256
 MAX_TILE_BYTES = 64 * 1024 * 1024
 MAX_COLLECTION_BYTES = 256 * 1024 * 1024
 MAX_JSON_BYTES = 1024 * 1024
+MAX_BATCH_BYTES = 128 * 1024 * 1024
 SETTINGS = ("cell_size", "cell_height", "agent_height", "agent_radius", "agent_climb", "max_slope")
 
 
@@ -243,6 +245,246 @@ def backend_bits(backend):
     return int(match.group(1))
 
 
+def plan_batches(grid, limit):
+    """Deterministic disjoint rectangles; native batches iterate X then Z."""
+    integer(limit, "batch cells", 1, 16)
+    width = min(grid["x_max"] - grid["x_min"] + 1, limit)
+    height = min(grid["z_max"] - grid["z_min"] + 1, limit // width)
+    result = []
+    for z in range(grid["z_min"], grid["z_max"] + 1, height):
+        for x in range(grid["x_min"], grid["x_max"] + 1, width):
+            result.append({"id": len(result), "bounds": [x, min(x + width - 1, grid["x_max"]),
+                                                       z, min(z + height - 1, grid["z_max"])]})
+    return result
+
+
+def rectangle_cells(bounds):
+    xmin, xmax, zmin, zmax = bounds
+    return [(x, z) for x in range(xmin, xmax + 1) for z in range(zmin, zmax + 1)]
+
+
+def batch_json(data):
+    try:
+        return decode_json(data)
+    except (json.JSONDecodeError, UnicodeError) as error:
+        raise Invalid(f"invalid batch JSON: {error}") from error
+
+
+def batch_file(root, relative, limit):
+    selected = root / relative
+    need(selected.resolve().is_relative_to(root), "batch file escapes collection directory")
+    for part in (selected, *selected.parents):
+        if part == root:
+            break
+        need(not part.is_symlink(), "batch files/directories must not be symlinks")
+    return selected, read_file(selected, limit)
+
+
+def backend_number(value, field):
+    value = finite(value, field)
+    try:
+        converted = f32(value)
+    except OverflowError as error:
+        raise Invalid(f"{field} exceeds float32 range") from error
+    need(math.isfinite(converted), f"{field} exceeds float32 range")
+    return converted
+
+
+def validate_batch_output(root, manifest, batch):
+    """Join one actual invocation to its complete native output, without queries."""
+    group = integer(batch.get("id"), "batch id", 0, MAX_TILES - 1)
+    prefix = f"batches/{group:04d}"
+    grid, bits = manifest["grid"], manifest["reference_bits"]
+    cells = rectangle_cells(batch["bounds"])
+
+    def document(key, relative):
+        need(batch.get(key) == relative, f"unexpected batch {key} path")
+        _, data = batch_file(root, relative, MAX_JSON_BYTES)
+        need(sha(data) == hash_text(batch.get(key + "_sha256"), key), f"batch {key} hash mismatch")
+        return batch_json(data)
+
+    receipt = document("receipt", f"receipts/batch-{group:04d}.json")
+    need(type(receipt.get("exit_code")) is int and receipt["exit_code"] == 0,
+         "batch invocation did not succeed")
+    need(receipt.get("output_truncated") is False and not receipt.get("timed_out", False),
+         "batch invocation output is truncated or timed out")
+    argv = receipt.get("argv")
+    need(isinstance(argv, list) and len(argv) == 20 and all(isinstance(v, str) for v in argv),
+         "invalid batch receipt command")
+    need(argv[:4] == [manifest["tools"]["extractor"]["path"], "build-tiles-obj",
+                      manifest["tools"]["backend"]["path"], manifest["geometry"]["path"]]
+         and Path(argv[4]).is_absolute() and Path(argv[4]).as_posix().endswith("/" + prefix),
+         "batch receipt source/tool/output mismatch")
+    expected_args = [grid[key] for key in ("origin_x", "origin_z", "min_y", "max_y", "tile_cells")]
+    expected_args += batch["bounds"] + [grid[key] for key in SETTINGS]
+    for value, expected in zip(argv[5:], expected_args):
+        try:
+            actual = float(value)
+        except ValueError:
+            actual = math.nan
+        need(math.isfinite(actual) and actual == expected, "batch receipt grid/settings mismatch")
+
+    request = document("request", prefix + "/requested.json")
+    result = document("result", prefix + "/manifest.json")
+    need(isinstance(receipt.get("stdout"), str) and batch_json(receipt["stdout"]) == result,
+         "batch stdout differs from retained native result")
+    for record, complete in ((request, False), (result, True)):
+        need(record.get("format") == "bnav-tile-batch-v1" and
+             record.get("status") == ("COMPLETE" if complete else "INCOMPLETE"),
+             "invalid native batch format/status")
+        if complete:
+            need(integer(record.get("reference_bits"), "batch ABI", 32, 64) == bits,
+                 "native batch ABI differs from collection")
+        else:
+            need(record.get("reference_bits") is None, "historical batch request has an ABI result")
+        need(record.get("game_qa") == "NOT_RUN", "native batch cannot claim Game QA")
+        need(integer(record.get("requested_cells"), "requested batch cells", 1, 16) == len(cells),
+             "native batch requested coverage differs")
+        for field, keys in (("origin", ("origin_x", "origin_z")),
+                            ("vertical_bounds", ("min_y", "max_y")), ("settings", SETTINGS)):
+            values = record.get(field)
+            need(isinstance(values, list) and len(values) == len(keys), f"invalid native batch {field}")
+            need(all(backend_number(value, field) == backend_number(grid[key], key)
+                     for value, key in zip(values, keys)), f"native batch {field} differ from collection")
+        need(integer(record.get("tile_cells"), "native tile cells", 8, 1024) == grid["tile_cells"],
+             "native batch tile cells differ from collection")
+        for key in ("geometry_vertices", "geometry_triangles"):
+            integer(record.get(key), key, 1, 1_000_000)
+            need(record[key] == request.get(key), "native batch geometry counts changed")
+        entries = record.get("tiles")
+        need(isinstance(entries, list) and len(entries) == len(cells), "native batch inventory is incomplete")
+        built, empty = 0, 0
+        for entry, (x, z) in zip(entries, cells):
+            need(isinstance(entry, dict), "native batch tile entry must be an object")
+            need(integer(entry.get("x"), "native tile x", 0, 4095) == x and
+                 integer(entry.get("z"), "native tile z", 0, 4095) == z,
+                 "native batch cell order/coverage differs")
+            status = entry.get("status")
+            if not complete:
+                need(status == "missing" and set(entry) == {"x", "z", "status"},
+                     "historical batch inventory must remain missing")
+            elif status == "empty":
+                need(set(entry) == {"x", "z", "status"}, "empty batch cell declares a payload")
+                empty += 1
+            else:
+                need(status == "built" and set(entry) == {"x", "z", "status", "path", "bytes"},
+                     "invalid completed batch cell")
+                need(entry["path"] == f"{x}_{z}.navtile", "unexpected native batch tile path")
+                integer(entry["bytes"], "native tile bytes", 100, MAX_TILE_BYTES)
+                built += 1
+        need(integer(record.get("built"), "batch built count", 0, 16) == built and
+             integer(record.get("empty"), "batch empty count", 0, 16) == empty,
+             "native batch count summary differs")
+
+    output = root / prefix
+    need(output.is_dir() and not output.is_symlink(), "invalid batch output directory")
+    expected_names = {"requested.json", "manifest.json"}
+    accepted, total = [], 0
+    for entry in result["tiles"]:
+        x, z, state = entry["x"], entry["z"], entry["status"]
+        converted = {"x": x, "z": z, "status": state, "batch": group}
+        if state == "built":
+            relative = prefix + "/" + entry["path"]
+            _, data = batch_file(root, relative, MAX_TILE_BYTES)
+            need(len(data) == entry["bytes"], "native batch tile size mismatch")
+            inspect_tile(data, grid, x, z, bits)
+            total += len(data)
+            need(total <= MAX_BATCH_BYTES, "native batch exceeds 128 MiB payload budget")
+            converted.update(path=relative, bytes=len(data), sha256=sha(data))
+            expected_names.add(entry["path"])
+        accepted.append(converted)
+    need({p.name for p in output.iterdir()} == expected_names,
+         "batch directory has unexpected or missing output (including an empty-cell payload)")
+    return accepted, total
+
+
+def bake_batches(output, manifest):
+    grid = manifest["grid"]
+    entries = {(entry["x"], entry["z"]): entry for entry in manifest["tiles"]}
+    total = 0
+    for batch in manifest["batches"]:
+        group = batch["id"]
+        prefix = f"batches/{group:04d}"
+        command = [manifest["tools"]["extractor"]["path"], "build-tiles-obj",
+                   manifest["tools"]["backend"]["path"], manifest["geometry"]["path"], output / prefix,
+                   *(grid[key] for key in ("origin_x", "origin_z", "min_y", "max_y", "tile_cells")),
+                   *batch["bounds"], *(grid[key] for key in SETTINGS)]
+        try:
+            receipt = run(command)
+        except subprocess.TimeoutExpired as error:
+            stdout, stderr = error.stdout or b"", error.stderr or b""
+            receipt = {"argv": list(map(str, command)), "exit_code": None, "timed_out": True,
+                       "stdout": stdout.decode(errors="replace")[-16384:],
+                       "stderr": stderr.decode(errors="replace")[-16384:],
+                       "output_truncated": len(stdout) > 16384 or len(stderr) > 16384}
+        receipt_name = f"receipts/batch-{group:04d}.json"
+        write_json(output / receipt_name, receipt)
+        batch.update(receipt=receipt_name, receipt_sha256=sha((output / receipt_name).read_bytes()))
+        need(receipt["exit_code"] == 0, f"batch {group} bake failed: {receipt['stderr'].strip()}")
+        for key, name in (("request", "requested.json"), ("result", "manifest.json")):
+            relative = prefix + "/" + name
+            _, data = batch_file(output, relative, MAX_JSON_BYTES)
+            batch[key] = relative
+            batch[key + "_sha256"] = sha(data)
+        accepted, size = validate_batch_output(output, manifest, batch)
+        need(total + size <= MAX_COLLECTION_BYTES, "collection exceeds native 256 MiB load budget")
+        # Commit a batch's coverage only after all its output has been verified.
+        for entry in accepted:
+            entries[(entry["x"], entry["z"])].update(entry)
+        total += size
+
+
+def validate_batch_collection(path, manifest, cells, bits):
+    plans = plan_batches(manifest["grid"], manifest.get("batch_cells"))
+    batches = manifest.get("batches")
+    need(isinstance(batches, list) and len(batches) == len(plans), "batch inventory does not cover requested grid")
+    directory = path.parent / "batches"
+    need(directory.is_dir() and not directory.is_symlink() and
+         {p.name for p in directory.iterdir()} == {f"{p['id']:04d}" for p in plans},
+         "batch directory inventory differs from requested plan")
+    expected, total = {}, 0
+    for batch, plan in zip(batches, plans):
+        need(isinstance(batch, dict), "batch record must be an object")
+        need(integer(batch.get("id"), "batch id", 0, MAX_TILES - 1) == plan["id"], "batch id/order differs from plan")
+        bounds = batch.get("bounds")
+        need(isinstance(bounds, list) and len(bounds) == 4, "invalid batch rectangle")
+        for value, wanted in zip(bounds, plan["bounds"]):
+            need(integer(value, "batch bound", 0, 4095) == wanted, "batch rectangle differs from plan")
+        accepted, size = validate_batch_output(path.parent, manifest, batch)
+        total += size
+        need(total <= MAX_COLLECTION_BYTES, "collection exceeds native load budget")
+        for entry in accepted:
+            coordinate = entry["x"], entry["z"]
+            need(coordinate not in expected, "batch rectangles overlap")
+            expected[coordinate] = entry
+    need(set(expected) == set(cells), "batches omit requested cells")
+    tiles = manifest.get("tiles")
+    need(isinstance(tiles, list) and len(tiles) == len(cells), "tile inventory does not cover requested grid")
+    seen, paths = set(), []
+    counts = {state: 0 for state in ("built", "empty", "missing")}
+    for entry in tiles:
+        need(isinstance(entry, dict), "tile entry must be an object")
+        x = integer(entry.get("x"), "tile x", 0, 4095)
+        z = integer(entry.get("z"), "tile z", 0, 4095)
+        integer(entry.get("batch"), "tile batch", 0, MAX_TILES - 1)
+        coordinate = x, z
+        need(coordinate in expected and coordinate not in seen, "duplicate or out-of-grid tile coordinate")
+        seen.add(coordinate)
+        if entry.get("status") == "built":
+            integer(entry.get("bytes"), "tile bytes", 100, MAX_TILE_BYTES)
+        need(entry == expected[coordinate], "collection tile differs from bound batch result/hash")
+        counts[entry["status"]] += 1
+        if entry["status"] == "built":
+            paths.append(path.parent / entry["path"])
+    reported_counts = manifest.get("counts")
+    need(isinstance(reported_counts, dict) and set(reported_counts) == set(counts),
+         "invalid batch collection count summary")
+    for key, value in counts.items():
+        need(integer(reported_counts[key], key + " count", 0, MAX_TILES) == value,
+             "collection count summary differs from batch inventory")
+    return manifest, paths
+
+
 def bake(args):
     sidecar = args.source.expanduser().resolve(strict=True)
     source, source_bytes, geometry, geometry_bytes = source_record(sidecar)
@@ -250,6 +492,8 @@ def bake(args):
                                                "x_min", "x_max", "z_min", "z_max")}
     grid.update(zip(SETTINGS, args.settings))
     cells = validate_grid(grid)
+    batch_limit = getattr(args, "batch_cells", None)
+    plans = plan_batches(grid, batch_limit) if batch_limit is not None else None
     extractor, backend = (p.expanduser().resolve(strict=True) for p in (args.extractor, args.backend))
     tools = {"extractor": file_identity(extractor), "backend": file_identity(backend)}
     bits = backend_bits(backend)
@@ -259,11 +503,12 @@ def bake(args):
          "collection output must remain outside Git repositories")
     need(not output.exists(), "output directory already exists; choose a fresh path")
     output.mkdir(parents=True)
-    (output / "tiles").mkdir()
+    (output / ("batches" if plans is not None else "tiles")).mkdir()
     (output / "receipts").mkdir()
     with (output / "source.json").open("xb") as stream:
         stream.write(source_bytes)
-    manifest = {"format": FORMAT, "status": "INCOMPLETE", "grid": grid, "reference_bits": bits,
+    manifest = {"format": BATCH_FORMAT if plans is not None else FORMAT,
+                "status": "INCOMPLETE", "grid": grid, "reference_bits": bits,
                 "created_cst": datetime.now(ZoneInfo("America/Chicago")).isoformat(),
                 "geometry": {"path": str(geometry), "sha256": sha(geometry_bytes), "bytes": len(geometry_bytes)},
                 "source_sidecar_sha256": sha(source_bytes), "game": source["game"], "zone": source["zone"],
@@ -272,11 +517,18 @@ def bake(args):
                 "game_qa": "NOT_RUN", "native_adapter_compatibility": "NOT_VERIFIED",
                 "coverage_meaning": "every requested grid cell evaluated; not whole-zone geometry or gameplay proof",
                 "tiles": [{"x": x, "z": z, "status": "missing"} for x, z in cells], "errors": []}
+    if plans is not None:
+        manifest.update(batch_cells=batch_limit, batches=plans)
+        owners = {cell: plan["id"] for plan in plans for cell in rectangle_cells(plan["bounds"])}
+        for entry in manifest["tiles"]:
+            entry["batch"] = owners[(entry["x"], entry["z"])]
     # Retain the requested coverage even if the process is interrupted before a final receipt.
     write_json(output / "requested.json", manifest)
     total_bytes = 0
     try:
-        for entry in manifest["tiles"]:
+        if plans is not None:
+            bake_batches(output, manifest)
+        for entry in (manifest["tiles"] if plans is None else ()):
             x, z = entry["x"], entry["z"]
             relative = f"tiles/{x}_{z}.navtile"
             tile = output / relative
@@ -317,7 +569,7 @@ def bake(args):
 def validate_collection(path):
     path = path.expanduser().resolve(strict=True)
     manifest = decode_json(read_file(path, MAX_JSON_BYTES))
-    need(manifest.get("format") == FORMAT, "unsupported collection manifest format")
+    need(manifest.get("format") in (FORMAT, BATCH_FORMAT), "unsupported collection manifest format")
     need(manifest.get("status") == "COMPLETE" and manifest.get("errors") == [], "collection is incomplete or failed")
     cells = validate_grid(manifest.get("grid"))
     bits = integer(manifest.get("reference_bits"), "reference_bits", 32, 64)
@@ -347,6 +599,10 @@ def validate_collection(path):
         integer(tools[name].get("bytes"), f"{name} bytes", 1, 128 * 1024 * 1024)
     text(manifest["geometry"].get("path"), "recorded geometry path")
     integer(manifest["geometry"].get("bytes"), "recorded geometry bytes", 1, MAX_TILE_BYTES)
+    if manifest["format"] == BATCH_FORMAT:
+        return validate_batch_collection(path, manifest, cells, bits)
+    need("batch_cells" not in manifest and "batches" not in manifest,
+         "batch metadata cannot be downgraded to a legacy collection")
     tiles = manifest.get("tiles")
     need(isinstance(tiles, list) and len(tiles) == len(cells), "tile inventory does not cover requested grid")
     indexed = {}
@@ -448,6 +704,8 @@ def main():
         build.add_argument("--" + field, required=True, type=int)
     build.add_argument("--settings", nargs=6, type=float, default=[0.3, 0.2, 2.0, 0.6, 0.9, 45.0],
                        metavar=("CS", "CH", "HEIGHT", "RADIUS", "CLIMB", "SLOPE"))
+    build.add_argument("--batch-cells", type=int, choices=range(1, 17),
+                       help="opt in to batches of at most N cells; omitted preserves individual-cell format")
     build.set_defaults(action=bake)
     verify = commands.add_parser("check", help="verify complete inventory, raw tile grid/ABI and hashes")
     verify.add_argument("manifest", type=Path)

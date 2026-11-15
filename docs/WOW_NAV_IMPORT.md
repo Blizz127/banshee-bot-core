@@ -126,6 +126,13 @@ with exit 3 while retaining the native result and measurements. Omission leaves
 the policy unassessed and preserves the existing success status. Invalid limits
 fail before invoking the backend. See [projection policy](NAV_ROUTE_METRICS.md).
 
+The optional `--diagnostic-refusals` selects the matching backend's
+[typed refusal command](NAV_QUERY_REFUSALS.md). Profile, flag policy, exact
+producer identity and selected-set checks remain required; the option cannot
+admit a missing selected tile or replace the recorded backend. Missing polygons
+and incomplete corridors remain observations under that selection, never a
+whole-map unreachability claim.
+
 Use the tool with the owner's retained sources and matching private backend.
 Structural wrapper checks are not a general hostile-binary validator; the
 native loader adds polygon/index/link checks before query allocation and use.

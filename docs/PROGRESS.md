@@ -1145,3 +1145,36 @@ Times are America/Chicago (CST).
   probe runner intentionally does not infer unreachable states from stderr.
   Native FFXI claim work and C1/P0 acceptance stay with their existing owners.
   No C1 gate, producer allowlist or restart authority changes.
+
+- Build0017's one superseding publisher intake is queued; response retained at
+  `evidence/build0017-readback/coordinator-response.json`. It is not publication.
+  Work continued directly into the typed refusal increment below.
+
+## 2026-11-15 07:54 CST — explicit query refusals: PASS, offline synthetic scope
+
+- Added opt-in native report commands and wrapper `--diagnostic-refusals`, with
+  probe format v2. Successful output and legacy errors remain unchanged in the
+  focused comparison. The typed contract distinguishes missing nearby polygons,
+  a nonempty incomplete corridor and query-budget exhaustion. Invalid input/tool
+  failures are never converted into expected spatial outcomes. Resource failure
+  always remains an ERROR in the probe runner.
+- VERIFIED: each reference ABI passes 21 checks /33 native commands, including
+  legacy byte equivalence and invalid/ABI/missing-selection controls. A separately
+  compiled original 300-quad fixture proves full connectivity with capacity512
+  and path-buffer exhaustion at256, without node exhaustion. It receives the
+  budget classification, not a disconnected result.
+- Seventeen pure tests and 18 outer wrapper/probe commands across both ABIs pass;
+  each ABI records16 runner commands. Fresh synthetic island collections/imports
+  match all supported spatial expectations. Actual budget exhaustion stops v2
+  with ERROR and leaves a later probe NOT_RUN. Existing default wrapper success
+  agrees with report output; missing endpoint retains legacy exit2. Exact pins,
+  commands and unrun cases are in `NAV_QUERY_REFUSALS.md`.
+- Both native builds pass19 compilation units plus link with no diagnostics.
+  All31 external input hashes/compiler flags remain equal to the prior baseline;
+  the bridge alone changes. New native hashes are distinct producers and grant
+  no FFXI allowlist/adoption authority. Rust/shared core is unchanged. No game
+  asset, native FFXI job, C1 comparison, old benchmark or live action ran.
+- Next correction: package/read back build0018 and route one superseding private
+  tool/source intake. Native C1/P0/Game QA and private publication still need
+  owning-lane receipts; there is no new shared-core defect from the last bounded
+  summary. NEVER restart FFXI, including at zero players; all holds persist.

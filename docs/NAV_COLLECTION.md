@@ -174,6 +174,12 @@ paths and hashes remain declarations from the original bake; they are not
 rewritten to imply another invocation. Queries still require the exact recorded
 backend identity.
 
+For named negative checks, `query --diagnostic-refusals` opts into
+[typed native refusals](NAV_QUERY_REFUSALS.md) with a report-capable recorded
+backend. It preserves collection integrity checks and distinguishes missing
+nearby polygons or an incomplete corridor from exhausted query resources.
+Omission keeps the original query command and error behavior.
+
 ## Default per-cell records and failure behavior
 
 - `source.json` is the byte-exact input sidecar.

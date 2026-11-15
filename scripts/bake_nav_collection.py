@@ -13,7 +13,7 @@ import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
-from nav_route_metrics import RouteError, measure_route, validate_projection_limit
+from nav_route_metrics import RouteError, measure_route, validate_projection_limit, validate_query_refusal
 
 
 FORMAT = "bnav-collection-v1"
@@ -674,15 +674,27 @@ def query(args):
     need(backend_bits(backend) == manifest["reference_bits"], "backend ABI differs from collection")
     coords = [finite(value, "query coordinate") for value in (*args.start, *args.end)]
     grid = manifest["grid"]
-    result = run([backend, "query-tiles", grid["origin_x"], grid["min_y"] - grid["cell_height"],
+    diagnostics = getattr(args, "diagnostic_refusals", False)
+    result = run([backend, "query-tiles-report" if diagnostics else "query-tiles", grid["origin_x"], grid["min_y"] - grid["cell_height"],
                   grid["origin_z"], grid["tile_cells"] * grid["cell_size"], *coords, *paths])
-    need(result["exit_code"] == 0, f"native query failed: {result['stderr'].strip()}")
+    refused = diagnostics and result["exit_code"] == 3
+    need(result["exit_code"] == 0 or refused, f"native query failed: {result['stderr'].strip()}")
     native = decode_json(result["stdout"])
-    need(native.get("complete") is True, "native query did not report a complete snapped-endpoint path")
-    metrics = measure_route(args.start, args.end, native, limit)
+    if refused:
+        need(not result.get("output_truncated", False), "native refusal output is truncated")
+        validate_query_refusal(native, manifest["reference_bits"])
+    else:
+        need(native.get("complete") is True, "native query did not report a complete snapped-endpoint path")
+        metrics = measure_route(args.start, args.end, native, limit)
     need(file_identity(backend)["sha256"] == manifest["tools"]["backend"]["sha256"], "backend changed during query")
     validate_collection(manifest_path)
     need(sha(read_file(manifest_path, MAX_JSON_BYTES)) == manifest_hash, "collection changed during query")
+    if refused:
+        print(json.dumps({"status": "QUERY_REFUSED", "game": manifest["game"], "zone": manifest["zone"],
+                          "coverage": manifest["coverage"], "diagnostic": native,
+                          "requested_start": args.start, "requested_end": args.end, "game_qa": "NOT_RUN",
+                          "native_adapter_compatibility": "NOT_VERIFIED"}))
+        return 3
     exceeded = metrics["within_projection_limit"] is False
     print(json.dumps({"status": "PROJECTION_LIMIT_EXCEEDED" if exceeded else "COMPLETE_PROJECTED_PATH",
                       "game": manifest["game"], "zone": manifest["zone"],
@@ -718,6 +730,8 @@ def main():
     route.add_argument("--end", nargs=3, type=float, required=True)
     route.add_argument("--max-projection-distance", type=float,
                        help="optional maximum 3D endpoint projection distance in source coordinate units")
+    route.add_argument("--diagnostic-refusals", action="store_true",
+                       help="opt in to typed native query refusals; requires a report-capable backend")
     route.set_defaults(action=query)
     args = parser.parse_args()
     try:

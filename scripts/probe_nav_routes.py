@@ -19,10 +19,12 @@ import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
-from nav_route_metrics import measure_route, validate_projection_limit
+from nav_route_metrics import measure_route, validate_projection_limit, validate_query_refusal
 
 
 FORMAT = "bnav-route-probes-v1"
+REPORT_FORMAT = "bnav-route-probes-v2"
+REFUSALS = {"start_polygon_not_found", "end_polygon_not_found", "no_complete_corridor"}
 MAX_JSON = 2 * 1024 * 1024
 MAX_LOG = 1024 * 1024
 WRAPPERS = {"collection": "bake_nav_collection.py", "wow-selection": "import_wow_nav.py"}
@@ -93,7 +95,7 @@ def finite(value, label):
 
 
 def validate_suite(suite):
-    need(isinstance(suite, dict) and suite.get("format") == FORMAT, "unsupported probe format")
+    need(isinstance(suite, dict) and suite.get("format") in (FORMAT, REPORT_FORMAT), "unsupported probe format")
     kind = suite.get("target_kind")
     need(isinstance(kind, str) and kind in WRAPPERS, "unsupported target kind")
     fields = {"format", "target_kind", "manifest_sha256", "units", "scope", "limitations", "probes"}
@@ -133,6 +135,10 @@ def validate_suite(suite):
         except ValueError as error:
             raise Invalid(str(error)) from error
         expect = probe["expect"]
+        if (suite["format"] == REPORT_FORMAT and isinstance(expect, dict)
+                and isinstance(expect.get("outcome"), str) and expect["outcome"] in REFUSALS):
+            need(set(expect) == {"outcome"}, "refusal expectation must not assert ray/tile observations")
+            continue
         need(isinstance(expect, dict) and set(expect) ==
              {"outcome", "direct_path_blocked", "min_traversed_tiles"}, "invalid expectation fields")
         need(expect["outcome"] in ("complete", "projection_limit_exceeded"), "unsupported expected outcome")
@@ -141,7 +147,7 @@ def validate_suite(suite):
     return suite
 
 
-def assess(probe, invocation, kind, bits):
+def assess(probe, invocation, kind, bits, allow_refusals=False):
     """A process refusal cannot prove non-traversability or match an expectation."""
     try:
         need(kind in SUCCESS and type(bits) is int and bits in (32, 64), "invalid assessment profile")
@@ -151,6 +157,20 @@ def assess(probe, invocation, kind, bits):
         need(type(code) is int and code in (0, 3), "query command failed; no route classification")
         result = decode(invocation["stdout"])
         need(result.get("game_qa") == "NOT_RUN", "query cannot establish Game QA")
+        if result.get("status") == "QUERY_REFUSED":
+            need(allow_refusals is True and code == 3, "native refusal requires explicit report mode and exit 3")
+            diagnostic = validate_query_refusal(result.get("diagnostic"), bits)
+            for key in ("start", "end"):
+                values = result.get("requested_" + key)
+                need(isinstance(values, list) and len(values) == 3 and all(
+                    finite(a, key) == b for a, b in zip(values, probe[key])), "refusal endpoints differ from request")
+            if diagnostic["reason"] == "QUERY_BUDGET_EXCEEDED":
+                return {"verdict": "ERROR", "reasons": ["native query budget exhausted; connectivity unassessed"],
+                        "diagnostic": diagnostic}
+            outcome = diagnostic["reason"].lower()
+            reasons = [] if outcome == probe["expect"]["outcome"] else ["native refusal differs from expectation"]
+            return {"verdict": "MISMATCH" if reasons else "MATCH", "reasons": reasons,
+                    "actual_outcome": outcome, "diagnostic": diagnostic}
         native = result.get("result")
         need(isinstance(native, dict) and native.get("complete") is True, "native route is not complete")
         need(type(native.get("reference_bits")) is int and native["reference_bits"] == bits, "native ABI differs")
@@ -178,10 +198,10 @@ def assess(probe, invocation, kind, bits):
         expected = probe["expect"]
         reasons = []
         if outcome != expected["outcome"]:
-            reasons.append("projection outcome differs from expectation")
-        if native["direct_path_blocked"] != expected["direct_path_blocked"]:
+            reasons.append("route outcome differs from expectation")
+        if "direct_path_blocked" in expected and native["direct_path_blocked"] != expected["direct_path_blocked"]:
             reasons.append("native direct-ray observation differs from expectation")
-        if traversed < expected["min_traversed_tiles"]:
+        if "min_traversed_tiles" in expected and traversed < expected["min_traversed_tiles"]:
             reasons.append("fewer tiles traversed than expected")
         return {"verdict": "MISMATCH" if reasons else "MATCH", "reasons": reasons,
                 "actual_outcome": outcome, "route_metrics": metrics,
@@ -239,6 +259,7 @@ def run(args):
     need(sha(manifest_bytes) == suite["manifest_sha256"], "target manifest differs from probe suite")
     manifest = decode(manifest_bytes)
     kind = suite["target_kind"]
+    reports = suite["format"] == REPORT_FORMAT
     formats = ("bnav-collection-v1", "bnav-collection-batch-v1") if kind == "collection" else ("bnav-wow-selection-v1",)
     need(manifest.get("format") in formats, "target format differs from probe suite")
     bits = manifest.get("reference_bits")
@@ -263,7 +284,8 @@ def run(args):
                "suite_sha256": sha(suite_bytes), "inputs_before": before, "commands": [],
                "probes": [{"name": p["name"], "verdict": "NOT_RUN"} for p in suite["probes"]],
                "errors": [], "game_qa": "NOT_RUN", "native_adapter_compatibility": "NOT_VERIFIED",
-               "calibration": "NOT_VERIFIED", "unreachable_classification": "NOT_SUPPORTED"}
+               "calibration": "NOT_VERIFIED", "unreachable_classification": "NOT_SUPPORTED",
+               "native_refusal_diagnostics": reports}
     save(output / "requested.json", receipt)
     prefix = [sys.executable, "-E", "-s", "-B", wrapper]
 
@@ -295,8 +317,10 @@ def run(args):
                     "--end", *probe["end"], "--max-projection-distance", probe["max_projection_distance"]]
             if kind == "wow-selection":
                 argv += ["--include-flags", suite["query_flags"]["include"], "--exclude-flags", suite["query_flags"]["exclude"]]
+            if reports:
+                argv += ["--diagnostic-refusals"]
             record = command(argv)
-            verdict = assess(probe, record, kind, bits)
+            verdict = assess(probe, record, kind, bits, allow_refusals=reports)
             receipt["probes"][index].update(verdict, command=len(receipt["commands"]) - 1)
             need(verdict["verdict"] != "ERROR", f"probe {probe['name']}: {'; '.join(verdict['reasons'])}")
         check()

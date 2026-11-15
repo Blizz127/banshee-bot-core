@@ -11,6 +11,34 @@ class RouteError(ValueError):
     pass
 
 
+def validate_query_refusal(native, reference_bits):
+    """Validate an opt-in native refusal, without inferring world reachability."""
+    fields = {"format", "complete", "reference_bits", "reason", "stage",
+              "node_limit", "path_limit", "nearest_extents"}
+    if not isinstance(native, dict) or set(native) != fields:
+        raise RouteError("invalid native query refusal fields")
+    if native["format"] != "bnav-query-refusal-v1" or native["complete"] is not False:
+        raise RouteError("invalid native query refusal format/completion")
+    if (type(reference_bits) is not int or reference_bits not in (32, 64)
+            or type(native["reference_bits"]) is not int or native["reference_bits"] != reference_bits):
+        raise RouteError("native query refusal ABI differs")
+    stages = {"START_POLYGON_NOT_FOUND": ("nearest_start",),
+              "END_POLYGON_NOT_FOUND": ("nearest_end",),
+              "NO_COMPLETE_CORRIDOR": ("find_path",),
+              "QUERY_BUDGET_EXCEEDED": ("find_path", "straight_path")}
+    reason = native["reason"]
+    if not isinstance(reason, str) or reason not in stages or native["stage"] not in stages[reason]:
+        raise RouteError("unsupported native query refusal reason/stage")
+    for key, expected in (("node_limit", 2048), ("path_limit", 256)):
+        if type(native[key]) is not int or native[key] != expected:
+            raise RouteError("native query refusal budget differs")
+    extents = native["nearest_extents"]
+    if (not isinstance(extents, list) or len(extents) != 3
+            or any(type(v) not in (int, float) or v != e for v, e in zip(extents, (2, 4, 2)))):
+        raise RouteError("native query refusal extents differ")
+    return native
+
+
 def _finite(value, field):
     if type(value) not in (int, float):
         raise RouteError(f"{field} must be a finite number")

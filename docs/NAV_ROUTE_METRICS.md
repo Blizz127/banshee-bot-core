@@ -5,6 +5,10 @@ distance from each requested endpoint to its returned polyline endpoint. A
 native complete-path result establishes a corridor between projected positions;
 it does not establish arrival at the requested coordinates.
 
+The separate opt-in [native refusal diagnostics](NAV_QUERY_REFUSALS.md) cover
+queries that cannot return a complete route. They contain no invented projection
+measurements and are distinct from a complete path exceeding a projection limit.
+
 Append `--max-projection-distance 0.5`, for example, to either query command
 to require each endpoint to project by at most 0.5 input coordinate units.
 The threshold is caller policy, not a calibrated game default. The tools

@@ -7,11 +7,12 @@ It does not build geometry, search for neighboring files, drive a bot or establi
 Game QA. Python 3.11 on Linux and the target's exact native backend are required.
 
 This supports repeatable named checks such as a direct route, a detour around a
-wall and an endpoint that projects too far. A query failure is always an error:
-missing polygons, disconnected regions, exhausted resources and tool faults are
-not interchangeable evidence of an impassable route. The current native error
-contract cannot reliably distinguish all those causes, so expected
-`blocked`/`unreachable` outcomes are deliberately unsupported.
+wall and an endpoint that projects too far. Unclassified query failures remain
+errors: missing polygons, disconnected regions, exhausted resources and tool
+faults are not interchangeable evidence of an impassable route. Format v1 uses
+the original query contract. Opt-in format v2 adds the narrow typed spatial
+refusals described below; expected `blocked`/`unreachable` outcomes remain
+unsupported.
 
 ## Probe data and invocation
 
@@ -95,6 +96,37 @@ fields, status and exit code must agree; numeric booleans cannot masquerade as
 measurements. A complete path may still end at projected coordinates. The
 report retains those distances and the path length in source units.
 
+## Opt-in typed refusals in format v2
+
+Set `format` to `bnav-route-probes-v2` to request
+[`--diagnostic-refusals`](NAV_QUERY_REFUSALS.md) from the query wrapper. The
+recorded backend must support native report commands. There is no fallback or
+producer substitution. Existing positive/projection expectation objects remain
+valid. Three additional expectations have only an `outcome` field:
+
+```json
+"expect": {"outcome": "no_complete_corridor"}
+```
+
+The other values are `start_polygon_not_found` and `end_polygon_not_found`.
+These assert only the typed native condition under the loaded mesh/flag/search
+policy. They cannot also assert ray observations or traversed-tile counts,
+because no complete route is available. Endpoints and a projection limit remain
+required; the limit is used if a complete route is returned, and no projection
+distance is invented for a refusal.
+
+A valid different observation is a MISMATCH. A malformed diagnostic, different
+requested endpoint, invalid ABI/stage/budget declaration or ordinary command
+failure is ERROR. `QUERY_BUDGET_EXCEEDED` is always ERROR and stops later probes;
+it cannot be listed as a passing expectation. Format v1 rejects typed refusals.
+The report retains the validated diagnostic and still makes no whole-world
+unreachability claim.
+
+The [typed-diagnostic verification record](NAV_QUERY_REFUSALS.md) covers v2:
+17 pure tests and actual wrapper/probe runs for both ABIs pass, including an
+actual path-buffer exhaustion result that remains ERROR. The historical v1
+proof below retains its original build0017 source/tool scope.
+
 ## Receipts, failures and limits
 
 The output retains byte-exact `probes.json`, an initial `requested.json`, numbered
@@ -130,7 +162,7 @@ local tools and data. Native diagnostic limits (2048 nodes, 256 path points and
 nearby-polygon extents) remain unchanged. No new geometry or producer admission
 is implied by a matched suite.
 
-## Focused verification
+## Build0017 focused verification (format v1)
 
 Ten pure tests cover schema bounds, explicit masks/limits, both target kinds and
 ABIs, outcome mismatches, malformed results, typed metrics and error isolation.

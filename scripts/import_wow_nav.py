@@ -13,7 +13,7 @@ import subprocess
 import sys
 from zoneinfo import ZoneInfo
 
-from nav_route_metrics import measure_route, validate_projection_limit
+from nav_route_metrics import measure_route, validate_projection_limit, validate_query_refusal
 
 
 FORMAT = "bnav-wow-selection-v1"
@@ -371,19 +371,31 @@ def query(args):
     need(backend_bits(backend) == manifest["reference_bits"], "backend ABI differs from selected profile")
     coordinates = [*args.start, *args.end]
     need(all(math.isfinite(v) and abs(v) <= 10_000_000 for v in coordinates), "invalid query coordinate")
-    result = run([backend, "query-map", manifest["profile"], map_path, args.include_flags, args.exclude_flags,
+    diagnostics = getattr(args, "diagnostic_refusals", False)
+    result = run([backend, "query-map-report" if diagnostics else "query-map", manifest["profile"], map_path, args.include_flags, args.exclude_flags,
                   *coordinates, *paths])
-    need(result["exit_code"] == 0, f"native query failed: {result['stderr'].strip()}")
+    refused = diagnostics and result["exit_code"] == 3
+    need(result["exit_code"] == 0 or refused, f"native query failed: {result['stderr'].strip()}")
     native = decode(result["stdout"])
-    need(native.get("complete") is True and native.get("whole_map_coverage") is False
-         and native.get("scope") == "selected-tiles", "native query did not report a selected-region projected path")
-    need(native.get("profile") == manifest["profile"] and native.get("reference_bits") == manifest["reference_bits"]
-         and native.get("include_flags") == args.include_flags and native.get("exclude_flags") == args.exclude_flags,
-         "native query profile/flag policy differs from request")
-    metrics = measure_route(args.start, args.end, native, limit)
+    if refused:
+        need(not result.get("output_truncated", False), "native refusal output is truncated")
+        validate_query_refusal(native, manifest["reference_bits"])
+    else:
+        need(native.get("complete") is True and native.get("whole_map_coverage") is False
+             and native.get("scope") == "selected-tiles", "native query did not report a selected-region projected path")
+        need(native.get("profile") == manifest["profile"] and native.get("reference_bits") == manifest["reference_bits"]
+             and native.get("include_flags") == args.include_flags and native.get("exclude_flags") == args.exclude_flags,
+             "native query profile/flag policy differs from request")
+        metrics = measure_route(args.start, args.end, native, limit)
     validate_selection(path)
     need(sha(read(path, MAX_JSON)) == manifest_hash, "selection changed during query")
     need(identity(backend, limit=128 * 1024 * 1024)["sha256"] == backend_hash, "backend changed during query")
+    if refused:
+        print(json.dumps({"status": "QUERY_REFUSED", "map_id": manifest["map_id"], "scope": SCOPE,
+                          "include_flags": args.include_flags, "exclude_flags": args.exclude_flags,
+                          "diagnostic": native, "requested_start": args.start, "requested_end": args.end,
+                          "game_qa": "NOT_RUN"}))
+        return 3
     exceeded = metrics["within_projection_limit"] is False
     print(json.dumps({"status": "PROJECTION_LIMIT_EXCEEDED" if exceeded else "SELECTED_REGION_PROJECTED_PATH",
                       "map_id": manifest["map_id"], "scope": SCOPE,
@@ -414,6 +426,8 @@ def main():
     route.add_argument("--end", type=float, nargs=3, required=True)
     route.add_argument("--max-projection-distance", type=float,
                        help="optional maximum 3D endpoint projection distance in source coordinate units")
+    route.add_argument("--diagnostic-refusals", action="store_true",
+                       help="opt in to typed native query refusals; requires a report-capable backend")
     route.set_defaults(action=query)
     args = parser.parse_args()
     try:

@@ -897,3 +897,21 @@ Times are America/Chicago (CST).
   associations, then submit one superseding private tool/source candidate.
   Current native jobs, canonical04b/shared6ead intake, producer allowlist,
   P0/Game QA gates, NEVER restart FFXI and every hold remain unchanged.
+
+## 2026-11-15 05:23 CST — private build0013: PASS, native gates retained
+
+- VERIFIED: source 20baf49e packages as **0.1.0-build0013**, 1070828 bytes,
+  SHA256 `6895722f13eac10bdd57b76fa3f2f80b287b2744ef4a31c4b64d017116a3a47b`.
+  All 127 payloads and 13 startup checks pass. Twenty-two core inputs and the
+  new role checker/driver match the completed pure comparison. All 111 tracked
+  source files, log and Rust outputs join to the fresh producer record; five
+  saved compiler invocations match its compiler. See `BUILD_0013.md`.
+- External native reference source is excluded; four executables match0012
+  bytes. Existing Role/PolicyRole definitions and prior architecture source/tests
+  remain unchanged. No earlier/native tests were replayed or aggregate P0 proof
+  inferred. Supersedes proposed0012 for the private publisher only; retain
+  rollback artifacts. Publication and current native P0/Game QA lack receipts.
+- The role helper is additive and unadopted. Current04b/shared6ead intake,
+  native Cover/Follow work, producer allowlist and all holds remain unchanged.
+  Next native boundary is owning adapter mapping/atomic-commit review and P0;
+  no duplicate job or live action is requested. NEVER restart FFXI persists.

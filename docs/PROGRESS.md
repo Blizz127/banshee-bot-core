@@ -736,3 +736,19 @@ Times are America/Chicago (CST).
   Current owning P0/Game QA gates and NEVER restart FFXI remain intact.
 - Next correction: package/read back build0010 with these current source pins,
   then issue one private tool/source candidate intake superseding build0009.
+
+## 2026-11-15 03:56 CST — private build0010: PASS, runtime gates retained
+
+- VERIFIED: source 438853d2 packages as **0.1.0-build0010**, 1029589 bytes,
+  SHA256 `3d2b583c73eb6d5e99e205d190d2a8a738989337afe6e04c57f3df489c43332c`.
+  All 111 payloads and 13 startup invocations pass. Twenty current core inputs
+  and the new navigation test match the completed eight-test receipt. The
+  earlier decision module/test and four executables retain their prior bytes.
+  Exact receipts and evidence limits are in `BUILD_0010.md`.
+- Supersedes proposed0009 for the existing private publisher only; earlier
+  rollback artifacts remain. The FFXI 04b/shared6ead native source intake and
+  producer allowlist are unchanged. Publication and Game QA have no receipt.
+  No native replay, install, reload or restart occurred; all holds persist.
+- Next integration dependency remains the owning lane's current native P0 and
+  Game QA evidence. Shared decision/navigation groundwork is available without
+  runtime wiring; do not promote it or the old comparison into native acceptance.

@@ -7,3 +7,4 @@ pub mod decision;
 pub mod formation;
 pub mod orders;
 pub mod selection;
+pub mod strategy;

@@ -26,8 +26,9 @@ triangle geometry and provides explicit WoW tile preflight; see
 summarizes a server adapter's recorded metrics; see its
 [CSV contract and coverage checks](docs/BOT_SOAK.md). It does not spawn bots.
 
-The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds the existing pinned
-reader outside Git; its first bounded zone230 geometry has been
+The [FFXI offline export wrapper](docs/FFXI_EXPORT.md) builds or verifies and
+reuses the existing pinned reader outside Git, with explicit zone/DAT selection.
+Its first bounded zone230 geometry has been
 [baked and queried locally](docs/FFXI_REGION_BAKE.md). Collision completeness,
 physical calibration and native/client QA remain unverified.
 The corrected owning FFXI wrapper and native library now
@@ -43,7 +44,7 @@ See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [readiness table](docs/BOT-READINESS.md),
 [provenance](docs/PROVENANCE.md) and [progress](docs/PROGRESS.md).
 Private QA-candidate packaging is documented in [builds](docs/BUILDS.md).
-The current proposed private tool candidate is [build0003](docs/BUILD_0003.md);
+The current proposed private tool candidate is [build0004](docs/BUILD_0004.md);
 publication and native/Game QA remain separate pending steps.
 Game data, extracted geometry, binaries and evidence stay outside git under
 `~/.local/share/banshee-bot-core/`. No public release or repository remote.

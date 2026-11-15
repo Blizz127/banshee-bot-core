@@ -380,3 +380,19 @@ Times are America/Chicago (CST).
 - Next correction: finish explicit-zone export and verified decoder/harness
   reuse, then consume the bounded zone101 crop. These common-tool checks are
   independent of owning-lead native C1 adoption and publisher work.
+
+## 2026-11-15 02:42 AM CST — explicit FFXI region export: PASS offline
+
+- VERIFIED: ten focused export/reuse integrity tests pass. Actual zone101
+  export selects72 triangles from the explicit owner DAT using a verified
+  retained decoder, without compilation or dependency download. Actual zone/DAT
+  mismatch and selected-water cases refuse output. Source identities and exact
+  evidence are recorded in `FFXI_EXPORT.md`.
+- VERIFIED: the retained accepted32-bit backend bakes/reloads that crop as a
+  four-polygon, nine-vertex tile,1448 bytes, SHA-256
+  `cd23a5b744adab700f75c7061dbce4bdcefca4b5fa8a361bba18ba8bcf12541c`.
+  Receipt: `evidence/ffxi-east-ronfaure101-nav-20261115-01/result.json`.
+  Source units, agent settings and whole-zone coverage remain unverified.
+- Next correction: verify reuse of the corrected owning wrapper/native harness
+  on this new crop without recompiling, then package the increment. Native C1
+  adoption/P0, private publication and Game QA remain separate pending work.

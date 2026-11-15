@@ -83,3 +83,12 @@ Only the original caller/reproduction logic is committed here. Owning source,
 native binary, asset inputs and query coordinates remain external. The exact
 capacity contract and current production call-site evidence are recorded with
 the result, without claiming server/client QA or changing native guards.
+
+Explicit zone selection and retained exporter reuse preserve that same `a13`
+reader and unchanged original Rust driver. Reuse checks the immutable git
+objects, retained staged sources/lock, driver, executable and MIT attribution;
+it records references rather than claiming to recreate source/compiler output.
+The zone101 experiment uses an existing historical source-audit point and
+explicit owner DAT path. Its source/asset identities, water/path refusals and
+incomplete region limits are recorded in [the export evidence](FFXI_EXPORT.md).
+No new format implementation or external code was imported into this repository.

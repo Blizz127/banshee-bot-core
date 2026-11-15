@@ -1267,3 +1267,19 @@ Times are America/Chicago (CST).
   an existing frozen strategy frame. Explicit deadline, deterministic model
   failure fallback, stale-reply handling and one result; no native adoption or
   C2+ rollout. Existing C1 primitives/holds remain; NEVER restart FFXI.
+
+## 2026-11-15 08:46 CST — shared advice lifecycle: PASS offline, PARTIAL integration
+
+- Added original `brain::advice_window` around existing frozen strategy frames.
+  Safety/owner/no-choice frames resolve immediately; eligible rankings have an
+  explicit inclusive deadline, stale-reply handling and deterministic failure
+  fallback. Cancellation/clock regression discard work; at most one intent is
+  returned. No timer, sleep, model call, network or game action is performed.
+- VERIFIED: eight focused integration checks pass with no compiler warnings.
+  Receipt `evidence/advice-window-20261115-01/result.json`, SHA256
+  `29294bcafdf862571f4dedf7f6024b82288349b8a315ee9f06459dc820689bb6`.
+  Source/toolchain stable; 21/22 prior core inputs unchanged and brain module
+  differs only by the new export. No C1 primitive or existing selector change.
+- Next correction: package/read back build0020 and route one superseding
+  TOOL/SOURCE candidate to the existing publisher. Native adoption, full C1/P0,
+  Game QA and publication remain owning results. All holds persist.

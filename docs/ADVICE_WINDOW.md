@@ -80,3 +80,25 @@ maps a transport refusal, parse error or unavailable model to
 `Reply::Unavailable { frame }`, or simply lets the deadline elapse. Advice never
 receives GM/economy authority. Native execution and all mutations stay with the
 game owner. **NEVER restart FFXI**, including at zero players.
+
+## Focused evidence
+
+VERIFIED offline: eight integration tests pass against the real shared strategy
+preparer and selector. They cover immediate safety/owner/economy/single/empty
+fallback, valid rankings and one-result consumption, invalid ranking fallback,
+stale ranking/failure replies, inclusive deadlines and zero budget, explicit
+unavailability, cancellation, equal/regressing time and checked-add overflow.
+
+Command: `nice -n 19 cargo test --offline --locked -j1 -p banshee-bot-core
+--test advice_window`, using a fresh external target directory. One compiler
+job was selected under observed host load. The build has no warnings and its
+source/toolchain pins stayed stable. Receipt:
+`~/.local/share/banshee-bot-core/evidence/advice-window-20261115-01/result.json`,
+SHA256 `29294bcafdf862571f4dedf7f6024b82288349b8a315ee9f06459dc820689bb6`.
+
+Of the 22 inputs in the prior role-election receipt, 21 retain their exact
+bytes; `brain/mod.rs` adds only the new module export. Existing C1 primitives,
+feature flags, selector and strategy implementation remain unchanged. Earlier
+tests/comparisons were not replayed or promoted to whole-current-crate proof.
+No real model service, native adapter, runtime tick timing, Game QA or live
+action was exercised. The new interface is unadopted source groundwork.

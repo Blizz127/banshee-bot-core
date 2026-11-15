@@ -714,3 +714,25 @@ Times are America/Chicago (CST).
 - Next independent architecture item: expose bounded endpoint measurements
   through the Rust navigation boundary for future adapters, preserving existing
   Path/Navigation contracts and native C1/producer ownership.
+
+## 2026-11-15 03:54 CST — shared route measurements: PASS offline
+
+- Added original pure `nav::metrics`: finite 3D endpoint displacement, separation
+  and polyline length for supplied complete routes. An explicit optional limit
+  yields unassessed/within/exceeded; invalid and incomplete paths are refused.
+  Coordinates promote before subtraction, including finite `f32` extremes.
+- VERIFIED: eight new focused integration tests pass; all 20 current core input
+  hashes stayed stable. Receipt
+  `evidence/nav-core-metrics-integrated-20261115-01/result.json`, SHA256
+  `74db0915cf325d5dc09f10748903924c63989b2150106e7893bc9b83e3d46b54`.
+  Existing Point3/Path/Navigation definitions are byte-identical apart from the
+  new export. Native buffer capacities are separate; never truncate output.
+- Decision-module/test hashes match the earlier separate 11-test receipt. Of
+  the historical C1 comparison's 18 inputs, 16 retain their bytes; brain/nav
+  module exports are the only changed existing files. No C1 implementation or
+  flag changed, and no policy/C1/native test was replayed or aggregated.
+- This is unused architecture groundwork, not native legality or walkability
+  proof. No runtime call site, native adoption/producer change or C2+ rollout.
+  Current owning P0/Game QA gates and NEVER restart FFXI remain intact.
+- Next correction: package/read back build0010 with these current source pins,
+  then issue one private tool/source candidate intake superseding build0009.

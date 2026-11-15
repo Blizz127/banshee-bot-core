@@ -49,6 +49,8 @@ queries an explicitly bounded selection with a matching native backend.
 Both collection and selected-map queries report
 [endpoint projection distances](docs/NAV_ROUTE_METRICS.md), with an optional
 caller-specified limit that can reject a complete but displaced path.
+The Rust navigation boundary also provides optional
+[route measurements](docs/NAV_CORE_METRICS.md) for future in-process adapters.
 
 See [FFXI source audit](docs/C1_FFXI_SOURCE_AUDIT.md),
 [adapter handoff](docs/C1_ADAPTER_HANDOFF.md),

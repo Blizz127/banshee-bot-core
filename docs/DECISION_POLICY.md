@@ -68,6 +68,12 @@ current game legality through the native adapter. Existing C1 authority tickets,
 control fences and native execution checks remain authoritative. A returned
 decision is an intent, not a claim that an action ran or succeeded.
 
+For a movement candidate, the adapter can use
+[Rust route measurements](NAV_CORE_METRICS.md) alongside its native collision
+and movement checks before adding the action to the legal set. A projection
+outcome alone does not establish route legality. The selector receives the
+resulting action ID, not a new path invented by advice.
+
 The API provides ordering and validation, not strategies for a particular job,
 native triggers, chat phrasing, movement, auction policy or population control.
 Those remain in their ordered rollout phases and require owning-game evidence.
@@ -86,8 +92,12 @@ SHA256 `a49f7f8b3ff8a22bb2a4fd44ee981cc7bdae2991129c66889508abb7d6ec2fa1`.
 The source and lock hashes are unchanged through that run.
 
 The earlier C1 comparison remains historical evidence for its exact source.
-Seventeen of its 18 recorded inputs remain byte-identical; `brain/mod.rs` adds
+At this policy check, 17 of its 18 recorded inputs were byte-identical; `brain/mod.rs` adds
 only `pub mod decision;`, and `brain/decision.rs` is new. No existing C1
 primitive, feature flag, Cargo manifest or lock changed. The comparison was not
 replayed and is not presented as whole-current-crate equivalence. This API has
 no native runtime call site and no game/LLM service was exercised.
+
+The subsequent [navigation measurement API](NAV_CORE_METRICS.md) adds a second
+module/export. Its separate receipt records 16 unchanged historical inputs and
+unchanged decision-module/test bytes; it does not replay or expand this result.

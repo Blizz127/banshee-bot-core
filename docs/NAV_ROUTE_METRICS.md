@@ -46,6 +46,11 @@ This is an offline diagnostic contract. It changes neither the Rust shared
 core nor native Recast/Detour code, terrain masks, producer pins or FFXI adapter
 behavior. Native C1/P0 and Game QA remain independent and incomplete.
 
+Future in-process adapters can use the separate
+[Rust navigation measurements](NAV_CORE_METRICS.md). That API measures supplied
+`Point3` values; this tool measures serialized JSON coordinates. Their input
+precision differs, and neither establishes game movement legality.
+
 ## Focused verification, 2026-11-15 CST
 
 VERIFIED: a fresh original synthetic floor built using the retained build0006

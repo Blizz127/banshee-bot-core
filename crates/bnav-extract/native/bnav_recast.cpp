@@ -28,6 +28,38 @@ void need(bool condition, const char* message) {
 
 struct EmptyTile : std::runtime_error { using std::runtime_error::runtime_error; };
 
+enum class QueryRefusalReason {
+    StartPolygonNotFound, EndPolygonNotFound, NoCompleteCorridor, QueryBudgetExceeded
+};
+enum class QueryRefusalStage { NearestStart, NearestEnd, FindPath, StraightPath };
+
+struct QueryRefusal : std::runtime_error {
+    QueryRefusalReason reason;
+    QueryRefusalStage stage;
+    QueryRefusal(const char* message, QueryRefusalReason reason, QueryRefusalStage stage)
+        : std::runtime_error(message), reason(reason), stage(stage) {}
+};
+
+const char* query_refusal_reason(QueryRefusalReason reason) {
+    switch (reason) {
+        case QueryRefusalReason::StartPolygonNotFound: return "START_POLYGON_NOT_FOUND";
+        case QueryRefusalReason::EndPolygonNotFound: return "END_POLYGON_NOT_FOUND";
+        case QueryRefusalReason::NoCompleteCorridor: return "NO_COMPLETE_CORRIDOR";
+        case QueryRefusalReason::QueryBudgetExceeded: return "QUERY_BUDGET_EXCEEDED";
+    }
+    throw std::logic_error("unknown query refusal reason");
+}
+
+const char* query_refusal_stage(QueryRefusalStage stage) {
+    switch (stage) {
+        case QueryRefusalStage::NearestStart: return "nearest_start";
+        case QueryRefusalStage::NearestEnd: return "nearest_end";
+        case QueryRefusalStage::FindPath: return "find_path";
+        case QueryRefusalStage::StraightPath: return "straight_path";
+    }
+    throw std::logic_error("unknown query refusal stage");
+}
+
 int integer(const char* value, int minimum, int maximum) {
     std::size_t used = 0;
     long result = std::stol(value, &used);
@@ -491,23 +523,43 @@ void query_mesh(dtNavMesh& mesh, char** positions, int loaded_tiles,
     dtQueryFilter filter;
     filter.setIncludeFlags(include_flags);
     filter.setExcludeFlags(exclude_flags);
-    need(dtStatusSucceed(q.findNearestPoly(requested_start,extents,&filter,&start_ref,start)) && start_ref,
-         "start has no nearby polygon");
-    need(dtStatusSucceed(q.findNearestPoly(requested_end,extents,&filter,&end_ref,end)) && end_ref,
-         "end has no nearby polygon");
+    auto status=q.findNearestPoly(requested_start,extents,&filter,&start_ref,start);
+    need(dtStatusSucceed(status), "start has no nearby polygon");
+    if (!start_ref)
+        throw QueryRefusal("start has no nearby polygon", QueryRefusalReason::StartPolygonNotFound,
+                           QueryRefusalStage::NearestStart);
+    status=q.findNearestPoly(requested_end,extents,&filter,&end_ref,end);
+    need(dtStatusSucceed(status), "end has no nearby polygon");
+    if (!end_ref)
+        throw QueryRefusal("end has no nearby polygon", QueryRefusalReason::EndPolygonNotFound,
+                           QueryRefusalStage::NearestEnd);
     dtPolyRef corridor[256]{};
     int corridor_count=0;
-    auto status=q.findPath(start_ref,end_ref,start,end,&filter,corridor,&corridor_count,256);
-    need(dtStatusSucceed(status) && !dtStatusDetail(status,DT_BUFFER_TOO_SMALL) &&
-         !dtStatusDetail(status,DT_OUT_OF_NODES) && corridor_count>0 && corridor[corridor_count-1]==end_ref,
-         "no complete path within query budget");
+    status=q.findPath(start_ref,end_ref,start,end,&filter,corridor,&corridor_count,256);
+    const bool complete = dtStatusSucceed(status) && !dtStatusDetail(status,DT_BUFFER_TOO_SMALL) &&
+         !dtStatusDetail(status,DT_OUT_OF_NODES) && corridor_count>0 && corridor[corridor_count-1]==end_ref;
+    if (!complete) {
+        // Resource limits take precedence over an incomplete corridor. Failed
+        // or empty results without those flags remain ordinary tool errors.
+        if (dtStatusDetail(status,DT_OUT_OF_NODES) || dtStatusDetail(status,DT_BUFFER_TOO_SMALL))
+            throw QueryRefusal("no complete path within query budget", QueryRefusalReason::QueryBudgetExceeded,
+                               QueryRefusalStage::FindPath);
+        if (dtStatusSucceed(status) && corridor_count>0 && corridor[corridor_count-1]!=end_ref)
+            throw QueryRefusal("no complete path within query budget", QueryRefusalReason::NoCompleteCorridor,
+                               QueryRefusalStage::FindPath);
+        need(false, "no complete path within query budget");
+    }
     float points[256*3]{};
     unsigned char flags[256]{};
     dtPolyRef references[256]{};
     int point_count=0;
     status=q.findStraightPath(start,end,corridor,corridor_count,points,flags,references,&point_count,256);
-    need(dtStatusSucceed(status) && !dtStatusDetail(status,DT_BUFFER_TOO_SMALL) && point_count>=2,
-         "straight path failed or exceeded budget");
+    if (!(dtStatusSucceed(status) && !dtStatusDetail(status,DT_BUFFER_TOO_SMALL) && point_count>=2)) {
+        if (dtStatusDetail(status,DT_BUFFER_TOO_SMALL))
+            throw QueryRefusal("straight path failed or exceeded budget", QueryRefusalReason::QueryBudgetExceeded,
+                               QueryRefusalStage::StraightPath);
+        need(false, "straight path failed or exceeded budget");
+    }
     float direct_fraction=0, normal[3]{};
     int direct_count=0;
     dtPolyRef direct[256]{};
@@ -678,6 +730,24 @@ void query_map(int argc, char** argv) {
              "Detour rejected an imported tile");
     query_mesh(mesh, argv + 6, count, include, exclude, argv[2]);
 }
+
+// Only the opt-in commands consume typed refusals. Legacy commands still reach
+// main's unchanged exception handler, preserving their error text and exit 2.
+int query_report(int argc, char** argv, void (*operation)(int, char**)) {
+    try {
+        operation(argc, argv);
+        return 0;
+    } catch (const QueryRefusal& refusal) {
+        const char* reason = query_refusal_reason(refusal.reason);
+        const char* stage = query_refusal_stage(refusal.stage);
+        std::cout << "{\"format\":\"bnav-query-refusal-v1\",\"complete\":false,\"reference_bits\":"
+                  << sizeof(dtPolyRef)*8 << ",\"reason\":\"" << reason << "\",\"stage\":\"" << stage
+                  << "\",\"node_limit\":2048,\"path_limit\":256,\"nearest_extents\":[2,4,2]}\n";
+        std::cout.flush();
+        need(bool(std::cout), "query refusal output write failed");
+        return 3;
+    }
+}
 }
 
 int main(int argc,char** argv) {
@@ -690,6 +760,8 @@ int main(int argc,char** argv) {
                       << "  bnav-recast query TILE sx sy sz ex ey ez\n"
                       << "  bnav-recast query-tiles ox oy oz tile-world sx sy sz ex ey ez TILE...\n"
                       << "  bnav-recast query-map PROFILE MAP_PARAMS INCLUDE_FLAGS EXCLUDE_FLAGS sx sy sz ex ey ez RAW_TILE...\n"
+                      << "  query-report, query-tiles-report, query-map-report: same arguments and success JSON.\n"
+                      << "    Typed refusals return bnav-query-refusal-v1 JSON with exit 3; other errors remain exit 2.\n"
                       << "Coordinates: Y up; agent settings use the same world units as geometry.\n"
                       << "query/query-tiles accept this helper's generated tiles with matching ABI.\n"
                       << "query-map accepts trusted imported raw tiles with explicit profile/flags; selected-set scope only.\n";
@@ -707,6 +779,9 @@ int main(int argc,char** argv) {
         else if (std::string(argv[1])=="query") query(argc,argv);
         else if (std::string(argv[1])=="query-tiles") query_tiles(argc,argv);
         else if (std::string(argv[1])=="query-map") query_map(argc,argv);
+        else if (std::string(argv[1])=="query-report") return query_report(argc,argv,query);
+        else if (std::string(argv[1])=="query-tiles-report") return query_report(argc,argv,query_tiles);
+        else if (std::string(argv[1])=="query-map-report") return query_report(argc,argv,query_map);
         else throw std::runtime_error("unknown backend command");
         return 0;
     } catch(const EmptyTile& error) {

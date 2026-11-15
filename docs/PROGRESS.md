@@ -529,3 +529,24 @@ Times are America/Chicago (CST).
   README and existing C1 intake now distinguish observed partial authority
   adoption from still-unverified remaining adapter/P0/Game QA work. Build0006
   and its separate source comparison remain unchanged.
+
+## 2026-11-15 03:15 AM CST — offline endpoint projection policy: PASS
+
+- VERIFIED: shared original Python metrics distinguish requested positions from
+  serialized native endpoints. Both collection and selected-map query tools
+  accept an optional finite nonnegative maximum projection distance. Omission
+  preserves prior success semantics; exceeding either endpoint returns JSON
+  `PROJECTION_LIMIT_EXCEEDED`/exit 3 after the normal integrity checks.
+- VERIFIED: ten focused synthetic query checks pass across both wrappers.
+  About 0.8 units of projection passes a limit of 2, fails 0.01, and remains
+  explicitly unassessed with no limit. NaN/negative limits fail before backend
+  access. The integrated script hashes equal the completed smoke's inputs.
+  Receipt SHA256 `75388d164cf6e8c79b496f77b1ae45ff028fba95ffcc83270f48479917ec2012`
+  is linked in `NAV_ROUTE_METRICS.md`.
+- No shared Rust/native source, ABI, producer pin, terrain mask or FFXI behavior
+  changed. No closed platform job or prior query was repeated. Serialized
+  rounding remains visible; there is no implicit epsilon or calibration claim.
+- Next correction: package and read back build0007 with its new Python module,
+  then give the existing private publisher one superseding candidate intake.
+  C1 native adoption/P0, physical navigation calibration and Game QA remain
+  separate pending work with the owning lanes; all operational holds remain.

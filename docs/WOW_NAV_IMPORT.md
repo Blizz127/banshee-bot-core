@@ -119,6 +119,13 @@ and projected endpoints, flags, loaded/traversed tile counts and
 `whole_map_coverage: false`. The result remains an offline diagnostic, not a
 server movement command or a real-client QA result.
 
+The wrapper also returns `route_metrics` for the serialized polyline. Add
+`--max-projection-distance DISTANCE` to bound the larger of the two 3D endpoint
+projection distances. Exceeding the limit returns `PROJECTION_LIMIT_EXCEEDED`
+with exit 3 while retaining the native result and measurements. Omission leaves
+the policy unassessed and preserves the existing success status. Invalid limits
+fail before invoking the backend. See [projection policy](NAV_ROUTE_METRICS.md).
+
 Use the tool with the owner's retained sources and matching private backend.
 Structural wrapper checks are not a general hostile-binary validator; the
 native loader adds polygon/index/link checks before query allocation and use.

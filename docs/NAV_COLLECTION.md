@@ -112,7 +112,8 @@ explicit cell, including its command receipt. Any other failed invocation stops
 the bake, retains partial output and writes an incomplete manifest; the wrapper
 returns 3. Interrupted processes may leave only `requested.json` and partial
 records; these cannot pass `check`. Invalid arguments or verification failures
-return 2. Successful bake/check/query returns 0. An entirely empty collection
+return 2. A query that exceeds an explicit endpoint projection limit returns 3
+with status `PROJECTION_LIMIT_EXCEEDED`. Successful bake/check/query returns 0. An entirely empty collection
 can pass `check`, but cannot produce a navigation query.
 
 `check` requires every cell, matching command receipts and hashes, no unexpected
@@ -122,7 +123,8 @@ or tools to remain present. Collections can therefore move intact to another
 private directory. Hashes detect accidental changes; the manifest is not a
 signature or protection against an author rewriting all records.
 
-`query` first performs `check`, requires the explicitly supplied backend's
+`query` validates an optional projection limit before any backend invocation,
+then performs `check` and requires the explicitly supplied backend's
 recorded binary hash and reference width, then queries all built tiles together.
 It checks the collection and backend again afterward. Missing or corrupt tiles,
 incomplete inventories, mismatched grids and different backends fail closed.
@@ -136,6 +138,14 @@ points can differ from the requested position and height. This is an offline
 navigation diagnostic, not approval to move a character. The current single-tile
 FFXI consumer rejects tiled coordinates/portals and needs an owning-lead change
 before collection integration.
+
+Every successful native query also includes `route_metrics`: requested and
+reported endpoints, both projection distances, path length, endpoint separation
+and corridor size. Add `--max-projection-distance DISTANCE` to require both
+reported endpoints to fall within that 3D distance of their requested positions.
+Omitting the option preserves the previous success status and leaves
+`within_projection_limit` null. See [projection policy](NAV_ROUTE_METRICS.md)
+for rounding, units, result validation and exit semantics.
 
 ## Focused evidence
 
